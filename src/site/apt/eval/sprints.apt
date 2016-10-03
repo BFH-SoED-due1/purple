@@ -1,0 +1,80 @@
+		-----------
+		Sprint Plan
+		-----------
+		Eric Dubuis
+		--------------
+		October 03, 2016
+		--------------
+
+
+Sprint Plan of Project Smart Reservation System
+
+* Introduction
+
+	The goal of this project is to simulate the incremental, iterative,
+and agile software development process SCRUM. It is incremental in the sense
+that functionality (and, thus, business value) is provided in an
+incremental manner. It is iterative in so far that many development
+activities (use case modeling, design, coding, testing, documentation, ...)
+occur repeatedly. It is agile such that changes in customer requirements
+can be handled (rather) easily.
+
+
+* Schedule of Sprints
+
+	The following sprints and deliverables are planned:
+
+*-----------------------------------------------+---------------*-----------------*-----------------*
+| Sprint/Deliverable							| Due date		| Max points	  | Git tag			|
+*-----------------------------------------------+---------------*-----------------*-----------------*
+| Sprint 1/{{{./s1.html}Deliverable 1 (D1)}}	| Oct 21, 2016	| 		50		  | del1			|
+*-----------------------------------------------+---------------*-----------------*-----------------*
+| Sprint 2										| Nov 11, 2016	|		...		  | del2			|
+*-----------------------------------------------+---------------*-----------------*-----------------*
+| Sprint 3										| Dec 2, 2016	|		...		  | del3			|
+*-----------------------------------------------+---------------*-----------------*-----------------*
+| Sprint 4										| Dec 23, 2016	|		...		  | del4			|
+*-----------------------------------------------:---------------*-----------------*-----------------*
+|										Total 	| 				|		250		  |
+*-----------------------------------------------+---------------*-----------------*-----------------*
+Planning of sprints and deliverables.
+
+
+	[Note:]	Each deadline is Friday evening. However, you can provide
+			your deliverables till the following Sunday evening, 12 pm.
+
+
+* Deliverables and Git Branches
+
+	Here I give a few rules how to work with Git branches:
+
+	* Performing the first sprint "Sprint 1", you work on a branch called "development".
+		You have to create the "development" branch. Instructions follow.
+		Upon making the deliverable, you have to merge the stuff onto the "master" branch.
+
+	* To produce the first deliverable "del1", tag the deliverable on the master
+		branch. The tagged version will be evaluated.
+
+	* During the sprint "k", k > 1, each developer "i", i = 1, 2, ..., works on his/her
+		own branch. Give the BFH-Kürzel as the name of the branch. From
+		time to time merge the content of all the developers' branches
+		onto the "development" branch, and perform the integration tests
+		there.
+
+	* To produce the deliverable "k", k > 1, merge the "development"
+		branch onto the "master" trunk. Tag the deliverable with the
+		"tagk", k > 1.
+
+	[]
+
+	The branches of the Git repository may then look like:
+
+---
+developer_i        ++------+------+
+                  /  \      \      \
+development  +---+----+------+------+     development
+            /   /      \      \      \
+master     +---+--------+------+------+-  master
+               ^        ^      ^      ^
+tags          del1     del2   del3   del4
+---

@@ -1,0 +1,55 @@
+    ----------
+    User Stories
+    ----------
+    Author: To be provided
+    ----------
+    October 03, 2016
+
+User Stories
+
+  This document describes the (initial) set of user stories as well as the
+roles users have when using the Smart Reservation System (SRS).
+
+* 1. Roles
+
+  Describe the roles you have identified. I recommend to use a definition
+list:
+
+  [...] This is the ...
+
+  [Room Manager] Person who enters the rooms that can be booked.
+
+  [...] An ordinary user of the system.
+
+  [...] And so on ...
+
+
+* 2. User Stories
+
+  Describe the user stories you have identified so far. Provide a table,
+and number the stories. Provide a short text for each user story by using
+the format as presented in the script. In the last column, provide one
+or more criteria which can be used to validate whether the user story is
+correctly implemented.
+
+
+
+*------+---------------+--------------+-------+
+|<<No>>|<<Description>>|<<Success>>|<<Failed>>|
+*------+---------------+--------------+-------+
+|01|...|...|...|
+*--+---------------------------------------------------------+-----------+-----------+
+|..|As <Room Manager> I want to be to add add new room to the system, so that users can reserve this room.|The room is added and the users are able to book it.|A message box appears and shows the reason of an error.|
+*--+---------------------------------------------------------+-----------+-----------+
+|..|...|...|...|
+*--+---------------------------------------------------------+-----------+-----------+
+|..|As <User> I want to be able to add a new reservation, so that a resource is reserved till the reservation ends.|The object is reserved for the entered time.|A message box appears with the errors.|
+*--+---------------------------------------------------------+-----------+-----------+
+|..|...|...|...|
+*--+---------------------------------------------------------+-----------+-----------+
+
+
+
+* 3. Open Issues
+
+	Add here any open issues, if any.

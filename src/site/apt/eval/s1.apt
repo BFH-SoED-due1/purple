@@ -1,0 +1,125 @@
+		-------------
+		Deliverable 1
+		-------------
+		Eric Dubuis
+		-------------
+		October 3, 2016
+
+
+Introduction
+
+	This document describes the tasks to be performed for, and the constituents
+of the Deliverable 1. Such a document would usually not exist in a real
+project documentation. (Similar information would be found elsewhere, for
+example, in the Iteration Plan document, however.)
+
+		[Note:]	Do not edit or modify this document. This document is
+				managed by your lecturer.
+
+
+Goals
+
+	Deliverable 1 simulates the very first sprint according to Scrum. Hence,
+the project finds itself in a very early stage of the whole development process.
+An initial version of the project's {{{../vision.html}Vision}} document exists only.
+
+	The goals of the provisioning of Deliverable 1 are:
+
+	* To think about stakeholders;
+
+	* To think about and articulate first and most important user stories;
+
+	* To think about and illustrate a domain model.
+
+	[]
+
+
+Your Tasks
+
+	Besides setting up your infrastructure (according to instructions given
+by the lecturer), you work on the Deliverable 1. The constituents of D1
+(short for Deliverable 1) are:
+
+	[[1]]	A list of stakeholders; format: Name and
+			brief description. Recommended place: the {{{../glossary.html}Glossary}}.
+
+	[[]]	An initial set of user stories.
+
+	[[]]	A context (use case) diagram.
+
+	[[]]	A domain model. Domain classes (name, a few attributes at most, no
+			operations), associations and multiplicities. No navigability indications.
+
+	[[]]	A glossary.
+
+	[]
+
+
+Components of this Deliverable
+
+	Your deliverable will consist of your committed project on the Git master
+branch. You will merge the deliverable from you development branch <sprint1>
+(or <s1> if you prefer) to the master branch and tag it <d1>.
+
+	The constituents of your D1 shall consist of:
+
+	[[1]]	A document consisting of:
+
+			* The user stories;
+			
+			* The context diagram.
+
+	[[]]	A set of stakeholders, preferably in the {{{../glossary.html}Glossary}}.
+
+	[[]]	A Domain Model document (title, brief introduction, and the domain model).
+
+	[[]]	Initial sketch of working domain classes: classes, attributes, and
+				associations. No persistence. Some unit tests.
+
+	[]
+
+	Note that all documents and the source files must be committed on the "master"
+branch of the remote GitHub repository. Remeber: You’ll work on individual branches
+or on the development branch, however, and you have to merge your committed items
+onto the "master" branch.
+
+
+Evaluation
+
+	50 points at most are attributed to this deliverable.
+
+*-------------------------------------------+---------------*-----------------*
+| Item										| Max. points	| Points received |
+*-------------------------------------------+---------------*-----------------*
+| Document containing the user stories\		| 		10		| 				  |
+| and roles.								| 				| 				  |
+|											| 				| 				  |
+*-------------------------------------------+---------------*-----------------*
+| Domain Model Document\					| 		10		| 				  |
+| (associations, multiplicities)							| 				  |
+|											| 				| 				  |
+| 											| 				| 				  |
+*-------------------------------------------+---------------*-----------------*
+| Sensible stakeholders (in glossary)\		| 		10		| 				  |
+| 											| 				| 			  	  |
+| 											| 				| 				  |
+*-------------------------------------------+---------------*-----------------*
+| Working infrastructure\					| 		10		| 				  |
+| 											| 				| 			  	  |
+| 											| 				| 				  |
+*-------------------------------------------+---------------*-----------------*
+| Total										| 		50		| 				  |
+*-------------------------------------------+---------------*-----------------*
+Distribution of points for this deliverable.
+
+	Ideally, the (extension of the) glossary, the document with the User stories and the
+Domain Model Document is well integrated into the project documentation.
+If you don't use APT, then PDF files will do as well.
+
+
+Deadline
+
+	This deliverable is due: See {{{./sprints.html}Sprint Plan}}.
+
+	[Note:]	Deadline is Friday evening. However, you can provide
+			your deliverable till the following Sunday evening, 12 pm.
