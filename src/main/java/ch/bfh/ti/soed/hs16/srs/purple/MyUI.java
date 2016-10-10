@@ -6,6 +6,8 @@
  * Distributable under GPL license. See terms of license at gnu.org.
  * 
  * test
+ * 
+ * Test von gestachl
  */
 package ch.bfh.ti.soed.hs16.srs.purple;
 
