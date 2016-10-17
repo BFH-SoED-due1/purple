@@ -6,6 +6,7 @@
  * Distributable under GPL license. See terms of license at gnu.org.
  * 
  * test Elia Boesiger 2.2323
+ * Test Herr Gestach
  */
 package ch.bfh.ti.soed.hs16.srs.purple;
 
