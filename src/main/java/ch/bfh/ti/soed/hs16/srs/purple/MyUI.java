@@ -7,6 +7,7 @@
  * 
  * test Elia Boesiger 2.2323
  * Test Herr Gestach
+ * Test Scrum Master
  */
 package ch.bfh.ti.soed.hs16.srs.purple;
 
