@@ -9,4 +9,13 @@ public class Reservation {
 	private long endDate;
 	private List<User> hostList;
 	private List<User> participantList;
+	
+	public Room getRoom()
+	{
+		return room;
+	}
+	public void setRoom(Room room)
+	{
+		this.room = room;
+	}
 }
