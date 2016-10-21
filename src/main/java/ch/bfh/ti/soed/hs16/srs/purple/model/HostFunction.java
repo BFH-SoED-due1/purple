@@ -11,4 +11,16 @@ package ch.bfh.ti.soed.hs16.srs.purple.model;
 public class HostFunction {
 	private int hostFunctionID;
 	private String hostFunction;
+	public String getHostFunction() {
+		return hostFunction;
+	}
+	public void setHostFunction(String hostFunction) {
+		this.hostFunction = hostFunction;
+	}
+	public int getHostFunctionID() {
+		return hostFunctionID;
+	}
+	public void setHostFunctionID(int hostFunctionID) {
+		this.hostFunctionID = hostFunctionID;
+	}
 }

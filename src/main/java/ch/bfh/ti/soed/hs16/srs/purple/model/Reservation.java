@@ -18,6 +18,10 @@ public class Reservation {
 	private List<User> hostList;
 	private List<User> participantList;
 	
+	public Reservation(Room r, long sd, long ed, List<User> hl, List<User> lp){
+		
+	}
+
 	public Room getRoom()
 	{
 		return room;
@@ -25,5 +29,35 @@ public class Reservation {
 	public void setRoom(Room room)
 	{
 		this.room = room;
+	}
+	public int getReservationID() {
+		return reservationID;
+	}
+	public void setReservationID(int reservationID) {
+		this.reservationID = reservationID;
+	}
+	public long getStartDate() {
+		return startDate;
+	}
+	public void setStartDate(long startDate) {
+		this.startDate = startDate;
+	}
+	public long getEndDate() {
+		return endDate;
+	}
+	public void setEndDate(long endDate) {
+		this.endDate = endDate;
+	}
+	public List<User> getHostList() {
+		return hostList;
+	}
+	public void setHostList(List<User> hostList) {
+		this.hostList = hostList;
+	}
+	public List<User> getParticipantList() {
+		return participantList;
+	}
+	public void setParticipantList(List<User> participantList) {
+		this.participantList = participantList;
 	}
 }

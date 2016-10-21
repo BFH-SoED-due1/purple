@@ -1,31 +1,50 @@
 package ch.bfh.ti.soed.hs16.srs.purple.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
 import ch.bfh.ti.soed.hs16.srs.purple.model.Reservation;
 import ch.bfh.ti.soed.hs16.srs.purple.model.Room;
+import ch.bfh.ti.soed.hs16.srs.purple.model.User;
 
 public class ReservationTest
 {
-
+	
 	@Test
-	public void testNewReservation()
-	{
-		Reservation reservation = new Reservation();
-		Room r = reservation.getRoom();
-		assertNull(r);
+	public void testSetNewReservation(){
+		Room room = new Room();
+		List<User> userList = new ArrayList<User>();
+		userList.add(new User());
+		List<User> partList = new ArrayList<User>();
+		partList.add(new User());
+		Reservation reservation = new Reservation(room, 1600, 1700, userList, partList);
+		
+		assertNotNull(reservation.getReservationID());
+		assertEquals(reservation.getRoom(), room);
+		assertEquals(reservation.getStartDate(), 1600);
+		assertEquals(reservation.getEndDate(), 1700);
+		assertEquals(reservation.getHostList(), userList);
+		assertEquals(reservation.getParticipantList(), partList);
 	}
 	
 	@Test
-	public void testRoomOfReservation()
+	public void testChangeRoomOfReservation()
 	{
-		Reservation res = new Reservation();
+		Room room = new Room();
+		List<User> userList = new ArrayList<User>();
+		userList.add(new User());
+		List<User> partList = new ArrayList<User>();
+		partList.add(new User());
+		Reservation reservation = new Reservation(room, 1600, 1700, userList, partList);
 		Room r = new Room();
-		res.setRoom(r);
-		assertEquals(res.getRoom(), r);
+		reservation.setRoom(r);
+		
+		assertEquals(reservation.getRoom(), r);
 	}
 
 }

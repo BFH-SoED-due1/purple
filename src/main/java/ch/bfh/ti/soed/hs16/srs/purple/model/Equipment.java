@@ -13,4 +13,16 @@ package ch.bfh.ti.soed.hs16.srs.purple.model;
 public class Equipment {
 	private int equipment;
 	private String equipmentName;
+	public String getEquipmentName() {
+		return equipmentName;
+	}
+	public void setEquipmentName(String equipmentName) {
+		this.equipmentName = equipmentName;
+	}
+	public int getEquipment() {
+		return equipment;
+	}
+	public void setEquipment(int equipment) {
+		this.equipment = equipment;
+	}
 }

@@ -12,4 +12,12 @@ import java.util.List;
  */
 public class HostUser {
 	private List<HostFunction> hostFunctionList;
+
+	public List<HostFunction> getHostFunctionList() {
+		return hostFunctionList;
+	}
+
+	public void setHostFunctionList(List<HostFunction> hostFunctionList) {
+		this.hostFunctionList = hostFunctionList;
+	}
 }
