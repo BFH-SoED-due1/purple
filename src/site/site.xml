@@ -43,8 +43,8 @@
         <menu name="Project Evaluation">
             <item name="Sprint Plan" href="eval/sprints.html"/>
             <item name="Deliverable 1" href="eval/s1.html"/>
-            <!--
             <item name="Deliverable 2" href="eval/s2.html"/>
+            <!--
             <item name="Deliverable 3" href="eval/s3.html"/>
             <item name="Deliverable 4" href="eval/s4.html"/>
             <item name="Evaluation" href="eval/summary.html"/>

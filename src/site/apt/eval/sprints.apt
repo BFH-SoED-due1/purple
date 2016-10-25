@@ -3,7 +3,7 @@
 		-----------
 		Eric Dubuis
 		--------------
-		October 03, 2016
+		October 25, 2016
 		--------------
 
 
@@ -29,7 +29,7 @@ can be handled (rather) easily.
 *-----------------------------------------------+---------------*-----------------*-----------------*
 | Sprint 1/{{{./s1.html}Deliverable 1 (D1)}}	| Oct 21, 2016	| 		50		  | del1			|
 *-----------------------------------------------+---------------*-----------------*-----------------*
-| Sprint 2										| Nov 11, 2016	|		...		  | del2			|
+| Sprint 2/{{{./s2.html}Deliverable 2 (D2)}}	| Nov 11, 2016	|		50		  | del2			|
 *-----------------------------------------------+---------------*-----------------*-----------------*
 | Sprint 3										| Dec 2, 2016	|		...		  | del3			|
 *-----------------------------------------------+---------------*-----------------*-----------------*
@@ -55,26 +55,26 @@ Planning of sprints and deliverables.
 	* To produce the first deliverable "del1", tag the deliverable on the master
 		branch. The tagged version will be evaluated.
 
-	* During the sprint "k", k > 1, each developer "i", i = 1, 2, ..., works on his/her
-		own branch. Give the BFH-Kürzel as the name of the branch. From
-		time to time merge the content of all the developers' branches
-		onto the "development" branch, and perform the integration tests
-		there.
+	* During the sprint "k", k > 1, each developer "i", i = 1, 2, ..., takes a task "t"
+		and works on that task. To do so, create a branch named "task_t" originating
+		from the development branch. Work on that branch until the task is finished.
+		As soon as the task is finished, or even more frequently, merge it to the "development" branch,
+		and perform the integration tests there.
 
-	* To produce the deliverable "k", k > 1, merge the "development"
+	* To produce the deliverable "k", k > 0, merge the "development"
 		branch onto the "master" trunk. Tag the deliverable with the
-		"tagk", k > 1.
+		"del_k", k > 0.
 
 	[]
 
 	The branches of the Git repository may then look like:
 
 ---
-developer_i        ++------+------+
-                  /  \      \      \
-development  +---+----+------+------+     development
-            /   /      \      \      \
-master     +---+--------+------+------+-  master
-               ^        ^      ^      ^
-tags          del1     del2   del3   del4
+developer_i (task_t)          ++   +--+ ...
+                             /  \ /    \
+development             +   +----+------+------+     development
+                       / \ /      \      \      \
+master                +---+--------+------+------+-  master
+                          ^        ^      ^      ^
+tags                     del1     del2   del3   del4
 ---

@@ -8,3 +8,15 @@ The Maven Site of the Smart Reservation System
 mvn clean package site
 
 +-----+
+
+
+	You'll find the project documentation in <<<./target/site/index.html>>>.
+To test you code, type:
+
++-----+
+
+mvn clean package jetty:run-war
+
++-----+
+
+	Then open your browser at open <<<http://localhost:8080/>>>.

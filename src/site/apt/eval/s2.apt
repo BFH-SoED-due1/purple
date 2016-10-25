@@ -1,0 +1,107 @@
+		-------------
+		Deliverable 2
+		-------------
+		Eric Dubuis
+		-------------
+		October 25, 2016
+
+Deliverable 2
+
+* Introduction
+
+	This document describes the tasks to be performed for, and the constituents
+of the Deliverable 2. Such a document would usually not exist in a real
+project documentation. (Similar information would be found elsewhere, for
+example, in the Sprint Plan document, however.)
+
+		[Note:]	Do not edit or modify this document. This document is
+				managed by your lecturer.
+
+
+* Goals
+
+	The goals for this sprint are:
+
+	*	To learn how to initiate a sprint.
+
+	*	To organize a sprint in terms of product backlog, sprint backlog/tasks
+
+			*	Product backlog organization
+
+			*	Tasks and task allocations.
+
+			*	Team collaboration.
+
+			*	Working with Git (branches, team efforts, merging, ...)
+
+	*	To deliver tested code.
+
+
+	[]
+
+* Your Tasks
+
+	These are the effective task you'll have to provide for this sprint:
+
+	*	Organize your product backlog (PL):
+
+			* PL item prioritization
+
+			* PL item grooming
+
+			* PL item "best-guess" estimation
+
+	*	Organize your sprint
+	
+			* Fix the list of PB items for this sprint
+
+			* Split larger PB items into tasks
+
+			* Provide task "best-guess" estimations
+
+	*	Update any documents you have so far, if needed
+
+	*	Provide code for selected user stories (or parts thereof)
+
+			* Packages according your (initial) architecture
+
+			* Production Java interfaces and classes
+
+			* JUnit test classes
+
+	[]
+
+
+* Components of this Deliverable
+
+	The deliverable for this sprint shall encompass:
+
+	*	The product backlog at the beginning of the sprint
+
+	*	The sprint backlog items / task list
+	
+	*	The list of finished sprint backlog items / tasks
+
+	*	Production Java interfaces and classes
+
+	*	JUnit test classes, coverage: 95% (UI components excluded)
+
+	*	Check the Checkstyle report.
+
+	[]
+
+
+
+* Evaluation
+
+	50 points at most per team member are attributed to this deliverable. Points may
+	not be equally distributed among team members. (However, this is the goal.)
+
+
+
+* Deadline
+
+	This deliverable is due: See {{{./sprints.html}Sprint Plan}}.
+
+	[Note:]	Deadline is Friday evening. However, you can provide
+			your deliverable till the following Sunday evening, 12 pm.
