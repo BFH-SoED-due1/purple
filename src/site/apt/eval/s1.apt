@@ -3,7 +3,7 @@
 		-------------
 		Eric Dubuis
 		-------------
-		October 3, 2016
+		October 3, 2016; Evaluation: October 30, 2016
 
 
 Introduction
@@ -79,7 +79,7 @@ branch. You will merge the deliverable from you development branch <sprint1>
 	[]
 
 	Note that all documents and the source files must be committed on the "master"
-branch of the remote GitHub repository. Remeber: You’ll work on individual branches
+branch of the remote GitHub repository. Remember: You’ll work on individual branches
 or on the development branch, however, and you have to merge your committed items
 onto the "master" branch.
 
@@ -91,24 +91,35 @@ Evaluation
 *-------------------------------------------+---------------*-----------------*
 | Item										| Max. points	| Points received |
 *-------------------------------------------+---------------*-----------------*
-| Document containing the user stories\		| 		10		| 				  |
+| Document containing the user stories\		| 		10		| 		 9		  |
 | and roles.								| 				| 				  |
-|											| 				| 				  |
+| COMMENTS:\								| 				| 				  |
+| - User stories: good\ 					| 				| 				  |
+| - Roles: Provide explicit list\			| 				| 				  |
+| - Roles: Not present in domain model / Name mismatch (-1)\ | | 			  |
+| - Context diagram: "Login" is not a use case | 			| 				  |
 *-------------------------------------------+---------------*-----------------*
-| Domain Model Document\					| 		10		| 				  |
-| (associations, multiplicities)							| 				  |
-|											| 				| 				  |
-| 											| 				| 				  |
+| Domain Model Document\					| 		10		| 		 9		  |
+| (associations, multiplicities)			|				| 				  |
+| COMMENTS:\								| 				| 				  |
+| - In text: Do not refer to DB tables, primary keys etc.\ | | 				  |
+| - In DM: Do not introduce attributes for technical ID's\ | | 				  |
+| - In DM: Do not introduce attributes for associations you draw\ | | 		  |
+| - In DM: Do not introduce "ArrayList" (-1)\ | 			| 				  |
+| - In DM: I recommend not to introduce inheritance	| 		| 				  |
 *-------------------------------------------+---------------*-----------------*
-| Sensible stakeholders (in glossary)\		| 		10		| 				  |
-| 											| 				| 			  	  |
-| 											| 				| 				  |
+| Sensible stakeholders (in glossary)\		| 		10		| 		10		  |
+| COMMENTS:\								| 				| 				  |
+| - Good									| 				| 				  |
 *-------------------------------------------+---------------*-----------------*
-| Working infrastructure\					| 		10		| 				  |
-| 											| 				| 			  	  |
-| 											| 				| 				  |
+| First classes and tests\					| 		10		| 		10		  |
+| COMMENTS:\								| 				| 				  |
+| - Okay 									| 				| 				  |
 *-------------------------------------------+---------------*-----------------*
-| Total										| 		50		| 				  |
+| Working infrastructure\					| 		10		| 		10		  |
+| - Okay									| 				| 			  	  |
+*-------------------------------------------+---------------*-----------------*
+| Total										| 		50		| 		48		  |
 *-------------------------------------------+---------------*-----------------*
 Distribution of points for this deliverable.
 
