@@ -49,4 +49,26 @@ Using Vaadin pre-releases
 -------------------------
 
 If Vaadin pre-releases are not enabled by default, use the Maven parameter
-"-P vaadin-prerelease" or change the activation default value of the profile in pom.xml .
+"-P vaadin-prerelease" or change the activation default value of the profile in pom.xml.
+
+Tagging
+-------------------------
+
+We use the following tags to track major milestones:
+
+del1:	deliverable 1
+
+del2:	deliverable 2
+
+del3:	deliverable 3
+
+del4:	deliverable 4
+
+eval1:	evaluation 1
+
+eval2:	evaluation 2
+
+eval3:	evaluation 3
+
+eval4:	evaluation 4
+
