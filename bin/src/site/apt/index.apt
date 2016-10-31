@@ -1,0 +1,10 @@
+The Maven Site of the Smart Reservation System
+
+	This is the Smart Reservation System (SRS) project of team green. To generate
+	this site, go to the root directory of the project, and then type:
+
++-----+
+
+mvn clean package site
+
++-----+

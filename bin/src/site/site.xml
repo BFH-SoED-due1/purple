@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="Smart Reservation System" xmlns="http://maven.apache.org/DECORATION/1.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
+
+    <bannerLeft>
+        <name>Smart Reservation System</name>
+        <src>images/bfh-ti-de.gif</src>
+        <href>http://www.ti.bfh.ch</href>
+    </bannerLeft>
+
+    <version position="right"/>
+
+    <body>
+        <breadcrumbs>
+            <item name="BFH-TI" href="http://www.ti.bfh.ch"/>
+        </breadcrumbs>
+
+        <menu name="Process Documentation">
+            <!--
+                To add a menu item that links to a HTML page, provide
+                an entry of the form:
+                  <item name="AName" href="path_from_apt_dir_to_file.html" />
+
+                To add a menu item that links to a PDF file, provide
+                an entry of the form:
+                  <item name="AName" href="path_from_resources/pdf_dir_to_file.pdf" />
+            -->
+            <item name="About" href="index.html"/>
+            <item name="The Vision" href="doc/vision.pdf"/>
+            <item name="User Stories" href="user_stories.html"/>
+            <item name="Domain Model" href="domain_model.html"/>
+            <item name="Context View" href="context_view.html"/>
+            <!--
+            <item name="System Sequence Diagram" href="system_sequence_diagram.html" />
+            <item name="Detailed Design Document" href="detailed_design_document.html" />
+            <item name="System Architecture Document" href="system_architecture_document.html" />
+            <item name="Other Specs" href="other_specs.html" />
+            -->
+            <item name="Glossary" href="glossary.html"/>
+        </menu>
+        <menu name="Project Evaluation">
+            <item name="Sprint Plan" href="eval/sprints.html"/>
+            <item name="Deliverable 1" href="eval/s1.html"/>
+            <!--
+            <item name="Deliverable 2" href="eval/s2.html"/>
+            <item name="Deliverable 3" href="eval/s3.html"/>
+            <item name="Deliverable 4" href="eval/s4.html"/>
+            <item name="Evaluation" href="eval/summary.html"/>
+            -->
+        </menu>
+        <menu name="Resources">
+            <item name="The APT Format" href="format.html"/>
+            <item name="The FAQ Format" href="faq.html"/>
+        </menu>
+        <menu ref="reports"/>
+        <!--
+        <menu name="Additional Reports">
+            <item name="Test Coverage" href="jacoco/index.html"/>
+        </menu>
+		-->
+    </body>
+
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>1.4</version>
+    </skin>
+</project>
