@@ -40,16 +40,48 @@
 
 	<developers>
 		<developer>
-			<id>xyzow1</id><!-- provide BFH Kürzel -->
-			<name>... ...</name><!-- provide first and last name -->
-			<email>...@students.bfh.ch</email><!-- provide e-mail address (optional) -->
+			<id>schie5</id><!-- provide BFH Kürzel -->
+			<name>Elias Schildknecht</name><!-- provide first and last name -->
+			<email>elias.schildknecht@students.bfh.ch</email><!-- provide e-mail address (optional) -->
 			<organization>Berner Fachhochschule / TI</organization>
 			<organizationUrl>http://www.ti.bfh.ch/</organizationUrl>
 			<roles>
 				<role>software developer</role>
 			</roles>
 		</developer>
-		<!-- add other developers, too -->
+		
+		<developer>
+			<id>aebip1</id><!-- provide BFH Kürzel -->
+			<name>Patrik Aebischer</name><!-- provide first and last name -->
+			<email>patrik.aebischer@students.bfh.ch</email><!-- provide e-mail address (optional) -->
+			<organization>Berner Fachhochschule / TI</organization>
+			<organizationUrl>http://www.ti.bfh.ch/</organizationUrl>
+			<roles>
+				<role>software developer</role>
+			</roles>
+		</developer>
+		
+		<developer>
+			<id>boesi1</id><!-- provide BFH Kürzel -->
+			<name>Elia Boesiger</name><!-- provide first and last name -->
+			<email>elia.boesiger@students.bfh.ch</email><!-- provide e-mail address (optional) -->
+			<organization>Berner Fachhochschule / TI</organization>
+			<organizationUrl>http://www.ti.bfh.ch/</organizationUrl>
+			<roles>
+				<role>software developer</role>
+			</roles>
+		</developer>
+		
+		<developer>
+			<id>gestl</id><!-- provide BFH Kürzel -->
+			<name>Lukas Gestach</name><!-- provide first and last name -->
+			<email>lukas.gestach@students.bfh.ch</email><!-- provide e-mail address (optional) -->
+			<organization>Berner Fachhochschule / TI</organization>
+			<organizationUrl>http://www.ti.bfh.ch/</organizationUrl>
+			<roles>
+				<role>software developer</role>
+			</roles>
+		</developer>
 	</developers>
 
 	<repositories>
