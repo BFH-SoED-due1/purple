@@ -7,7 +7,7 @@
 	<artifactId>srs-purple</artifactId>
 	<packaging>war</packaging>
 	<version>1.0-SNAPSHOT</version>
-	<name>srs-blue</name>
+	<name>srs-purple</name>
 	<organization>
 		<name>BFH</name>
 		<url>http://www.ti.bfh.ch</url>
