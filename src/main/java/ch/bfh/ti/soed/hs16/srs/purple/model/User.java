@@ -6,6 +6,7 @@
  * Distributable under GPL license. See terms of license at gnu.org.
  */
 package ch.bfh.ti.soed.hs16.srs.purple.model;
+
 /**
  * Ein User ist ein Benutzer des Systems.
  * Ein User registriert sich mit den folgenden Attributen:
@@ -39,8 +40,13 @@ public class User {
 		USER_ROLE_PARTICIPANT
 	}
 
-	public User(String lN, String fN, String mailAdd, String uN, String pw, UserRole uR){
-
+	public User(String lastname, String firstname, String emailAddress, String username, String password, UserRole userRole){
+		this.lastName = lastname;
+		this.firstName = firstname;
+		this.emailAddress = emailAddress;
+		this.username = username;
+		this.password = password;
+		this.userRole = userRole;
 	}
 
 	public User() {
