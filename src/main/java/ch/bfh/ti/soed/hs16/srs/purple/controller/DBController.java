@@ -11,17 +11,17 @@ import ch.bfh.ti.soed.hs16.srs.purple.model.User;
 import ch.bfh.ti.soed.hs16.srs.purple.model.User.UserRole;
 
 public class DBController {
-	
+
 	/**
 	 * Creates a new user in the database or updates an existing one.
-	 * 
+	 *
 	 * @param username - The name the user likes to have.
 	 * @param password - The password associated with the given username.
 	 * @param emailAddress - The email of the user.
 	 * @param role - The specific role this user should have.
 	 * @param firstname - Firstname
 	 * @param lastname - Lastname
-	 * 
+	 *
 	 * @return User - The user stored in the database
 	 * */
 	public User createUser(String lastname, String firstname, String emailAddress, String username, String password, UserRole role){
