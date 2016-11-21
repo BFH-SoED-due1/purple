@@ -21,9 +21,9 @@ public class RegistrationControllerTest
 {
 
 	@Test
-	public void RCTest()
-	{
-		DBController dbController = new DBController();
+	public void RCTest() {
+		DBController dbController = DBController.getInstance();
+		
 		RegistrationView registrationView = new RegistrationView();
 		
 		RegistrationController rc = new RegistrationController(registrationView,dbController);
@@ -39,7 +39,8 @@ public class RegistrationControllerTest
 		String emailAddress = "email";
 		UserRole role = UserRole.USER_ROLE_ADMIN;
 		
-		DBController dbController = new DBController();
+		DBController dbController = DBController.getInstance();
+		
 		RegistrationView registrationView = new RegistrationView();
 		
 		RegistrationController rc = new RegistrationController(registrationView,dbController);

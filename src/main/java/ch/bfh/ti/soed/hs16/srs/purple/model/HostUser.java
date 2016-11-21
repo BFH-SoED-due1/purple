@@ -18,13 +18,13 @@ import java.util.List;
  *
  */
 public class HostUser {
-	private List<HostFunction> hostFunctionList;
+	private List<Function> hostFunctionList;
 
-	public List<HostFunction> getHostFunctionList() {
+	public List<Function> getHostFunctionList() {
 		return hostFunctionList;
 	}
 
-	public void setHostFunctionList(List<HostFunction> hostFunctionList) {
+	public void setHostFunctionList(List<Function> hostFunctionList) {
 		this.hostFunctionList = hostFunctionList;
 	}
 }
