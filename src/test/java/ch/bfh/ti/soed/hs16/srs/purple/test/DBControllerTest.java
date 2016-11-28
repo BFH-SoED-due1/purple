@@ -16,33 +16,38 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController;
-import ch.bfh.ti.soed.hs16.srs.purple.model.Function;
 
 public class DBControllerTest {
 	
 	@BeforeClass
-	public static void testSingleton(){
-		DBController.getInstance();
-		
+	public static void testSingleton() {
 		assertNotNull(DBController.getInstance());
-		assertNotNull(DBController.getInstance().getConnection());
 	}
 	
 	@Test
-	public void testCreateFunction(){
-		String testFunction = "TestFunction";
-		Function function = DBController.getInstance().createFunction(testFunction);
-		assertEquals(function.getFunction(),testFunction);
-	}
-	
-	@AfterClass
-	public static void disconnect(){
+	public void testConnection(){
+		boolean connected = false;
 		try {
-			DBController.getInstance().disconnect();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			DBController.getInstance().connect();
+			connected = true;
+		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
+		assertTrue(connected);
+	}
+	
+	// TODO: Test (Elias)
+	
+	@AfterClass
+	public static void disconnect() throws SQLException{
+		boolean disconnected = false;
+		try {
+			DBController.getInstance().disconnect();
+			disconnected = true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		assertTrue(disconnected);
 	}
 
 }

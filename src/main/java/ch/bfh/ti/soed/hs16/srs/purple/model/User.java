@@ -16,10 +16,9 @@ package ch.bfh.ti.soed.hs16.srs.purple.model;
  * - Username
  * - Passwort
  * Die Rolle des Benutzers wird in der Klasse UserRole definiert. Die Reservations-Applikation erlaubt die folgenden
- * drei Benutzerrollen:
- * - USER_ROLE_HOST: Der Veranstalter kann Reservationen tätigen.
- * - USER_ROLE_PARTICIPANT: Ist der Teilnehmer einer Reservation/Veranstaltung.
- * - USER_ROLE_ADMIN: Der Admin hat alle Rechte und wird verwendet um einem User die Veranstaltungsrechte zu geben.
+ * zwei Benutzerrollen:
+ * - USER_ROLE_MEMBER: Member.
+ * - USER_ROLE_ADMIN: Admin.
  *
  * @author Aebischer Patrik, Bösiger Elia, Gestach Lukas, Schildknecht Elias
  * @date 20.10.2016
@@ -32,21 +31,18 @@ public class User {
 	private String firstName;
 	private String emailAddress;
 	private String username;
+	// TODO: encrypt password
 	private String password;
-	private UserRole userRole;
-	public static enum UserRole {
-		USER_ROLE_ADMIN,
-		USER_ROLE_HOST,
-		USER_ROLE_PARTICIPANT
-	}
+	private Role role;
 
-	public User(String lastname, String firstname, String emailAddress, String username, String password, UserRole userRole){
+	public User(int userID, String lastname, String firstname, String emailAddress, String username, String password, Role role){
+		this.userID = userID;
 		this.lastName = lastname;
 		this.firstName = firstname;
 		this.emailAddress = emailAddress;
 		this.username = username;
 		this.password = password;
-		this.userRole = userRole;
+		this.role = role;
 	}
 
 	public User() {
@@ -89,10 +85,12 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public UserRole getUserRole() {
-		return userRole;
+
+	public Role getRole() {
+		return role;
 	}
-	public void setUserRole(UserRole userRole) {
-		this.userRole = userRole;
-	};
+
+	public void setRole(Role role) {
+		this.role = role;
+	}
 }

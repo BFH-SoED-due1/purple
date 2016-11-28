@@ -20,10 +20,27 @@ import java.util.List;
  */
 public class Room {
 	private int roomID;
+	private String name;
 	private int roomNumber;
 	private int numberOfSeats;
 	private List<Equipment> equipmentList;
 	private List<Reservation> reservationList;
+	
+	public Room(int roomID, int roomNumber, String name, int numberOfSeats){
+		this.roomID = roomID;
+		this.name = name;
+		this.roomNumber = roomNumber;
+		this.numberOfSeats = numberOfSeats;
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public int getRoomID() {
 		return roomID;
 	}
@@ -53,5 +70,10 @@ public class Room {
 	}
 	public void setReservationList(List<Reservation> reservationList) {
 		this.reservationList = reservationList;
+	}
+	
+	@Override
+	public boolean equals(Object o){
+		return ((Room)o).getRoomID() == this.roomID;
 	}
 }

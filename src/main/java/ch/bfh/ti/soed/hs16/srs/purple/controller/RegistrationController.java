@@ -7,8 +7,9 @@
  */
 package ch.bfh.ti.soed.hs16.srs.purple.controller;
 
+import ch.bfh.ti.soed.hs16.srs.purple.model.Function;
+import ch.bfh.ti.soed.hs16.srs.purple.model.Role;
 import ch.bfh.ti.soed.hs16.srs.purple.model.User;
-import ch.bfh.ti.soed.hs16.srs.purple.model.User.UserRole;
 import ch.bfh.ti.soed.hs16.srs.purple.view.RegistrationView;
 
 public class RegistrationController {
@@ -33,9 +34,11 @@ public class RegistrationController {
 	 *
 	 * @return User - The registered User
 	 * */
-	public User registerNewUser(String lastname, String firstname, String emailAddress, String username, String password, UserRole role){
+	public User registerNewUser(String lastname, String firstname, String emailAddress, String username, String password, Function function, Role role){
 		// TODO: bind this method to a "register"-event
-		return dbController.createUser(lastname,firstname,emailAddress,username,password,role);
+		dbController.insertUser(firstname, lastname, emailAddress, username, password, function, role);
+		// TODO: get user and return him
+		return null;
 	}
 
 }

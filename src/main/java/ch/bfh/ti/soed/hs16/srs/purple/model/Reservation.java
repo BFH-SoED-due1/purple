@@ -7,6 +7,7 @@
  */
 package ch.bfh.ti.soed.hs16.srs.purple.model;
 
+import java.sql.Timestamp;
 import java.util.List;
 /**
  * Eine Reservation definiert eine Reservation, die von einem Veranstalter erstellt wurde.
@@ -20,13 +21,16 @@ import java.util.List;
 public class Reservation {
 	private int reservationID;
 	private Room room;
-	private long startDate;
-	private long endDate;
+	private Timestamp startDate;
+	private Timestamp endDate;
 	private List<User> hostList;
 	private List<User> participantList;
 
-	public Reservation(Room r, long sd, long ed, List<User> hl, List<User> lp){
-
+	public Reservation(int reservationID, Room room, Timestamp startDate, Timestamp endDate){
+		this.reservationID = reservationID;
+		this.room = room;
+		this.startDate = startDate;
+		this.endDate = endDate;
 	}
 
 	public Room getRoom()
@@ -43,28 +47,24 @@ public class Reservation {
 	public void setReservationID(int reservationID) {
 		this.reservationID = reservationID;
 	}
-	public long getStartDate() {
+	public Timestamp getStartDate() {
 		return startDate;
 	}
-	public void setStartDate(long startDate) {
+	public void setStartDate(Timestamp startDate) {
 		this.startDate = startDate;
 	}
-	public long getEndDate() {
+	public Timestamp getEndDate() {
 		return endDate;
 	}
-	public void setEndDate(long endDate) {
+	public void setEndDate(Timestamp endDate) {
 		this.endDate = endDate;
 	}
-	public List<User> getHostList() {
-		return hostList;
+	
+	public void addHost(User host){
+		hostList.add(host);
 	}
-	public void setHostList(List<User> hostList) {
-		this.hostList = hostList;
-	}
-	public List<User> getParticipantList() {
-		return participantList;
-	}
-	public void setParticipantList(List<User> participantList) {
-		this.participantList = participantList;
+	
+	public void addParticipant(User participant){
+		participantList.add(participant);
 	}
 }

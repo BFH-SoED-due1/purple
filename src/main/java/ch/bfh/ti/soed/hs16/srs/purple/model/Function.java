@@ -6,6 +6,7 @@
  * Distributable under GPL license. See terms of license at gnu.org.
  */
 package ch.bfh.ti.soed.hs16.srs.purple.model;
+
 /**
  * Function definiert eine Funktion eines Benutzers.
  * Ein Beispiel für eine Funktion eines Benutzers ist Physikprofessor.
@@ -16,6 +17,7 @@ package ch.bfh.ti.soed.hs16.srs.purple.model;
  *
  */
 public class Function {
+	
 	private int id;
 	private String function;
 	
@@ -24,6 +26,14 @@ public class Function {
 		this.function = function;
 	}
 	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public String getFunction() {
 		return function;
 	}
@@ -32,11 +42,8 @@ public class Function {
 		this.function = function;
 	}
 	
-	public int getID() {
-		return id;
-	}
-	
-	public void setID(int id) {
-		this.id = id;
+	@Override
+	public boolean equals(Object o){
+		return ((Function)o).getId() == this.id;
 	}
 }
