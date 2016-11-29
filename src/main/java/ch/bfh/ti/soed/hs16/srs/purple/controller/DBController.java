@@ -39,6 +39,66 @@ public class DBController {
 	
 	private static DBController instance;
 	
+	public enum Table_Function {
+		COLUMN_ID("idfunction"),
+		COLUMN_FUNCTION("function"),
+		CLOUMN_ALL("*");
+		
+		private final String column;
+		Table_Function(String column) {this.column = column;}
+		public String getValue(){return column;}
+	}
+	
+	public enum Table_Role {
+		COLUMN_ID("idrole"),
+		COLUMN_ROLE("role"),
+		CLOUMN_ALL("*");
+		
+		private final String column;
+		Table_Role(String column) {this.column = column;}
+		public String getValue(){return column;}
+	}
+	
+	public enum Table_Room {
+		COLUMN_ID("idroom"),
+		COLUMN_ROOMNUMBER("roomnumber"),
+		COLUMN_NAME("name"),
+		COLUMN_NUMBEROFSEATS("numberofseats"),
+		CLOUMN_ALL("*");
+		
+		private final String column;
+		Table_Room(String column) {this.column = column;}
+		public String getValue(){return column;}
+	}
+	
+	public enum Table_User {
+		COLUMN_ID("iduser"),
+		COLUMN_FIRSTNAME("firstname"),
+		COLUMN_LASTNAME("lastname"),
+		COLUMN_EMAIL("email"),
+		COLUMN_USERNAME("username"),
+		COLUMN_PASSWORD("password"),
+		COLUMN_FUNCTIONID("functionid"),
+		COLUMN_ROLEID("roleid"),
+		CLOUMN_ALL("*");
+		
+		private final String column;
+		Table_User(String column) {this.column = column;}
+		public String getValue(){return column;}
+	}
+	
+	public enum Table_Reservation {
+		COLUMN_ID("idreservation"),
+		COLUMN_STARTDATE("startdate"),
+		COLUMN_ENDDATE("enddate"),
+		COLUMN_ROOMID("roomid"),
+		CLOUMN_ALL("*");
+		
+		private final String column;
+		Table_Reservation(String column) {this.column = column;}
+		public String getValue(){return column;}
+	}
+	
 	private DBController() {
 		dbHost = "mysql22.webland.ch";
 		db = "brave_res_tool";
@@ -125,63 +185,130 @@ public class DBController {
 	
 	// --- SELECT METHODS ---
 	public List<Function> selectAllFunctions(){
-		ArrayList<Function> functions = new ArrayList<Function>();
-		String selectFunction = "SELECT * FROM function;";
-		for(Row row : executeSelect(selectFunction)){
-			Integer id = row.getRow().get(0).getValue() == Integer.class ? (Integer) row.getRow().get(0).getKey() : null;
+		return selectFunctionsBy(Table_Function.CLOUMN_ALL, null);
+	}
+	
+	public List<Role> selectAllRoles(){
+		return selectRoleBy(Table_Role.CLOUMN_ALL, null);
+	}
+	
+	public List<Room> selectAllRooms(){
+		return selectRoomBy(Table_Room.CLOUMN_ALL, null);
+	}
+	
+	public List<User> selectAllUsers(){
+		return selectUserBy(Table_User.CLOUMN_ALL, null);
+	}
+	
+	public List<Reservation> selectAllReservations(){
+		return selectReservationBy(Table_Reservation.CLOUMN_ALL, null);
+	}
+	
+	public <T> List<Function> selectFunctionsBy(Table_Function column, T value){
+		String selectStmt = "SELECT * FROM function WHERE "+column.getValue();
+		if(value != null) selectStmt += " = '"+value+"'"; else selectStmt += " IS NULL";
+		if(column.equals(Table_Function.CLOUMN_ALL)) selectStmt = "SELECT * FROM function";
+		List<Function> functions = new ArrayList<Function>();
+		
+		for(Row row : executeSelect(selectStmt)){
+			Integer idFunction = row.getRow().get(0).getValue() == Integer.class ? (Integer) row.getRow().get(0).getKey() : null;
 			String function = row.getRow().get(1).getValue() == String.class ? (String) row.getRow().get(1).getKey() : null;
-			functions.add(new Function(id,function));
+			functions.add(new Function(idFunction,function));
 		}
 		return functions;
 	}
 	
-	public List<Role> selectAllRoles(){
-		ArrayList<Role> roles = new ArrayList<Role>();
-		String selectRole = "SELECT * FROM role";
-		for(Row row : executeSelect(selectRole)){
-			Integer id = row.getRow().get(0).getValue() == Integer.class ? (Integer) row.getRow().get(0).getKey() : null;
+	public <T> List<Role> selectRoleBy(Table_Role column, T value){
+		String selectStmt = "SELECT * FROM role WHERE "+column.getValue();
+		if(value != null) selectStmt += " = '"+value+"'"; else selectStmt += " IS NULL";
+		if(column.equals(Table_Role.CLOUMN_ALL)) selectStmt = "SELECT * FROM role";
+		List<Role> roles = new ArrayList<Role>();
+		
+		for(Row row : executeSelect(selectStmt)){
+			Integer idRole = row.getRow().get(0).getValue() == Integer.class ? (Integer) row.getRow().get(0).getKey() : null;
 			String role = row.getRow().get(1).getValue() == String.class ? (String) row.getRow().get(1).getKey() : null;
-			roles.add(new Role(id,role));
+			roles.add(new Role(idRole,role));
 		}
 		return roles;
 	}
 	
-	public List<Room> selectAllRooms(){
-		ArrayList<Room> rooms = new ArrayList<Room>();
-		String selectRoom = "SELECT idroom FROM room";
-		for(Row row : executeSelect(selectRoom)){
+	public <T> List<Room> selectRoomBy(Table_Room column, T value){
+		String selectStmt = "SELECT * FROM room WHERE "+column.getValue();
+		if(value != null) selectStmt += " = '"+value+"'"; else selectStmt += " IS NULL";
+		if(column.equals(Table_Room.CLOUMN_ALL)) selectStmt = "SELECT * FROM room";
+		List<Room> rooms = new ArrayList<Room>();
+		
+		for(Row row : executeSelect(selectStmt)){
 			Integer idRoom = row.getRow().get(0).getValue() == Integer.class ? (Integer) row.getRow().get(0).getKey() : null;
-			rooms.add(this.selectRoomByID(idRoom));
+			Integer roomNumber = row.getRow().get(1).getValue() == Integer.class ? (Integer) row.getRow().get(1).getKey() : null;
+			String name = row.getRow().get(2).getValue() == String.class ? (String) row.getRow().get(2).getKey() : null;
+			Integer numberOfSeats = row.getRow().get(3).getValue() == Integer.class ? (Integer) row.getRow().get(3).getKey() : null;
+			rooms.add(new Room(idRoom,roomNumber,name,numberOfSeats));
 		}
 		return rooms;
 	}
 	
-	public List<User> selectAllUsers(){
-		ArrayList<User> users = new ArrayList<User>();
-		String selectUser = "SELECT iduser FROM user";
-		for(Row row : executeSelect(selectUser)){
+	public <T> List<User> selectUserBy(Table_User column, T value){
+		String selectStmt = "SELECT * FROM user WHERE "+column.getValue();
+		if(value != null) selectStmt += " = '"+value+"'"; else selectStmt += " IS NULL";
+		if(column.equals(Table_User.CLOUMN_ALL)) selectStmt = "SELECT * FROM user";
+		List<User> users = new ArrayList<User>();
+		
+		ArrayList<Function> functions = new ArrayList<Function>();
+		ArrayList<Role> roles = new ArrayList<Role>();
+		for(Row row : executeSelect(selectStmt)){
 			Integer idUser = row.getRow().get(0).getValue() == Integer.class ? (Integer) row.getRow().get(0).getKey() : null;
-			users.add(selectUserByID(idUser));
+			String firstName = row.getRow().get(1).getValue() == String.class ? (String) row.getRow().get(1).getKey() : null;
+			String lastName = row.getRow().get(2).getValue() == String.class ? (String) row.getRow().get(2).getKey() : null;
+			String email = row.getRow().get(3).getValue() == String.class ? (String) row.getRow().get(3).getKey() : null;
+			String username = row.getRow().get(4).getValue() == String.class ? (String) row.getRow().get(4).getKey() : null;
+			String password = row.getRow().get(5).getValue() == String.class ? (String) row.getRow().get(5).getKey() : null;
+			Integer idFunction = row.getRow().get(6).getValue() == Integer.class ? (Integer) row.getRow().get(6).getKey() : null;
+			Integer idRole = row.getRow().get(7).getValue() == Integer.class ? (Integer) row.getRow().get(7).getKey() : null;
+			
+			// Check if user has a function
+			Function functionObject = null;
+			if(idFunction != null){
+				// Check if a function was already loaded before
+				for(Function existingFunction : functions) if(existingFunction.getId() == idFunction) functionObject = existingFunction;
+				// If not, create new function and add it to the list
+				if(functionObject == null){
+					functionObject = selectFunctionsBy(Table_Function.COLUMN_ID, idFunction).get(0);
+					functions.add(functionObject);
+				}
+			}
+			
+			// Check if user has a role
+			Role roleObject = null;
+			if(idRole != null){
+				// Check if a role was already loaded before
+				for(Role existingRole : roles) if(existingRole.getId() == idRole) roleObject = existingRole;
+				// If not, create new role and add it to the list
+				if(roleObject == null){
+					roleObject = selectRoleBy(Table_Role.COLUMN_ID,idRole).get(0);
+					roles.add(roleObject);
+				}
+			}
+			
+			// TODO: User or HostUser needed?
+			if(idFunction == null){
+				users.add(new User(idUser,firstName,lastName,email,username,password,roleObject));
+			}else{
+				users.add(new HostUser(idUser,firstName,lastName,email,username,password,roleObject,functionObject));
+			}
 		}
 		return users;
 	}
 	
-	public List<Reservation> selectAllReservations(){
-		ArrayList<Reservation> reservations = new ArrayList<Reservation>();
-		String selectReservation = "SELECT idreservation FROM reservation";
-		for(Row row : executeSelect(selectReservation)){
-			Integer id = row.getRow().get(0).getValue() == Integer.class ? (Integer) row.getRow().get(0).getKey() : null;
-			reservations.add(selectReservationByID(id));
-		}
-		return reservations;
-	}
-	
-	public Reservation selectReservationByID(Integer id){
-		// Select reservations from reservation table
-		String selectReservation = "SELECT * FROM reservation WHERE idreservation = "+id;
+	public <T> List<Reservation> selectReservationBy(Table_Reservation column, T value){
+		String selectStmt = "SELECT * FROM reservation WHERE "+column.getValue();
+		if(value != null) selectStmt += " = '"+value+"'"; else selectStmt += " IS NULL";
+		if(column.equals(Table_Reservation.CLOUMN_ALL)) selectStmt = "SELECT * FROM reservation";
+		List<Reservation> reservations = new ArrayList<Reservation>();
+		
 		ArrayList<Room> rooms = new ArrayList<Room>();
 		ArrayList<User> users = new ArrayList<User>();
-		for(Row row : executeSelect(selectReservation)){
+		for(Row row : executeSelect(selectStmt)){
 			Integer idReservation = row.getRow().get(0).getValue() == Integer.class ? (Integer) row.getRow().get(0).getKey() : null;
 			Timestamp startDate = row.getRow().get(1).getValue() == Timestamp.class ? (Timestamp) row.getRow().get(1).getKey() : null;
 			Timestamp endDate = row.getRow().get(2).getValue() == Timestamp.class ? (Timestamp) row.getRow().get(2).getKey() : null;
@@ -190,7 +317,8 @@ public class DBController {
 			// Check if a room was already loaded before
 			Room roomObject = null;
 			for(Room existingRoom : rooms) if(existingRoom.getRoomID() == idroom) roomObject = existingRoom;
-			if(roomObject == null) rooms.add(roomObject = selectRoomByID(idroom));
+			// If not, create a new room and add it to the list (room is foreign key and cannot be null)
+			if(roomObject == null) rooms.add(roomObject = selectRoomBy(Table_Room.COLUMN_ID, idroom).get(0));
 			
 			Reservation reservation = new Reservation(idReservation,startDate,endDate,roomObject);
 			
@@ -204,138 +332,20 @@ public class DBController {
 				User user = null;
 				// Check if a specific user was already loaded before
 				for(User existingUser : users) if(existingUser.getUserID() == userId) user = existingUser;
-				// If not, load user and store him in the list
-				if(user == null){
-					user = selectUserByID(userId);
-					users.add(user);
-				}
+				// If not, load user and store him in the list (user is primary key with reservationid and cannot be null)
+				if(user == null) users.add(user = selectUserBy(Table_User.COLUMN_ID, userId).get(0));
 				
+				// Add the user to the reservation
 				if(host) {
 					reservation.addHost(user);
 				}else{
 					reservation.addParticipant(user);
 				}
 			}
-			return reservation;
+			// Add reservation to the list
+			reservations.add(reservation);
 		}
-		return null;
-	}
-	
-	public Function selectFunctionByID(Integer id){
-		String selectFunction = "SELECT * FROM function WHERE idfunction = "+id;
-		
-		for(Row row : executeSelect(selectFunction)){
-			Integer idFunction = row.getRow().get(0).getValue() == Integer.class ? (Integer) row.getRow().get(0).getKey() : null;
-			String function = row.getRow().get(1).getValue() == String.class ? (String) row.getRow().get(1).getKey() : null;
-			return new Function(idFunction,function);
-		}
-		return null;
-	}
-	
-	public Role selectRoleByID(Integer id){
-		String selectRole = "SELECT * FROM role WHERE idrole = "+id;
-		
-		for(Row row : executeSelect(selectRole)){
-			Integer idRole = row.getRow().get(0).getValue() == Integer.class ? (Integer) row.getRow().get(0).getKey() : null;
-			String role = row.getRow().get(1).getValue() == String.class ? (String) row.getRow().get(1).getKey() : null;
-			return new Role(idRole,role);
-		}
-		return null;
-	}
-	
-	public Room selectRoomByID(Integer id){
-		String selectRoom = "SELECT * FROM room WHERE idroom = "+id;
-		
-		for(Row row : executeSelect(selectRoom)){
-			Integer idRoom = row.getRow().get(0).getValue() == Integer.class ? (Integer) row.getRow().get(0).getKey() : null;
-			Integer roomNumber = row.getRow().get(1).getValue() == Integer.class ? (Integer) row.getRow().get(1).getKey() : null;
-			String name = row.getRow().get(2).getValue() == String.class ? (String) row.getRow().get(2).getKey() : null;
-			Integer numberOfSeats = row.getRow().get(3).getValue() == Integer.class ? (Integer) row.getRow().get(3).getKey() : null;
-			return new Room(idRoom,roomNumber,name,numberOfSeats);
-		}
-		return null;
-	}
-	
-	public User selectUserByID(Integer id){
-		String selectUser = "SELECT * FROM user WHERE iduser = "+id;
-		
-		ArrayList<Function> functions = new ArrayList<Function>();
-		ArrayList<Role> roles = new ArrayList<Role>();
-		for(Row row : executeSelect(selectUser)){
-			Integer idUser = row.getRow().get(0).getValue() == Integer.class ? (Integer) row.getRow().get(0).getKey() : null;
-			String firstName = row.getRow().get(1).getValue() == String.class ? (String) row.getRow().get(1).getKey() : null;
-			String lastName = row.getRow().get(2).getValue() == String.class ? (String) row.getRow().get(2).getKey() : null;
-			String email = row.getRow().get(3).getValue() == String.class ? (String) row.getRow().get(3).getKey() : null;
-			String username = row.getRow().get(4).getValue() == String.class ? (String) row.getRow().get(4).getKey() : null;
-			String password = row.getRow().get(5).getValue() == String.class ? (String) row.getRow().get(5).getKey() : null;
-			Integer idFunction = row.getRow().get(6).getValue() == Integer.class ? (Integer) row.getRow().get(6).getKey() : null;
-			Integer idRole = row.getRow().get(7).getValue() == Integer.class ? (Integer) row.getRow().get(7).getKey() : null;
-			
-			Function functionObject = null;
-			Role roleObject = null;
-			// Check if a function was already loaded before
-			for(Function existingFunction : functions) if(existingFunction.getId() == idFunction) functionObject = existingFunction;
-			// If not, load function and add it to the list
-			if(functionObject == null){
-				functionObject = selectFunctionByID(idFunction);
-				functions.add(functionObject);
-			}
-			// Same for role
-			for(Role existingRole : roles) if(existingRole.getId() == idRole) roleObject = existingRole;
-			if(roleObject == null){
-				roleObject = selectRoleByID(idRole);
-				roles.add(roleObject);
-			}
-			
-			// User or HostUser
-			if(idFunction == null){
-				return new User(idUser,firstName,lastName,email,username,password,roleObject);
-			}else{
-				return new HostUser(idUser,firstName,lastName,email,username,password,roleObject,functionObject);
-			}
-		}
-		return null;
-	}
-	
-	public User selectUserByUsername(String username){
-		String selectUser = "SELECT * FROM user WHERE username = '"+username+"'";
-		
-		ArrayList<Function> functions = new ArrayList<Function>();
-		ArrayList<Role> roles = new ArrayList<Role>();
-		for(Row row : executeSelect(selectUser)){
-			Integer idUser = row.getRow().get(0).getValue() == Integer.class ? (Integer) row.getRow().get(0).getKey() : null;
-			String firstName = row.getRow().get(1).getValue() == String.class ? (String) row.getRow().get(1).getKey() : null;
-			String lastName = row.getRow().get(2).getValue() == String.class ? (String) row.getRow().get(2).getKey() : null;
-			String email = row.getRow().get(3).getValue() == String.class ? (String) row.getRow().get(3).getKey() : null;
-			String u_name = row.getRow().get(4).getValue() == String.class ? (String) row.getRow().get(4).getKey() : null;
-			String password = row.getRow().get(5).getValue() == String.class ? (String) row.getRow().get(5).getKey() : null;
-			Integer idFunction = row.getRow().get(6).getValue() == Integer.class ? (Integer) row.getRow().get(6).getKey() : null;
-			Integer idRole = row.getRow().get(7).getValue() == Integer.class ? (Integer) row.getRow().get(7).getKey() : null;
-			
-			Function functionObject = null;
-			Role roleObject = null;
-			// Check if a function was already loaded before
-			for(Function existingFunction : functions) if(existingFunction.getId() == idFunction) functionObject = existingFunction;
-			// If not, load function and add it to the list
-			if(functionObject == null){
-				functionObject = selectFunctionByID(idFunction);
-				functions.add(functionObject);
-			}
-			// Same for role
-			for(Role existingRole : roles) if(existingRole.getId() == idRole) roleObject = existingRole;
-			if(roleObject == null){
-				roleObject = selectRoleByID(idRole);
-				roles.add(roleObject);
-			}
-			
-			// User or HostUser
-			if(idFunction == null){
-				return new User(idUser,firstName,lastName,email,u_name,password,roleObject);
-			}else{
-				return new HostUser(idUser,firstName,lastName,email,u_name,password,roleObject,functionObject);
-			}
-		}
-		return null;
+		return reservations;
 	}
 	
 	// --- UTIL METHODS ---
