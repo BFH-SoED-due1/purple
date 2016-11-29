@@ -10,12 +10,18 @@ package ch.bfh.ti.soed.hs16.srs.purple.test;
 import static org.junit.Assert.*;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController;
+import ch.bfh.ti.soed.hs16.srs.purple.model.Function;
+import ch.bfh.ti.soed.hs16.srs.purple.model.Reservation;
+import ch.bfh.ti.soed.hs16.srs.purple.model.Role;
+import ch.bfh.ti.soed.hs16.srs.purple.model.Room;
+import ch.bfh.ti.soed.hs16.srs.purple.model.User;
 
 public class DBControllerTest {
 	
@@ -25,15 +31,106 @@ public class DBControllerTest {
 	}
 	
 	@Test
-	public void testConnection(){
-		boolean connected = false;
-		try {
-			DBController.getInstance().connect();
-			connected = true;
-		} catch (ClassNotFoundException | SQLException e) {
-			e.printStackTrace();
-		}
-		assertTrue(connected);
+	public void testSelectAllFunctions(){
+		DBController controller = DBController.getInstance();
+		List<Function> functions = controller.selectAllFunctions();
+		
+		assertNotNull(functions);
+	}
+	
+	@Test
+	public void testSelectAllRoles(){
+		DBController controller = DBController.getInstance();
+		List<Role> roles = controller.selectAllRoles();
+		
+		assertNotNull(roles);
+	}
+	
+	@Test
+	public void testSelectAllRooms(){
+		DBController controller = DBController.getInstance();
+		List<Room> rooms = controller.selectAllRooms();
+		
+		assertNotNull(rooms);
+	}
+	
+	@Test
+	public void testSelectAllUsers(){
+		DBController controller = DBController.getInstance();
+		List<User> users = controller.selectAllUsers();
+		
+		assertNotNull(users);
+	}
+	
+	@Test
+	public void testSelectAllReservations(){
+		DBController controller = DBController.getInstance();
+		List<Reservation> reservations = controller.selectAllReservations();
+		
+		assertNotNull(reservations);
+	}
+	
+	@Test
+	public void testSelectFunctionByID(){
+		DBController controller = DBController.getInstance();
+		Function function = controller.selectFunctionByID(9);
+		
+		assertTrue(function.getId() == 9);
+		assertTrue(function.getFunction().equals("Dozent"));
+	}
+	
+	@Test
+	public void testSelectRoleByID(){
+		DBController controller = DBController.getInstance();
+		Role role = controller.selectRoleByID(1);
+		
+		assertTrue(role.getId() == 1);
+		assertTrue(role.getRole().equals("Admin"));
+	}
+	
+	@Test
+	public void testSelectRoomByID(){
+		DBController controller = DBController.getInstance();
+		Room room = controller.selectRoomByID(2);
+		
+		assertTrue(room.getRoomID() == 2);
+		assertTrue(room.getRoomNumber() == 11);
+		assertTrue(room.getName().equals("Raum11"));
+		assertTrue(room.getNumberOfSeats() == 17);
+	}
+	
+	@Test
+	public void testSelectUserByID(){
+		DBController controller = DBController.getInstance();
+		User user = controller.selectUserByID(1);
+		
+		assertTrue(user.getUserID() == 1);
+		assertTrue(user.getFirstName().equals("Elias"));
+		assertTrue(user.getLastName().equals("Schildknecht"));
+		assertTrue(user.getEmailAddress().equals("elias.schildknecht@students.bfh.ch"));
+		assertTrue(user.getUsername().equals("schie5"));
+		assertTrue(user.getPassword().equals("schie5"));
+		assertTrue(user.getRole().getId() == 1);
+		assertTrue(user.getRole().getRole().equals("Admin"));
+		// TODO: HostUser needed?
+//		((HostUser)user).getFunction().getId() == 8;
+	}
+	
+	@Test
+	public void testSelectUserByUsername(){
+		DBController controller = DBController.getInstance();
+		User user = controller.selectUserByUsername("schie5");
+		
+		assertTrue(user.getUserID() == 1);
+		assertTrue(user.getFirstName().equals("Elias"));
+		assertTrue(user.getLastName().equals("Schildknecht"));
+		assertTrue(user.getEmailAddress().equals("elias.schildknecht@students.bfh.ch"));
+		assertTrue(user.getUsername().equals("schie5"));
+		assertTrue(user.getPassword().equals("schie5"));
+		assertTrue(user.getRole().getId() == 1);
+		assertTrue(user.getRole().getRole().equals("Admin"));
+		// TODO: HostUser needed?
+//		((HostUser)user).getFunction().getId() == 8;
 	}
 	
 	// TODO: Test (Elias)

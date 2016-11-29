@@ -21,9 +21,8 @@ public class Row {
 	static {
 		TYPE = new HashMap<String,Class<?>>();
 		
-		TYPE.put("INTEGER", Integer.class);
-		TYPE.put("TINYINT", Byte.class);
-		TYPE.put("BOOLEAN", Boolean.class);
+		TYPE.put("INT", Integer.class);
+		TYPE.put("TINYINT", Boolean.class);
 		TYPE.put("VARCHAR", String.class);
 		TYPE.put("TIMESTAMP", Timestamp.class);
 	}
@@ -43,7 +42,11 @@ public class Row {
 	 * Casts an sql-type into a java type and adds the data into the row.
 	 * */
 	private void add(Object data, String sqlType){
-		this.add((Row.TYPE.get(sqlType)).cast(data));
+		if(data != null){
+			add((Row.TYPE.get(sqlType)).cast(data));
+		}else{
+			row.add(new AbstractMap.SimpleImmutableEntry<Object,Class<?>>(null,null));
+		}
 	}
 	
 	/**
@@ -64,7 +67,9 @@ public class Row {
 				Row currentRow = new Row();
 				
 				for(int i=1; i<=columnCount; i++){
-					currentRow.add(resultSet.getObject(i), rsmd.getColumnTypeName(i));
+					Object resultObject = resultSet.getObject(i);
+					String cloumnType = rsmd.getColumnTypeName(i);
+					currentRow.add(resultObject,cloumnType);
 				}
 				table.add(currentRow);
 			}

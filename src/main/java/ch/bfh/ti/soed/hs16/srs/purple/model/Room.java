@@ -19,14 +19,14 @@ import java.util.List;
  *
  */
 public class Room {
-	private int roomID;
+	private Integer roomID;
 	private String name;
-	private int roomNumber;
-	private int numberOfSeats;
+	private Integer roomNumber;
+	private Integer numberOfSeats;
 	private List<Equipment> equipmentList;
 	private List<Reservation> reservationList;
 	
-	public Room(int roomID, int roomNumber, String name, int numberOfSeats){
+	public Room(Integer roomID, Integer roomNumber, String name, Integer numberOfSeats){
 		this.roomID = roomID;
 		this.name = name;
 		this.roomNumber = roomNumber;
@@ -41,22 +41,22 @@ public class Room {
 		this.name = name;
 	}
 
-	public int getRoomID() {
+	public Integer getRoomID() {
 		return roomID;
 	}
-	public void setRoomID(int roomID) {
+	public void setRoomID(Integer roomID) {
 		this.roomID = roomID;
 	}
-	public int getRoomNumber() {
+	public Integer getRoomNumber() {
 		return roomNumber;
 	}
-	public void setRoomNumber(int roomNumber) {
+	public void setRoomNumber(Integer roomNumber) {
 		this.roomNumber = roomNumber;
 	}
-	public int getNumberOfSeats() {
+	public Integer getNumberOfSeats() {
 		return numberOfSeats;
 	}
-	public void setNumberOfSeats(int numberOfSeats) {
+	public void setNumberOfSeats(Integer numberOfSeats) {
 		this.numberOfSeats = numberOfSeats;
 	}
 	public List<Equipment> getEquipmentList() {

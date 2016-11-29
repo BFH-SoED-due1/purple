@@ -8,6 +8,7 @@
 package ch.bfh.ti.soed.hs16.srs.purple.model;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 /**
  * Eine Reservation definiert eine Reservation, die von einem Veranstalter erstellt wurde.
@@ -19,18 +20,20 @@ import java.util.List;
  *
  */
 public class Reservation {
-	private int reservationID;
+	private Integer reservationID;
 	private Room room;
 	private Timestamp startDate;
 	private Timestamp endDate;
 	private List<User> hostList;
 	private List<User> participantList;
 
-	public Reservation(int reservationID, Room room, Timestamp startDate, Timestamp endDate){
+	public Reservation(Integer reservationID, Room room, Timestamp startDate, Timestamp endDate){
 		this.reservationID = reservationID;
 		this.room = room;
 		this.startDate = startDate;
 		this.endDate = endDate;
+		hostList = new ArrayList<User>();
+		participantList = new ArrayList<User>();
 	}
 
 	public Room getRoom()
@@ -41,10 +44,10 @@ public class Reservation {
 	{
 		this.room = room;
 	}
-	public int getReservationID() {
+	public Integer getReservationID() {
 		return reservationID;
 	}
-	public void setReservationID(int reservationID) {
+	public void setReservationID(Integer reservationID) {
 		this.reservationID = reservationID;
 	}
 	public Timestamp getStartDate() {

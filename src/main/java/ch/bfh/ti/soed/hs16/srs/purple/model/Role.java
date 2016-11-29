@@ -9,19 +9,19 @@ package ch.bfh.ti.soed.hs16.srs.purple.model;
 
 public class Role {
 	
-	private int id;
+	private Integer id;
 	private String role;
 	
-	public Role(int id, String role){
+	public Role(Integer id, String role){
 		this.id = id;
 		this.role = role;
 	}
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

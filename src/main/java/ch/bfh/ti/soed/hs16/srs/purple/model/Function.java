@@ -18,19 +18,19 @@ package ch.bfh.ti.soed.hs16.srs.purple.model;
  */
 public class Function {
 	
-	private int id;
+	private Integer id;
 	private String function;
 	
-	public Function(int id, String function){
+	public Function(Integer id, String function){
 		this.id = id;
 		this.function = function;
 	}
 	
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

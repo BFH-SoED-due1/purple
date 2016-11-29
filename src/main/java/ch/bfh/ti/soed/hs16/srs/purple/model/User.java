@@ -26,7 +26,7 @@ package ch.bfh.ti.soed.hs16.srs.purple.model;
  *
  */
 public class User {
-	private int userID;
+	private Integer userID;
 	private String lastName;
 	private String firstName;
 	private String emailAddress;
@@ -35,7 +35,7 @@ public class User {
 	private String password;
 	private Role role;
 
-	public User(int userID, String lastname, String firstname, String emailAddress, String username, String password, Role role){
+	public User(Integer userID, String firstname, String lastname, String emailAddress, String username, String password, Role role){
 		this.userID = userID;
 		this.lastName = lastname;
 		this.firstName = firstname;
@@ -49,10 +49,10 @@ public class User {
 		// Only for Testing
 	}
 
-	public int getUserID() {
+	public Integer getUserID() {
 		return userID;
 	}
-	public void setUserID(int userID) {
+	public void setUserID(Integer userID) {
 		this.userID = userID;
 	}
 	public String getLastName() {

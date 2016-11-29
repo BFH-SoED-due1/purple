@@ -45,6 +45,12 @@ public class DBController {
 		db = "brave_res_tool";
 		dbUser = "brave_res_tool";
 		dbUserPassword = "SoED-purple1";
+		
+		try {
+			connect();
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static synchronized DBController getInstance() {
@@ -60,7 +66,7 @@ public class DBController {
 	 * @throws ClassNotFoundException if the mysql-jdbc driver class cannot be located.
 	 * @throws SQLException if a database access error occurs.
 	 * */
-	public void connect() throws ClassNotFoundException, SQLException {
+	private void connect() throws ClassNotFoundException, SQLException {
 		// Load mysql-jdbc driver
 		Class.forName("com.mysql.jdbc.Driver");
 		// Connect to database
@@ -121,7 +127,7 @@ public class DBController {
 	// --- SELECT METHODS ---
 	public List<Function> selectAllFunctions(){
 		ArrayList<Function> functions = new ArrayList<Function>();
-		String selectFunction = "SELECT * FROM function";
+		String selectFunction = "SELECT * FROM function;";
 		for(Row row : executeSelect(selectFunction)){
 			Integer id = row.getRow().get(0).getValue() == Integer.class ? (Integer) row.getRow().get(0).getKey() : null;
 			String function = row.getRow().get(1).getValue() == String.class ? (String) row.getRow().get(1).getKey() : null;
@@ -202,9 +208,9 @@ public class DBController {
 			Timestamp startDate = row.getRow().get(1).getValue() == Timestamp.class ? (Timestamp) row.getRow().get(1).getKey() : null;
 			Timestamp endDate = row.getRow().get(2).getValue() == Timestamp.class ? (Timestamp) row.getRow().get(2).getKey() : null;
 			Integer idroom = row.getRow().get(3).getValue() == Integer.class ? (Integer) row.getRow().get(3).getKey() : null;
-			Integer roomNumber = row.getRow().get(5).getValue() == Integer.class ? (Integer) row.getRow().get(5).getKey() : null;
-			String roomname = row.getRow().get(4).getValue() == String.class ? (String) row.getRow().get(4).getKey() : null;
-			Integer numberOfSeats = row.getRow().get(5).getValue() == Integer.class ? (Integer) row.getRow().get(5).getKey() : null;
+			Integer roomNumber = row.getRow().get(4).getValue() == Integer.class ? (Integer) row.getRow().get(4).getKey() : null;
+			String roomname = row.getRow().get(5).getValue() == String.class ? (String) row.getRow().get(5).getKey() : null;
+			Integer numberOfSeats = row.getRow().get(6).getValue() == Integer.class ? (Integer) row.getRow().get(6).getKey() : null;
 			
 			// TODO: mapping with existing rooms
 			Room roomObject = new Room(idroom,roomNumber,roomname,numberOfSeats);
@@ -229,6 +235,7 @@ public class DBController {
 					reservation.addParticipant(user);
 				}
 			}
+			reservations.add(reservation);
 		}
 		return reservations;
 	}
@@ -279,7 +286,7 @@ public class DBController {
 			String username = row.getRow().get(4).getValue() == String.class ? (String) row.getRow().get(4).getKey() : null;
 			String password = row.getRow().get(5).getValue() == String.class ? (String) row.getRow().get(5).getKey() : null;
 			Integer idFunction = row.getRow().get(6).getValue() == Integer.class ? (Integer) row.getRow().get(6).getKey() : null;
-			Integer idRole = row.getRow().get(8).getValue() == Integer.class ? (Integer) row.getRow().get(7).getKey() : null;
+			Integer idRole = row.getRow().get(7).getValue() == Integer.class ? (Integer) row.getRow().get(7).getKey() : null;
 			
 			// TODO: mapping with existing ones
 			Function functionObject = selectFunctionByID(idFunction);
@@ -296,7 +303,7 @@ public class DBController {
 	}
 	
 	public User selectUserByUsername(String username){
-		String selectUser = "SELECT * FROM user WHERE username = "+username;
+		String selectUser = "SELECT * FROM user WHERE username = '"+username+"'";
 		
 		for(Row row : executeSelect(selectUser)){
 			Integer idUser = row.getRow().get(0).getValue() == Integer.class ? (Integer) row.getRow().get(0).getKey() : null;
@@ -306,7 +313,7 @@ public class DBController {
 			String u_name = row.getRow().get(4).getValue() == String.class ? (String) row.getRow().get(4).getKey() : null;
 			String password = row.getRow().get(5).getValue() == String.class ? (String) row.getRow().get(5).getKey() : null;
 			Integer idFunction = row.getRow().get(6).getValue() == Integer.class ? (Integer) row.getRow().get(6).getKey() : null;
-			Integer idRole = row.getRow().get(8).getValue() == Integer.class ? (Integer) row.getRow().get(7).getKey() : null;
+			Integer idRole = row.getRow().get(7).getValue() == Integer.class ? (Integer) row.getRow().get(7).getKey() : null;
 			
 			// TODO: mapping with existing ones
 			Function functionObject = selectFunctionByID(idFunction);
