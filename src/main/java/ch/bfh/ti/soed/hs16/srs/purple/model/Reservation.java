@@ -27,7 +27,7 @@ public class Reservation {
 	private List<User> hostList;
 	private List<User> participantList;
 
-	public Reservation(Integer reservationID, Room room, Timestamp startDate, Timestamp endDate){
+	public Reservation(Integer reservationID, Timestamp startDate, Timestamp endDate, Room room){
 		this.reservationID = reservationID;
 		this.room = room;
 		this.startDate = startDate;
@@ -36,29 +36,33 @@ public class Reservation {
 		participantList = new ArrayList<User>();
 	}
 
-	public Room getRoom()
-	{
+	public Room getRoom() {
 		return room;
 	}
-	public void setRoom(Room room)
-	{
+	public void setRoom(Room room) {
 		this.room = room;
 	}
+	
 	public Integer getReservationID() {
 		return reservationID;
 	}
+	
 	public void setReservationID(Integer reservationID) {
 		this.reservationID = reservationID;
 	}
+	
 	public Timestamp getStartDate() {
 		return startDate;
 	}
+	
 	public void setStartDate(Timestamp startDate) {
 		this.startDate = startDate;
 	}
+	
 	public Timestamp getEndDate() {
 		return endDate;
 	}
+	
 	public void setEndDate(Timestamp endDate) {
 		this.endDate = endDate;
 	}
@@ -69,5 +73,13 @@ public class Reservation {
 	
 	public void addParticipant(User participant){
 		participantList.add(participant);
+	}
+
+	public List<User> getHostList() {
+		return hostList;
+	}
+
+	public List<User> getParticipantList() {
+		return participantList;
 	}
 }

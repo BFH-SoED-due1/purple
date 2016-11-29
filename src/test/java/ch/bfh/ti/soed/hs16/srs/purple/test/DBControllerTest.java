@@ -35,7 +35,8 @@ public class DBControllerTest {
 		DBController controller = DBController.getInstance();
 		List<Function> functions = controller.selectAllFunctions();
 		
-		assertNotNull(functions);
+		assertTrue(functions.get(0).getFunction().equals("Dozent"));
+		assertTrue(functions.size() == 2);
 	}
 	
 	@Test
@@ -44,6 +45,7 @@ public class DBControllerTest {
 		List<Role> roles = controller.selectAllRoles();
 		
 		assertNotNull(roles);
+		assertTrue(roles.size() == 2);
 	}
 	
 	@Test
@@ -52,6 +54,7 @@ public class DBControllerTest {
 		List<Room> rooms = controller.selectAllRooms();
 		
 		assertNotNull(rooms);
+		assertTrue(rooms.size() == 3);
 	}
 	
 	@Test
@@ -60,6 +63,7 @@ public class DBControllerTest {
 		List<User> users = controller.selectAllUsers();
 		
 		assertNotNull(users);
+		assertTrue(users.size() == 5);
 	}
 	
 	@Test
@@ -68,6 +72,10 @@ public class DBControllerTest {
 		List<Reservation> reservations = controller.selectAllReservations();
 		
 		assertNotNull(reservations);
+		assertTrue(reservations.size() == 2);
+		assertTrue(reservations.get(0).getParticipantList().size() == 2);
+		assertTrue(reservations.get(0).getHostList().size() == 2);
+		assertTrue(reservations.get(0).getHostList().get(0).getFirstName().equals("Elias"));
 	}
 	
 	@Test
@@ -132,8 +140,6 @@ public class DBControllerTest {
 		// TODO: HostUser needed?
 //		((HostUser)user).getFunction().getId() == 8;
 	}
-	
-	// TODO: Test (Elias)
 	
 	@AfterClass
 	public static void disconnect() throws SQLException{

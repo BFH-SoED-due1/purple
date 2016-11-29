@@ -32,10 +32,5 @@ public class Role {
 	public void setRole(String role) {
 		this.role = role;
 	}
-	
-	@Override
-	public boolean equals(Object o){
-		return ((Role)o).getId() == this.id;
-	}
 
 }

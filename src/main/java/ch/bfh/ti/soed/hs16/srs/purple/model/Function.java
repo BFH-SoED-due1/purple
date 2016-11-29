@@ -41,9 +41,4 @@ public class Function {
 	public void setFunction(String function) {
 		this.function = function;
 	}
-	
-	@Override
-	public boolean equals(Object o){
-		return ((Function)o).getId() == this.id;
-	}
 }

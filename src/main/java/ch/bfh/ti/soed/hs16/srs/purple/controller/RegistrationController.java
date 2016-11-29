@@ -36,7 +36,7 @@ public class RegistrationController {
 	 * */
 	public User registerNewUser(String lastname, String firstname, String emailAddress, String username, String password, Function function, Role role){
 		// TODO: bind this method to a "register"-event
-		dbController.insertUser(firstname, lastname, emailAddress, username, password, function, role);
+		dbController.insertNewUser(firstname, lastname, emailAddress, username, password, function, role);
 		// TODO: get user and return him
 		return null;
 	}

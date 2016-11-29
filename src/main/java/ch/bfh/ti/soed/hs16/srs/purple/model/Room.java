@@ -71,9 +71,4 @@ public class Room {
 	public void setReservationList(List<Reservation> reservationList) {
 		this.reservationList = reservationList;
 	}
-	
-	@Override
-	public boolean equals(Object o){
-		return ((Room)o).getRoomID() == this.roomID;
-	}
 }
