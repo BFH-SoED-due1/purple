@@ -143,9 +143,9 @@ public class DBController {
 	}
 
 	// --- INSERT METHODS ---
-	public boolean insertNewReservation(Timestamp startDate, Timestamp endDate, Room room, List<User> hosts, List<User> participants){
-		String insertReservation = "INSERT INTO reservation(IDReservation, StartDate, EndDate, RoomID) "
-				+ "VALUES(null,'"+startDate+"','"+endDate+"','"+room.getRoomID()+"')";
+	public boolean insertNewReservation(Timestamp startDate, Timestamp endDate, Room room, List<User> hosts, List<User> participants, String title, String description){
+		String insertReservation = "INSERT INTO reservation(IDReservation, StartDate, EndDate, RoomID, Title, Description) "
+				+ "VALUES(null,'"+startDate+"','"+endDate+"','"+room.getRoomID()+"','"+title+"','"+description+"')";
 		ExecuteResult resultReservation = executeUpdate(insertReservation);
 		if(resultReservation.isSuccess()){
 			for(Integer reservationID : resultReservation.getGeneratedIDs()){
@@ -181,12 +181,6 @@ public class DBController {
 		return executeUpdate(insertUser).isSuccess();
 	}
 
-	public boolean insertNewUserReservation(Reservation reservation, User user, boolean host){
-		String insertUserReservation = "INSERT INTO userreservation(ReservationID, UserID, Host) "
-				+ "VALUES("+reservation.getReservationID()+","+user.getUserID()+","+host+")";
-		return executeUpdate(insertUserReservation).isSuccess();
-	}
-
 	/**
 	 * Stores a new function in the database.
 	 *
@@ -217,6 +211,18 @@ public class DBController {
 
 	public List<Reservation> selectAllReservations(){
 		return selectReservationBy(Table_Reservation.CLOUMN_ALL, null);
+	}
+
+	public List<Reservation> selectHostReservationsForUser(User user){
+		List<Reservation> reservations = new ArrayList<Reservation>();
+		// TODO
+		return reservations;
+	}
+
+	public List<Reservation> selectParticipantReservationsForUser(User user){
+		List<Reservation> reservations = new ArrayList<Reservation>();
+		// TODO
+		return reservations;
 	}
 
 	public <T> List<Function> selectFunctionsBy(Table_Function column, T value){
@@ -328,6 +334,8 @@ public class DBController {
 			Timestamp startDate = row.getRow().get(1).getValue() == Timestamp.class ? (Timestamp) row.getRow().get(1).getKey() : null;
 			Timestamp endDate = row.getRow().get(2).getValue() == Timestamp.class ? (Timestamp) row.getRow().get(2).getKey() : null;
 			Integer idroom = row.getRow().get(3).getValue() == Integer.class ? (Integer) row.getRow().get(3).getKey() : null;
+			String title = row.getRow().get(4).getValue() == String.class ? (String) row.getRow().get(4).getKey() : null;
+			String description = row.getRow().get(5).getValue() == String.class ? (String) row.getRow().get(5).getKey() : null;
 
 			// Check if a room was already loaded before
 			Room roomObject = null;
@@ -335,7 +343,7 @@ public class DBController {
 			// If not, create a new room and add it to the list (room is foreign key and cannot be null)
 			if(roomObject == null) rooms.add(roomObject = selectRoomBy(Table_Room.COLUMN_ID, idroom).get(0));
 
-			Reservation reservation = new Reservation(idReservation,startDate,endDate,roomObject);
+			Reservation reservation = new Reservation(idReservation,startDate,endDate,roomObject,title,description);
 
 			// Select users for reservation from userreservation table
 			String selectUsersForReservation = "SELECT userid,host FROM userreservation ur INNER JOIN user u ON ur.userid = u.iduser "

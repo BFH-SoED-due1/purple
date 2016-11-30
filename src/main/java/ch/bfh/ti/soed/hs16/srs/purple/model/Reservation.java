@@ -26,12 +26,16 @@ public class Reservation {
 	private Timestamp endDate;
 	private List<User> hostList;
 	private List<User> participantList;
+	private String title;
+	private String description;
 
-	public Reservation(Integer reservationID, Timestamp startDate, Timestamp endDate, Room room){
+	public Reservation(Integer reservationID, Timestamp startDate, Timestamp endDate, Room room, String title, String description){
 		this.reservationID = reservationID;
 		this.room = room;
 		this.startDate = startDate;
 		this.endDate = endDate;
+		this.title = title;
+		this.description = description;
 		hostList = new ArrayList<User>();
 		participantList = new ArrayList<User>();
 	}
@@ -42,35 +46,35 @@ public class Reservation {
 	public void setRoom(Room room) {
 		this.room = room;
 	}
-	
+
 	public Integer getReservationID() {
 		return reservationID;
 	}
-	
+
 	public void setReservationID(Integer reservationID) {
 		this.reservationID = reservationID;
 	}
-	
+
 	public Timestamp getStartDate() {
 		return startDate;
 	}
-	
+
 	public void setStartDate(Timestamp startDate) {
 		this.startDate = startDate;
 	}
-	
+
 	public Timestamp getEndDate() {
 		return endDate;
 	}
-	
+
 	public void setEndDate(Timestamp endDate) {
 		this.endDate = endDate;
 	}
-	
+
 	public void addHost(User host){
 		hostList.add(host);
 	}
-	
+
 	public void addParticipant(User participant){
 		participantList.add(participant);
 	}
@@ -81,5 +85,21 @@ public class Reservation {
 
 	public List<User> getParticipantList() {
 		return participantList;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }

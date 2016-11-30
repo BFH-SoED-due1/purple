@@ -246,6 +246,8 @@ public class DBControllerTest {
 		assertTrue(reservations.get(0).getRoom().getRoomID() == 1);
 		assertTrue(reservations.get(0).getHostList().size() == 2);
 		assertTrue(reservations.get(0).getParticipantList().size() == 2);
+		assertTrue(reservations.get(0).getTitle().equals("Reservation 1"));
+		assertTrue(reservations.get(0).getDescription().equals("Description 1"));
 	}
 
 	@Test
@@ -296,7 +298,9 @@ public class DBControllerTest {
 		Room room = DBController.getInstance().selectRoomBy(Table_Room.COLUMN_ID, 1).get(0);
 		List<User> hosts = DBController.getInstance().selectUserBy(Table_User.COLUMN_ID, 1);
 		List<User> participants = DBController.getInstance().selectUserBy(Table_User.COLUMN_ID, 2);
-		assertTrue(controller.insertNewReservation(startDate, endDate, room, hosts, participants));
+		String title = "Test Title";
+		String description = "Test Description";
+		assertTrue(controller.insertNewReservation(startDate, endDate, room, hosts, participants, title, description));
 	}
 
 	@AfterClass
