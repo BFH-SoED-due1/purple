@@ -14,8 +14,8 @@ import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 
+import ch.bfh.ti.soed.hs16.srs.purple.model.Role;
 import ch.bfh.ti.soed.hs16.srs.purple.model.User;
-import ch.bfh.ti.soed.hs16.srs.purple.model.User.UserRole;
 
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.Page;
@@ -45,13 +45,18 @@ public class ReservationView extends UI {
 	public ReservationView()
 	{
 		ArrayList<User> users = new ArrayList<User>();
-		users.add(new User("Gestach", "Lukas", "lukas@gestach.ch", "gestachl", "passwort", UserRole.USER_ROLE_HOST));
+		users.add(new User(3, "Gestach", "Lukas", "lukas@gestach.ch", "gestachl", "passwort", new Role(1, "Admin")));
+		users.add(new User(4, "Aebischer", "Patrik", "ges@gestach.ch", "aebip1", "passwort", new Role(1, "Wollschaf")));
+		ArrayList<User> teilnehmer = new ArrayList<User>();
+		teilnehmer.add(new User(3, "Gestach", "Lukas", "lukas@gestach.ch", "teilnehmer", "passwort", new Role(1, "Admin")));
+		teilnehmer.add(new User(4, "Aebischer", "Patrik", "ges@gestach.ch", "boesie", "passwort", new Role(1, "Wollschaf")));
+		this.hostList = users;
+		this.teilnehmer = teilnehmer;
 	}
 
 	/**
 	 *
 	 * @param teilnehmer Die Teilnehmerliste
-	 * @param host Der eingeloggte User
 	 * @param hostList Die Liste der möglichen Hosts
 	 */
 	public ReservationView(List<User> teilnehmer, List<User> hostList)
@@ -85,23 +90,35 @@ public class ReservationView extends UI {
 			{
 				System.out.println("Range selected");
 				final VerticalLayout l = new VerticalLayout();
+				l.setMargin(true);
 				Window w = new Window();
+				//w.setPosition((int) UI.getCurrent().getWidth() / 2 - 150, (int) UI.getCurrent().getHeight() / 2 - 200);
+				//System.out.println(layout.getWidth());
 				DateField start = new DateField("Startdatum", event.getStart());
+				start.setLocale(getLocale());
 				DateField ende = new DateField("Enddatum", event.getEnd());
+				ende.setLocale(getLocale());
 				TextField titel = new TextField("Titel");
 				TextField beschr = new TextField("Beschreibung");
 				ListSelect hosts = new ListSelect("Reservierender");
+				hosts.setMultiSelect(true);
+				hosts.clear();
 				for(int i = 0;i < hostList.size();i++)
 				{
 					hosts.addItem(i);
 					hosts.setItemCaption(i, hostList.get(i).getUsername());
 				}
+				hosts.select(0);
+				hosts.setRows(hostList.size() > 5 ? 5 : hostList.size());
 				ListSelect tnListe = new ListSelect("Teilnehmer");
+				tnListe.setMultiSelect(true);
+				tnListe.clear();
 				for(int i = 0;i < teilnehmer.size();i++)
 				{
-					hosts.addItem(i);
-					hosts.setItemCaption(i, teilnehmer.get(i).getUsername());
+					tnListe.addItem(i);
+					tnListe.setItemCaption(i, teilnehmer.get(i).getUsername());
 				}
+				tnListe.setRows(teilnehmer.size() > 5 ? 5 : teilnehmer.size());
 				l.addComponents(start, ende, titel, beschr, hosts, tnListe);
 				w.setContent(l);
 				w.setWidth("300px");
