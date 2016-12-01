@@ -38,6 +38,10 @@ public class ReservationController {
 		return false;
 	}
 	
+	public boolean deleteReservation(int resID){
+		 return this.dbController.deleteReservation(resID);
+	}
+	
 	public void sendEmail(List<User> hosts, List<User> participants){
 		
 	}
