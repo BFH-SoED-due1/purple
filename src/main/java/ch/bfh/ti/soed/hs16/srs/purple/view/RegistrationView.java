@@ -14,6 +14,11 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 
+import ch.bfh.ti.soed.hs16.srs.purple.controller.RegistrationController;
+
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Component;
+
 /**
  *
  * @author eliabosiger
@@ -30,6 +35,7 @@ public class RegistrationView implements ViewTemplate {
     PasswordField passwordReply = new PasswordField("Passwort bestätigen");
     Button register = new Button("Registrieren");
     FormLayout registrationLayout = new FormLayout();
+//    RegistrationController registrationController = new RegistrationController(registrationView, dbController)
     
     @Override
     public void initView() {
@@ -51,10 +57,27 @@ public class RegistrationView implements ViewTemplate {
         this.registrationLayout.addComponent(this.password);
         this.registrationLayout.addComponent(this.passwordReply);
         this.registrationLayout.addComponent(this.register);
+        
+        setEventOnRegistration();
+       
     }
     
     @Override
-    public void display(Panel contentPanel) {
-        contentPanel.setContent(this.registrationLayout);
+    public void display(Component content) {
+    	Panel contentPanel = (Panel)content;
+    	contentPanel.setContent(this.registrationLayout);
     }
+    
+    /**
+	 * Function sets the event for the register button
+	 */
+	private void setEventOnRegistration() {
+		this.register.addClickListener(new Button.ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				//TODO: on register
+			}
+		});
+	}
 }
