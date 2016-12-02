@@ -2,5 +2,9 @@
 /.classpath
 /.project
 /.settings/
+<<<<<<< HEAD
 /bin/
 /.gitignore
+=======
+/src/
+>>>>>>> refs/heads/Task9

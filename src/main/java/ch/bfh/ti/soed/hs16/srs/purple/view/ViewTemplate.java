@@ -7,6 +7,13 @@
  */
 package ch.bfh.ti.soed.hs16.srs.purple.view;
 
-public class ViewTemplate {
+import com.vaadin.ui.Panel;
 
+/**
+ *
+ * @author eliabosiger
+ */
+public interface ViewTemplate {
+    public void initView();
+    public void display(Panel contentPanel);
 }
