@@ -5,7 +5,6 @@
  *
  * Distributable under GPL license. See terms of license at gnu.org.
  */
-
 package ch.bfh.ti.soed.hs16.srs.purple.view;
 
 import javax.servlet.annotation.WebServlet;
@@ -22,6 +21,8 @@ import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.Reindeer;
+
+import ch.bfh.ti.soed.hs16.srs.purple.controller.LoginController;
 
 /**
  * This UI is the application entry point. A UI may either represent a browser
@@ -42,15 +43,17 @@ public class ViewStructure extends UI {
     private static int MENU_HEIGHT = 35;
 
     //member variables
-    GridLayout fullSite = new GridLayout(2, 3);
-    Label logo = new Label("ReservationsTool");
-    HorizontalLayout header = new HorizontalLayout();
-    HorizontalLayout middle = new HorizontalLayout();
-    MenuBar menu = new MenuBar();
-    Panel contentPanel = new Panel();
-
-    LoginView loginView = new LoginView();
-    RegistrationView registrationView = new RegistrationView();
+    private GridLayout fullSite = new GridLayout(2, 3);
+    private Label logo = new Label("ReservationsTool");
+    private HorizontalLayout header = new HorizontalLayout();
+    private HorizontalLayout middle = new HorizontalLayout();
+    private MenuBar menu = new MenuBar();
+    private Panel contentPanel = new Panel();
+    private HorizontalLayout loginLogoutPart = new HorizontalLayout();
+   
+    private LoginController loginController = new LoginController();
+    private RegistrationView registrationView = new RegistrationView();
+    private LoginView loginView = new LoginView(this, loginController);
 
     /**
      * Function inits the components of the graphical userinterface (GUI).
@@ -59,24 +62,32 @@ public class ViewStructure extends UI {
      */
     @Override
     protected void init(VaadinRequest vaadinRequest) {
-        
+    	        
         this.contentPanel.setStyleName(Reindeer.PANEL_LIGHT);
         this.contentPanel.setSizeFull();
         this.contentPanel.addStyleName("contenPanel");
+        this.contentPanel.setImmediate(true);
         this.logo.addStyleName("logo");
 
         initMenu();
-
-        //TODO: Is user logged in?
-        HorizontalLayout login = new LoginView().initLoginView();
+        
+        if(this.loginController.isUserLoggedInOnSession()){
+          this.menu.setVisible(true);
+        }else{
+            this.menu.setVisible(false);
+        }
+        
+        this.fullSite.setImmediate(true);
+        this.loginView.initView();        
+        this.loginView.display(this.loginLogoutPart);
 
         this.registrationView.initView();
         this.registrationView.display(this.contentPanel);
 
         this.fullSite.addComponent(this.logo, 0, 0);
         this.fullSite.setComponentAlignment(this.logo, Alignment.MIDDLE_LEFT);
-        this.fullSite.addComponent(login, 1, 0);
-        this.fullSite.setComponentAlignment(login, Alignment.MIDDLE_RIGHT);
+        this.fullSite.addComponent(this.loginLogoutPart, 1, 0);
+        this.fullSite.setComponentAlignment(this.loginLogoutPart, Alignment.MIDDLE_RIGHT);
         this.fullSite.setRowExpandRatio(0, 0);
 
         this.fullSite.addComponent(this.menu, 0, 1, 1, 1);
@@ -108,6 +119,32 @@ public class ViewStructure extends UI {
         for (String menu : MENU_ITEMS) {
             this.menu.addItem(menu, null, menuSelected);
         }
+    }
+   
+    /**
+     * Function updates the login/logout part of the view.
+     * The menu will also be removed on logout and added on login.
+     * 
+     * @param layout
+     * @param loggedIn
+     */
+    public void refreshLoginLogoutContent(HorizontalLayout layout, boolean loggedIn){
+    	if(loggedIn){
+    		this.menu.setVisible(true);
+    	}else{
+    		this.menu.setVisible(false);
+    	}
+    	
+    	this.fullSite.replaceComponent(this.loginLogoutPart, layout);
+        this.fullSite.setComponentAlignment(layout, Alignment.MIDDLE_RIGHT);
+
+    	this.loginLogoutPart = layout;
+    }
+    
+    //TODO: to update sites
+    public void setContent(ViewTemplate view){
+    	 view.initView();
+    	 view.display(this.contentPanel);
     }
 
     /**
