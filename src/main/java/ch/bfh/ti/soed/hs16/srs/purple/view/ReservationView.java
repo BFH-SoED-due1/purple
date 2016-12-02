@@ -213,10 +213,10 @@ public class ReservationView extends UI {
 		this.teilnehmer = teilnehmer;
 	}
 
-	@WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
-	@VaadinServletConfiguration(ui = ReservationView.class, productionMode = false)
-	public static class MyUIServlet extends VaadinServlet {
-	}
+//	@WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
+//	@VaadinServletConfiguration(ui = ReservationView.class, productionMode = false)
+//	public static class MyUIServlet extends VaadinServlet {
+//	}
 
 	enum Action {
 		INSERT,
