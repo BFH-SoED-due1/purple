@@ -92,6 +92,8 @@ public class DBController {
 		COLUMN_STARTDATE("startdate"),
 		COLUMN_ENDDATE("enddate"),
 		COLUMN_ROOMID("roomid"),
+		COLUMN_TITLE("title"),
+		COLUMN_DESCRIPTION("description"),
 		CLOUMN_ALL("*");
 
 		private final String column;
@@ -140,6 +142,16 @@ public class DBController {
 	 * */
 	public void disconnect() throws SQLException {
 		connection.close();
+	}
+	
+	// --- DELETE METHODS ---
+	public boolean deleteReservation(Integer id){
+		boolean success = false;
+		String deleteUserReservation = "DELETE FROM userreservation WHERE reservationid ="+id;
+		success = executeUpdate(deleteUserReservation).isSuccess();
+		String deleteReservation = "DELETE FROM reservation WHERE idreservation ="+id;
+		success = executeUpdate(deleteReservation).isSuccess();
+		return success;
 	}
 
 	// --- INSERT METHODS ---

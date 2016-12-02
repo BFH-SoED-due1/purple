@@ -48,6 +48,26 @@ public class DBControllerTest {
 		assertTrue(functions.get(0).getId() == 9);
 		assertTrue(functions.get(0).getFunction().equals("Dozent"));
 	}
+	
+	@Test
+	public void testDeleteReservation(){
+		DBController controller = DBController.getInstance();
+		
+		// Insert test reservation
+		Timestamp startDate = Timestamp.valueOf("2016-12-08 08:00:00.000000");
+		Timestamp endDate = Timestamp.valueOf("2016-12-08 08:00:00.000000");
+		Room room = DBController.getInstance().selectRoomBy(Table_Room.COLUMN_ID, 1).get(0);
+		List<User> hosts = DBController.getInstance().selectUserBy(Table_User.COLUMN_ID, 1);
+		List<User> participants = DBController.getInstance().selectUserBy(Table_User.COLUMN_ID, 2);
+		String title = "Test Title";
+		String description = "Test Description";
+		assertTrue(controller.insertNewReservation(startDate, endDate, room, hosts, participants, title, description));
+		
+		// Delete test reservation
+		for(Reservation reservation : controller.selectReservationBy(Table_Reservation.COLUMN_TITLE, "Test Title")){
+			assertTrue(controller.deleteReservation(reservation.getReservationID()));
+		}
+	}
 
 	@Test
 	public void testSelectFunctionByFunction(){
@@ -292,15 +312,16 @@ public class DBControllerTest {
 
 	@Test
 	public void testInsertNewReservation(){
-		DBController controller = DBController.getInstance();
-		Timestamp startDate = Timestamp.valueOf("2016-12-08 08:00:00.000000");
-		Timestamp endDate = Timestamp.valueOf("2016-12-08 08:00:00.000000");
-		Room room = DBController.getInstance().selectRoomBy(Table_Room.COLUMN_ID, 1).get(0);
-		List<User> hosts = DBController.getInstance().selectUserBy(Table_User.COLUMN_ID, 1);
-		List<User> participants = DBController.getInstance().selectUserBy(Table_User.COLUMN_ID, 2);
-		String title = "Test Title";
-		String description = "Test Description";
-		assertTrue(controller.insertNewReservation(startDate, endDate, room, hosts, participants, title, description));
+		// TODO: dont insert new reservation for same date and room
+//		DBController controller = DBController.getInstance();
+//		Timestamp startDate = Timestamp.valueOf("2016-12-08 08:00:00.000000");
+//		Timestamp endDate = Timestamp.valueOf("2016-12-08 08:00:00.000000");
+//		Room room = DBController.getInstance().selectRoomBy(Table_Room.COLUMN_ID, 1).get(0);
+//		List<User> hosts = DBController.getInstance().selectUserBy(Table_User.COLUMN_ID, 1);
+//		List<User> participants = DBController.getInstance().selectUserBy(Table_User.COLUMN_ID, 2);
+//		String title = "Test Title";
+//		String description = "Test Description";
+//		assertTrue(controller.insertNewReservation(startDate, endDate, room, hosts, participants, title, description));
 	}
 
 	@AfterClass
