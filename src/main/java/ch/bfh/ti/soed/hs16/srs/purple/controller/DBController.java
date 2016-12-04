@@ -188,8 +188,10 @@ public class DBController {
 	}
 
 	public boolean insertNewUser(String firstName, String lastName, String email, String username, String password, Function function, Role role){
+		Integer idFunction = (function == null) ? null : function.getId();
+		Integer idRole = (role == null) ? null : role.getId();
 		String insertUser = "INSERT INTO user(IDUser, FirstName, LastName, Email, Username, Password, FunctionID, RoleID) "
-				+ "VALUES(null,'"+firstName+"','"+lastName+"','"+email+"','"+username+"','"+password+"',"+function.getId()+","+role.getId()+")";
+				+ "VALUES(null,'"+firstName+"','"+lastName+"','"+email+"','"+username+"','"+password+"',"+idFunction+","+idRole+")";
 		return executeUpdate(insertUser).isSuccess();
 	}
 
