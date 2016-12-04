@@ -8,8 +8,6 @@
 package ch.bfh.ti.soed.hs16.srs.purple.test;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
