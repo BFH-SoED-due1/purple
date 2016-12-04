@@ -129,9 +129,8 @@ public class ReservationView implements ViewTemplate {
 				final VerticalLayout reservationLayout = new VerticalLayout();
 				reservationLayout.setMargin(true);
 				popUpWindow = new Window();
-				// w.setPosition((int) UI.getCurrent().getWidth() / 2 - 150,
-				// (int) UI.getCurrent().getHeight() / 2 - 200);
-				// System.out.println(layout.getWidth());
+				popUpWindow.center();
+				popUpWindow.setModal(true);
 				startDate = new DateField("Startdatum", event.getStart());
 				startDate.setLocale(VaadinSession.getCurrent().getLocale());
 				endDate = new DateField("Enddatum", event.getEnd());
