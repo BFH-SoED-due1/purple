@@ -5,7 +5,6 @@
  *
  * Distributable under GPL license. See terms of license at gnu.org.
  */
-
 package ch.bfh.ti.soed.hs16.srs.purple.view;
 
 import javax.servlet.annotation.WebServlet;
@@ -23,6 +22,8 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.Reindeer;
 
+import ch.bfh.ti.soed.hs16.srs.purple.controller.LoginController;
+
 /**
  * This UI is the application entry point. A UI may either represent a browser
  * window (or tab) or some part of a html page where a Vaadin application is
@@ -35,86 +36,130 @@ import com.vaadin.ui.themes.Reindeer;
 @Theme("mytheme")
 public class ViewStructure extends UI {
 
-    //static
-    private static String OVERVIEW_TITLE = "Übersicht";
-    private static String RESERVATION_TITLE = "Reservation";
-    private static String[] MENU_ITEMS = {OVERVIEW_TITLE, RESERVATION_TITLE};
-    private static int MENU_HEIGHT = 35;
+	// static
+	private static String OVERVIEW_TITLE = "Übersicht";
+	private static String RESERVATION_TITLE = "Reservation";
+	private static String[] MENU_ITEMS = { OVERVIEW_TITLE, RESERVATION_TITLE };
+	private static int MENU_HEIGHT = 35;
 
-    //member variables
-    GridLayout fullSite = new GridLayout(2, 3);
-    Label logo = new Label("ReservationsTool");
-    HorizontalLayout header = new HorizontalLayout();
-    HorizontalLayout middle = new HorizontalLayout();
-    MenuBar menu = new MenuBar();
-    Panel contentPanel = new Panel();
+	// member variables
+	private GridLayout fullSite = new GridLayout(2, 3);
+	private Label logo = new Label("ReservationsTool");
+	private HorizontalLayout header = new HorizontalLayout();
+	private HorizontalLayout middle = new HorizontalLayout();
+	private MenuBar menu = new MenuBar();
+	private Panel contentPanel = new Panel();
+	private HorizontalLayout loginLogoutPart = new HorizontalLayout();
 
-    LoginView loginView = new LoginView();
-    RegistrationView registrationView = new RegistrationView();
+	private LoginController loginController = new LoginController();
+	private RegistrationView registrationView = new RegistrationView();
+	private LoginView loginView = new LoginView(this, loginController);
+	private ReservationView reservationView = new ReservationView();
 
-    /**
-     * Function inits the components of the graphical userinterface (GUI).
-     *
-     * @param vaadinRequest
-     */
-    @Override
-    protected void init(VaadinRequest vaadinRequest) {
-        
-        this.contentPanel.setStyleName(Reindeer.PANEL_LIGHT);
-        this.contentPanel.setSizeFull();
-        this.contentPanel.addStyleName("contenPanel");
-        this.logo.addStyleName("logo");
+	/**
+	 * Function inits the components of the graphical userinterface (GUI).
+	 *
+	 * @param vaadinRequest
+	 */
+	@Override
+	protected void init(VaadinRequest vaadinRequest) {
 
-        initMenu();
+		this.contentPanel.setStyleName(Reindeer.PANEL_LIGHT);
+		this.contentPanel.setSizeFull();
+		this.contentPanel.addStyleName("contenPanel");
+		this.contentPanel.setImmediate(true);
+		this.logo.addStyleName("logo");
 
-        //TODO: Is user logged in?
-        HorizontalLayout login = new LoginView().initLoginView();
+		initMenu();
+		this.reservationView.initView();
+		this.registrationView.initView();
 
-        this.registrationView.initView();
-        this.registrationView.display(this.contentPanel);
+		if (this.loginController.isUserLoggedInOnSession()) {
+			this.menu.setVisible(true);
+			setContent(this.reservationView);
+		} else {
+			this.menu.setVisible(false);
+			setContent(this.registrationView);
+		}
 
-        this.fullSite.addComponent(this.logo, 0, 0);
-        this.fullSite.setComponentAlignment(this.logo, Alignment.MIDDLE_LEFT);
-        this.fullSite.addComponent(login, 1, 0);
-        this.fullSite.setComponentAlignment(login, Alignment.MIDDLE_RIGHT);
-        this.fullSite.setRowExpandRatio(0, 0);
+		this.fullSite.setImmediate(true);
+		this.loginView.initView();
+		this.loginView.display(this.loginLogoutPart);
 
-        this.fullSite.addComponent(this.menu, 0, 1, 1, 1);
-        this.fullSite.setComponentAlignment(this.menu, Alignment.TOP_LEFT);
+		this.fullSite.addComponent(this.logo, 0, 0);
+		this.fullSite.setComponentAlignment(this.logo, Alignment.MIDDLE_LEFT);
+		this.fullSite.addComponent(this.loginLogoutPart, 1, 0);
+		this.fullSite.setComponentAlignment(this.loginLogoutPart, Alignment.MIDDLE_RIGHT);
+		this.fullSite.setRowExpandRatio(0, 0);
 
-        this.fullSite.addComponent(this.contentPanel, 0, 2, 1, 2);
-        this.fullSite.setComponentAlignment(this.contentPanel, Alignment.TOP_LEFT);
-        this.fullSite.setRowExpandRatio(2, 10);
+		this.fullSite.addComponent(this.menu, 0, 1, 1, 1);
+		this.fullSite.setComponentAlignment(this.menu, Alignment.TOP_LEFT);
 
-        this.fullSite.setSizeFull();
-        this.setContent(this.fullSite);
-    }
+		this.fullSite.addComponent(this.contentPanel, 0, 2, 1, 2);
+		this.fullSite.setComponentAlignment(this.contentPanel, Alignment.TOP_LEFT);
+		this.fullSite.setRowExpandRatio(2, 10);
 
-    /**
-     * Function initialize the menubar (navifation).
-     */
-    private void initMenu() {
-        // Define a common menu command for all the menu items.
-        MenuBar.Command menuSelected = new MenuBar.Command() {
-            @Override
-            public void menuSelected(MenuBar.MenuItem selectedItem) {
-                System.out.println("Menu selected: " + selectedItem.getText()); //TODO: Whats to do when menu is clicked
-            }
-        };
+		this.fullSite.setSizeFull();
+		this.setContent(this.fullSite);
+	}
 
-        this.menu.setWidth(100, Unit.PERCENTAGE);
-        this.menu.setHeight(MENU_HEIGHT, Unit.PIXELS);
+	/**
+	 * Function initialize the menubar (navifation).
+	 */
+	private void initMenu() {
+		// Define a common menu command for all the menu items.
+		MenuBar.Command menuSelected = new MenuBar.Command() {
+			@Override
+			public void menuSelected(MenuBar.MenuItem selectedItem) {
+				System.out.println("Menu selected: " + selectedItem.getText());
+				// TODO:Menu is clicked
+			}
+		};
 
-        for (String menu : MENU_ITEMS) {
-            this.menu.addItem(menu, null, menuSelected);
-        }
-    }
+		this.menu.setWidth(100, Unit.PERCENTAGE);
+		this.menu.setHeight(MENU_HEIGHT, Unit.PIXELS);
 
-    /**
-     * Servlet
-     */
-    @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
-    @VaadinServletConfiguration(ui = ViewStructure.class, productionMode = false)
-    public static class MyUIServlet extends VaadinServlet {
-    }
+		for (String menu : MENU_ITEMS) {
+			this.menu.addItem(menu, null, menuSelected);
+		}
+	}
+
+	/**
+	 * Function updates the login/logout part of the view. The menu will also be
+	 * removed on logout and added on login.
+	 * 
+	 * @param layout
+	 * @param loggedIn
+	 */
+	public void refreshLoginLogoutContent(HorizontalLayout layout, boolean loggedIn) {
+		if (loggedIn) {
+			this.menu.setVisible(true);
+			setContent(this.reservationView);
+		} else {
+			this.menu.setVisible(false);
+			setContent(this.registrationView);
+		}
+
+		this.fullSite.replaceComponent(this.loginLogoutPart, layout);
+		this.fullSite.setComponentAlignment(layout, Alignment.MIDDLE_RIGHT);
+
+		this.loginLogoutPart = layout;
+	}
+
+	/**
+	 * Function sets the content with a view.
+	 * 
+	 * @param view
+	 */
+	private void setContent(ViewTemplate view) {
+		view.display(this.contentPanel);
+	}
+
+	/**
+	 * Servlet: Is used to set to the start view.
+	 */
+	@WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
+	@VaadinServletConfiguration(ui = ViewStructure.class, productionMode = false)
+	public static class MyUIServlet extends VaadinServlet {
+	}
 }

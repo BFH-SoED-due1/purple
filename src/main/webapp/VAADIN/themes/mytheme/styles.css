@@ -12980,3 +12980,11 @@ div.v-layout.v-horizontal.v-widget {
 .mytheme .login {
 	padding: 15px;
 }
+
+.mytheme .errorTextField {
+	border-color: red;
+}
+
+.mytheme .normalTextField {
+	border-color: #a3a3a3;
+}

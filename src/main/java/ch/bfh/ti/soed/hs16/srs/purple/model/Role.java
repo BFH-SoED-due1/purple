@@ -8,11 +8,11 @@
 package ch.bfh.ti.soed.hs16.srs.purple.model;
 
 public class Role {
-	
+
 	private Integer id;
 	private String role;
-	
-	public Role(Integer id, String role){
+
+	public Role(Integer id, String role) {
 		this.id = id;
 		this.role = role;
 	}
