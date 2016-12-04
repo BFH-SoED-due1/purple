@@ -12,6 +12,7 @@ import java.util.List;
 import com.vaadin.server.VaadinSession;
 
 import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController.Table_User;
+import ch.bfh.ti.soed.hs16.srs.purple.model.Role;
 import ch.bfh.ti.soed.hs16.srs.purple.model.User;
 
 public class LoginController {
@@ -22,10 +23,9 @@ public class LoginController {
 	// membervariables
 	private User user;
 	private DBController dbController;
-	
-	public LoginController(){
+
+	public LoginController() {
 		this.dbController = DBController.getInstance();
-		System.out.println("Test");
 	}
 
 	/**
@@ -57,6 +57,13 @@ public class LoginController {
 	private boolean checkIfUserExists(String username) {
 
 		List<User> users = this.dbController.selectUserBy(Table_User.COLUMN_USERNAME, username);
+
+		List<Role> roles = this.dbController.selectAllRoles();
+
+		for (Role role : roles) {
+			System.out.println("role id: " + role.getId());
+			System.out.println("role: " + role.getRole());
+		}
 
 		if (users != null && !users.isEmpty()) {
 			this.user = users.get(0);

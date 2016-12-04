@@ -76,10 +76,10 @@ public class ViewStructure extends UI {
 
 		if (this.loginController.isUserLoggedInOnSession()) {
 			this.menu.setVisible(true);
-			this.reservationView.display(this.contentPanel);
+			setContent(this.reservationView);
 		} else {
 			this.menu.setVisible(false);
-			this.registrationView.display(this.contentPanel);
+			setContent(this.registrationView);
 		}
 
 		this.fullSite.setImmediate(true);
@@ -111,14 +111,8 @@ public class ViewStructure extends UI {
 		MenuBar.Command menuSelected = new MenuBar.Command() {
 			@Override
 			public void menuSelected(MenuBar.MenuItem selectedItem) {
-				System.out.println("Menu selected: " + selectedItem.getText()); // TODO:
-																				// Whats
-																				// to
-																				// do
-																				// when
-																				// menu
-																				// is
-																				// clicked
+				System.out.println("Menu selected: " + selectedItem.getText());
+				// TODO:Menu is clicked
 			}
 		};
 
@@ -140,10 +134,10 @@ public class ViewStructure extends UI {
 	public void refreshLoginLogoutContent(HorizontalLayout layout, boolean loggedIn) {
 		if (loggedIn) {
 			this.menu.setVisible(true);
-			this.reservationView.display(this.contentPanel);
+			setContent(this.reservationView);
 		} else {
 			this.menu.setVisible(false);
-			this.registrationView.display(this.contentPanel);
+			setContent(this.registrationView);
 		}
 
 		this.fullSite.replaceComponent(this.loginLogoutPart, layout);
@@ -152,14 +146,17 @@ public class ViewStructure extends UI {
 		this.loginLogoutPart = layout;
 	}
 
-	// TODO: to update sites
-	public void setContent(ViewTemplate view) {
-		view.initView();
+	/**
+	 * Function sets the content with a view.
+	 * 
+	 * @param view
+	 */
+	private void setContent(ViewTemplate view) {
 		view.display(this.contentPanel);
 	}
 
 	/**
-	 * Servlet
+	 * Servlet: Is used to set to the start view.
 	 */
 	@WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
 	@VaadinServletConfiguration(ui = ViewStructure.class, productionMode = false)
