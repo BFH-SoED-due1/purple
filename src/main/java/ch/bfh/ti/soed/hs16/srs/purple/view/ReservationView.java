@@ -56,7 +56,7 @@ public class ReservationView implements ViewTemplate {
 	private Window popUpWindow;
 	private VerticalLayout layout = new VerticalLayout();
 
-	enum Action {
+	public static enum Action {
 		INSERT, DELETE, EDIT, NONE
 	}
 
