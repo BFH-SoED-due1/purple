@@ -11,23 +11,18 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import javax.servlet.annotation.WebServlet;
-
-import ch.bfh.ti.soed.hs16.srs.purple.model.Reservation;
-import ch.bfh.ti.soed.hs16.srs.purple.model.Role;
-import ch.bfh.ti.soed.hs16.srs.purple.model.User;
-
-import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.Page;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinServlet;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Calendar;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -38,62 +33,81 @@ import com.vaadin.ui.components.calendar.CalendarComponentEvents.RangeSelectEven
 import com.vaadin.ui.components.calendar.CalendarComponentEvents.RangeSelectHandler;
 import com.vaadin.ui.components.calendar.event.BasicEvent;
 
-@SuppressWarnings("serial")
-public class ReservationView extends UI {
+import ch.bfh.ti.soed.hs16.srs.purple.model.Reservation;
+import ch.bfh.ti.soed.hs16.srs.purple.model.Role;
+import ch.bfh.ti.soed.hs16.srs.purple.model.User;
 
-	private List<User> teilnehmer, hostList;
+public class ReservationView implements ViewTemplate {
+
+	// membervariables
+	private List<User> participant, hostList;
 	private ClickListener cl;
 	private Reservation res;
 	private Action action = Action.NONE;
 
-	//UI Komponenten
-	private DateField startzeit;
-	private DateField ende;
-	private TextField titel;
-	private TextField beschr;
+	// UI Components
+	private Label siteTitle = new Label("Reservation");
+	private DateField startDate;
+	private DateField endDate;
+	private TextField title;
+	private TextField description;
 	private ListSelect hosts;
-	private ListSelect tnListe;
-	private Window w;
+	private ListSelect participantList;
+	private Window popUpWindow;
+	private VerticalLayout layout = new VerticalLayout();
 
-	public ReservationView()
-	{
-		//Nur für Testzwecke
+	enum Action {
+		INSERT, DELETE, EDIT, NONE
+	}
+
+	/**
+	 * Constructor: ReservationView
+	 */
+	public ReservationView() {
+		// Nur für Testzwecke
+		// TODO: Read this from db
 		ArrayList<User> users = new ArrayList<User>();
 		users.add(new User(3, "Gestach", "Lukas", "lukas@gestach.ch", "gestachl", "passwort", new Role(1, "Admin")));
 		users.add(new User(4, "Aebischer", "Patrik", "ges@gestach.ch", "aebip1", "passwort", new Role(1, "Wollschaf")));
-		ArrayList<User> teilnehmer = new ArrayList<User>();
-		teilnehmer.add(new User(3, "Gestach", "Lukas", "lukas@gestach.ch", "teilnehmer", "passwort", new Role(1, "Admin")));
-		teilnehmer.add(new User(4, "Aebischer", "Patrik", "ges@gestach.ch", "boesie", "passwort", new Role(1, "Wollschaf")));
+		ArrayList<User> participant = new ArrayList<User>();
+		participant.add(
+				new User(3, "Gestach", "Lukas", "lukas@gestach.ch", "teilnehmer", "passwort", new Role(1, "Admin")));
+		participant.add(
+				new User(4, "Aebischer", "Patrik", "ges@gestach.ch", "boesie", "passwort", new Role(1, "Wollschaf")));
 		this.hostList = users;
-		this.teilnehmer = teilnehmer;
-		cl = new ClickListener()
-		{
+		this.participant = participant;
+
+		cl = new ClickListener() {
 
 			@Override
-			public void buttonClick(ClickEvent event)
-			{
-				System.out.println("Geklickt");
+			public void buttonClick(ClickEvent event) {
+
 			}
 		};
 	}
 
 	/**
-	 *
-	 * @param teilnehmer Die Teilnehmerliste
-	 * @param hostList Die Liste der möglichen Hosts
+	 * Constructor: ReservationViews
+	 * 
+	 * @param participant
+	 *            participant list
+	 * @param hostList
+	 *            List of possible hosts
 	 */
-	public ReservationView(List<User> teilnehmer, List<User> hostList)
-	{
-		this.teilnehmer = teilnehmer;
+	public ReservationView(List<User> participant, List<User> hostList) {
+		this.participant = participant;
 		this.hostList = hostList;
-		if(teilnehmer == null || hostList == null)
+		if (participant == null || hostList == null)
 			throw new NullPointerException();
 	}
 
+	/**
+	 * Function initalizes the reservation view
+	 */
 	@Override
-	protected void init(VaadinRequest vaadinRequest) {
-		final VerticalLayout layout = new VerticalLayout();
+	public void initView() {
 
+		this.siteTitle.addStyleName("h2");
 		final Calendar cal = new Calendar();
 		GregorianCalendar start = new GregorianCalendar();
 		GregorianCalendar end = new GregorianCalendar();
@@ -105,123 +119,121 @@ public class ReservationView extends UI {
 		cal.setEndDate(end.getTime());
 		cal.setVisible(true);
 
-		cal.setHandler(new RangeSelectHandler()
-		{
+		// Handler opens a new reservation pop-up
+		cal.setHandler(new RangeSelectHandler() {
 
 			@Override
-			public void rangeSelect(RangeSelectEvent event)
-			{
+			public void rangeSelect(RangeSelectEvent event) {
 				action = Action.INSERT;
 				System.out.println("Range selected");
-				final VerticalLayout l = new VerticalLayout();
-				l.setMargin(true);
-				w = new Window();
-				//w.setPosition((int) UI.getCurrent().getWidth() / 2 - 150, (int) UI.getCurrent().getHeight() / 2 - 200);
-				//System.out.println(layout.getWidth());
-				startzeit = new DateField("Startdatum", event.getStart());
-				startzeit.setLocale(getLocale());
-				ende = new DateField("Enddatum", event.getEnd());
-				ende.setLocale(getLocale());
-				titel = new TextField("Titel");
-				beschr = new TextField("Beschreibung");
+				final VerticalLayout reservationLayout = new VerticalLayout();
+				reservationLayout.setMargin(true);
+				popUpWindow = new Window();
+				// w.setPosition((int) UI.getCurrent().getWidth() / 2 - 150,
+				// (int) UI.getCurrent().getHeight() / 2 - 200);
+				// System.out.println(layout.getWidth());
+				startDate = new DateField("Startdatum", event.getStart());
+				startDate.setLocale(VaadinSession.getCurrent().getLocale());
+				endDate = new DateField("Enddatum", event.getEnd());
+				endDate.setLocale(VaadinSession.getCurrent().getLocale());
+				title = new TextField("Titel");
+				description = new TextField("Beschreibung");
 				hosts = new ListSelect("Reservierender");
 				hosts.setMultiSelect(true);
 				hosts.clear();
-				for(int i = 0;i < hostList.size();i++)
-				{
+				for (int i = 0; i < hostList.size(); i++) {
 					hosts.addItem(i);
 					hosts.setItemCaption(i, hostList.get(i).getUsername());
 				}
 				hosts.select(0);
 				hosts.setRows(hostList.size() > 5 ? 5 : hostList.size());
-				tnListe = new ListSelect("Teilnehmer");
-				tnListe.setMultiSelect(true);
-				tnListe.clear();
-				for(int i = 0;i < teilnehmer.size();i++)
-				{
-					tnListe.addItem(i);
-					tnListe.setItemCaption(i, teilnehmer.get(i).getUsername());
+				participantList = new ListSelect("Teilnehmer");
+				participantList.setMultiSelect(true);
+				participantList.clear();
+				for (int i = 0; i < participant.size(); i++) {
+					participantList.addItem(i);
+					participantList.setItemCaption(i, participant.get(i).getUsername());
 				}
-				tnListe.setRows(teilnehmer.size() > 5 ? 5 : teilnehmer.size());
-				Button b = new Button("Speichern");
-				b.addClickListener(cl);
-				l.addComponents(startzeit, ende, titel, beschr, hosts, tnListe, b);
-				w.setContent(l);
-				w.setWidth("300px");
-				w.setHeight("400px");
-				w.setCaption("Neue Reservierung");
-				UI.getCurrent().addWindow(w);
-				//cal.addEvent(new BasicEvent("Aebischers Wule", "Aebischer hat immer eine Wule!", event.getStart()));
+				participantList.setRows(participant.size() > 5 ? 5 : participant.size());
+				Button saveButton = new Button("Speichern");
+				saveButton.addClickListener(cl);
+				reservationLayout.addComponents(startDate, endDate, title, description, hosts, participantList,
+						saveButton);
+				popUpWindow.setContent(reservationLayout);
+				popUpWindow.setWidth("300px");
+				popUpWindow.setHeight("400px");
+				popUpWindow.setCaption("Neue Reservierung");
+				UI.getCurrent().addWindow(popUpWindow);
+				// cal.addEvent(new BasicEvent("Aebischers Wule", "Aebischer hat
+				// immer eine Wule!", event.getStart()));
 			}
 		});
 
 		cal.setHandler(new EventClickHandler() {
-		    @Override
+			@Override
 			public void eventClick(EventClick event) {
-		        BasicEvent e = (BasicEvent) event.getCalendarEvent();
+				BasicEvent e = (BasicEvent) event.getCalendarEvent();
 
-		        // Do something with it
-		        new Notification("Event clicked: " + e.getCaption(),
-		            e.getDescription()).show(Page.getCurrent());
-		    }
+				// Do something with it
+				new Notification("Event clicked: " + e.getCaption(), e.getDescription()).show(Page.getCurrent());
+			}
 		});
 
-		layout.addComponents(cal);
-		layout.setMargin(true);
-		layout.setSpacing(true);
-
-		setContent(layout);
+		this.layout.addComponent(this.siteTitle);
+		this.layout.addComponents(cal);
+		this.layout.setMargin(true);
+		this.layout.setSpacing(true);
 	}
 
 	/**
-	 * Rückgabeparameter vom Kontroller an die View, damit die geeignete Ausgabe für den Benutzer ausgegeben werden kann
-	 * @param status Der Status der SQL Abfrage
+	 * Function shows the view on the content panel
 	 */
-	public void setStatus(boolean status)
-	{
-		//Statusmeldung vom Controller
-		//Fenster schliessen oä. bei Success, Fehlermeldung anzeigen sonst
-		//TODO
+	@Override
+	public void display(Component content) {
+		Panel contentPanel = (Panel) content;
+		contentPanel.setContent(this.layout);
+	}
+
+	/**
+	 * Rückgabeparameter vom Kontroller an die View, damit die geeignete Ausgabe
+	 * für den Benutzer ausgegeben werden kann
+	 * 
+	 * @param status
+	 *            Der Status der SQL Abfrage
+	 */
+	public void setStatus(boolean status) {
+		// Statusmeldung vom Controller
+		// Fenster schliessen oä. bei Success, Fehlermeldung anzeigen sonst
+		// TODO
 	}
 
 	/**
 	 * Gibt die Aktion zurück, für welche ein ButtonClickEvent ausgelöst wurde
+	 * 
 	 * @return Die Aktion
 	 */
-	public Action getAction()
-	{
+	public Action getAction() {
 		return action;
 	}
 
 	/**
 	 * Die Daten zum ButtonClickEvent werden als Reservation Objekt ausgegeben
+	 * 
 	 * @return Die Daten zur Reservation
 	 */
-	public Reservation getReservation()
-	{
-		//TODO
-		//res = new Reservation(0, startDate, endDate, room, title, description)
+	public Reservation getReservation() {
+		// TODO
+		// res = new Reservation(0, startDate, endDate, room, title,
+		// description)
 		return res;
 	}
 
 	/**
 	 * Die Teilehmerliste setzen (falls nicht schon im Konstruktor geschehen)
-	 * @param teilnehmer
+	 * 
+	 * @param participant
 	 */
-	public void setTeilnehmer(List<User> teilnehmer)
-	{
-		this.teilnehmer = teilnehmer;
-	}
-
-	@WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
-	@VaadinServletConfiguration(ui = ReservationView.class, productionMode = false)
-	public static class MyUIServlet extends VaadinServlet {
-	}
-
-	enum Action {
-		INSERT,
-		DELETE,
-		EDIT,
-		NONE
+	public void setParticipant(List<User> participant) {
+		this.participant = participant;
 	}
 }
