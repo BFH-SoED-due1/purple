@@ -36,6 +36,7 @@ import com.vaadin.ui.components.calendar.event.BasicEvent;
 import ch.bfh.ti.soed.hs16.srs.purple.model.Reservation;
 import ch.bfh.ti.soed.hs16.srs.purple.model.Role;
 import ch.bfh.ti.soed.hs16.srs.purple.model.User;
+import ch.bfh.ti.soed.hs16.srs.purple.util.ReservationAction;
 
 public class ReservationView implements ViewTemplate {
 
@@ -43,7 +44,7 @@ public class ReservationView implements ViewTemplate {
 	private List<User> participant, hostList;
 	private ClickListener cl;
 	private Reservation res;
-	private Action action = Action.NONE;
+	private ReservationAction reservationAction = ReservationAction.NONE;
 
 	// UI Components
 	private Label siteTitle = new Label("Reservation");
@@ -56,13 +57,10 @@ public class ReservationView implements ViewTemplate {
 	private Window popUpWindow;
 	private VerticalLayout layout = new VerticalLayout();
 
-	public static enum Action {
-		INSERT, DELETE, EDIT, NONE
-	}
-
 	/**
 	 * Constructor: ReservationView
 	 */
+	@SuppressWarnings("serial")
 	public ReservationView() {
 		// Nur für Testzwecke
 		// TODO: Read this from db
@@ -76,6 +74,7 @@ public class ReservationView implements ViewTemplate {
 				new User(4, "Aebischer", "Patrik", "ges@gestach.ch", "boesie", "passwort", new Role(1, "Wollschaf")));
 		this.hostList = users;
 		this.participant = participant;
+		
 
 		cl = new ClickListener() {
 
@@ -102,6 +101,7 @@ public class ReservationView implements ViewTemplate {
 	/**
 	 * Function initalizes the reservation view
 	 */
+	@SuppressWarnings("serial")
 	@Override
 	public void initView() {
 
@@ -122,14 +122,13 @@ public class ReservationView implements ViewTemplate {
 
 			@Override
 			public void rangeSelect(RangeSelectEvent event) {
-				action = Action.INSERT;
+				reservationAction = ReservationAction.INSERT;
 				System.out.println("Range selected");
 				final VerticalLayout reservationLayout = new VerticalLayout();
 				reservationLayout.setMargin(true);
 				popUpWindow = new Window();
-				// w.setPosition((int) UI.getCurrent().getWidth() / 2 - 150,
-				// (int) UI.getCurrent().getHeight() / 2 - 200);
-				// System.out.println(layout.getWidth());
+				popUpWindow.center();
+				popUpWindow.setModal(true);
 				startDate = new DateField("Startdatum", event.getStart());
 				startDate.setLocale(VaadinSession.getCurrent().getLocale());
 				endDate = new DateField("Enddatum", event.getEnd());
@@ -209,8 +208,8 @@ public class ReservationView implements ViewTemplate {
 	 * 
 	 * @return Die Aktion
 	 */
-	public Action getAction() {
-		return action;
+	public ReservationAction getAction() {
+		return reservationAction;
 	}
 
 	/**
