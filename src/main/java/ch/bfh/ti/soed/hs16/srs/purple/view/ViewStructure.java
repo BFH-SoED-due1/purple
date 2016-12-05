@@ -59,7 +59,7 @@ public class ViewStructure extends UI {
 	/**
 	 * Function inits the components of the graphical userinterface (GUI).
 	 *
-	 * @param vaadinRequest
+	 * @param vaadinRequest - The vaadin request
 	 */
 	@Override
 	protected void init(VaadinRequest vaadinRequest) {
@@ -125,11 +125,10 @@ public class ViewStructure extends UI {
 	}
 
 	/**
-	 * Function updates the login/logout part of the view. The menu will also be
-	 * removed on logout and added on login.
-	 * 
-	 * @param layout
-	 * @param loggedIn
+	 * Function updates the login/logout part of the view. The menu will also be removed on logout and added on login.
+	 *
+	 * @param layout - The layout
+	 * @param loggedIn - logged in or not
 	 */
 	public void refreshLoginLogoutContent(HorizontalLayout layout, boolean loggedIn) {
 		if (loggedIn) {
@@ -148,8 +147,6 @@ public class ViewStructure extends UI {
 
 	/**
 	 * Function sets the content with a view.
-	 * 
-	 * @param view
 	 */
 	private void setContent(ViewTemplate view) {
 		view.display(this.contentPanel);

@@ -31,33 +31,33 @@ public class ReservationController {
 		hosts.add(actUser);
 	}
 
-	ClickListener clickListener = new ClickListener() {
-
-		@Override
-		public void buttonClick(ClickEvent event) {
-			// Reservation uiRes = reservationView.getReservation();
-			// switch (reservationView.getAction()) {
-			// case ReservationView.Action.INSERT:
-			// reservationView.setStatus(addReservation(uiRes.getStartDate(),
-			// uiRes.getEndDate(), uiRes.getRoom(),
-			// uiRes.getTitle(), uiRes.getDescription(),
-			// uiRes.getParticipantList()));
-			// break;
-			// case ReservationView.Action.DELETE:
-			// reservationView.setStatus(deleteReservation(uiRes.getReservationID()));
-			// break;
-			// case ReservationView.Action.EDIT:
-			// reservationView.setStatus(editReservation(uiRes.getReservationID()));
-			// break;
-			// case ReservationView.Action.NONE:
-			// break;
-			// }
-		}
-	};
+//	private ClickListener clickListener = new ClickListener() {
+//
+//		@Override
+//		public void buttonClick(ClickEvent event) {
+//			// Reservation uiRes = reservationView.getReservation();
+//			// switch (reservationView.getAction()) {
+//			// case ReservationView.Action.INSERT:
+//			// reservationView.setStatus(addReservation(uiRes.getStartDate(),
+//			// uiRes.getEndDate(), uiRes.getRoom(),
+//			// uiRes.getTitle(), uiRes.getDescription(),
+//			// uiRes.getParticipantList()));
+//			// break;
+//			// case ReservationView.Action.DELETE:
+//			// reservationView.setStatus(deleteReservation(uiRes.getReservationID()));
+//			// break;
+//			// case ReservationView.Action.EDIT:
+//			// reservationView.setStatus(editReservation(uiRes.getReservationID()));
+//			// break;
+//			// case ReservationView.Action.NONE:
+//			// break;
+//			// }
+//		}
+//	};
 
 	/**
 	 * Add a reservation to the DB
-	 * 
+	 *
 	 * @param start
 	 *            : startime of the reservation
 	 * @param end
@@ -84,7 +84,7 @@ public class ReservationController {
 
 	/**
 	 * Delete a reservation from the DB
-	 * 
+	 *
 	 * @param resID
 	 *            : ReservationID
 	 * @return true = success, false = fail
@@ -93,20 +93,20 @@ public class ReservationController {
 		return this.dbController.deleteReservation(resID);
 	}
 
-	/**
-	 * Edit a reservation
-	 * 
-	 * @param resID
-	 *            : ReservationID
-	 */
-	public void editReservation(int resID) {
-		// // einfach löschen und neu erstellen? Oder zu gefährlich weil jemand
-		// anderes dazwischen reservieren könnte?
-	}
+//	/**
+//	 * Edit a reservation
+//	 *
+//	 * @param resID
+//	 *            : ReservationID
+//	 */
+//	public void editReservation(int resID) {
+//		// // einfach löschen und neu erstellen? Oder zu gefährlich weil jemand
+//		// anderes dazwischen reservieren könnte?
+//	}
 
 	/**
 	 * Send an E-Mail to the hosts and participants of a reservation
-	 * 
+	 *
 	 * @param hosts
 	 *            : Hosts of the reservation
 	 * @param participants

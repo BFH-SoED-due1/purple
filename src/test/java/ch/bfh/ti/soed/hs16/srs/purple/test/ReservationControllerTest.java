@@ -7,9 +7,7 @@
  */
 package ch.bfh.ti.soed.hs16.srs.purple.test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -28,19 +26,9 @@ import ch.bfh.ti.soed.hs16.srs.purple.model.Reservation;
 import ch.bfh.ti.soed.hs16.srs.purple.model.Room;
 import ch.bfh.ti.soed.hs16.srs.purple.model.User;
 
-public class ReservationControllerTest
-{
-
-	/*
-	@Test
-	public void RCTest()
-	{
-		ReservationController rc = new ReservationController();
-		assertNotNull(rc);
-	}*/
+public class ReservationControllerTest {
 	
 	static ReservationController reservationController;
-	private Reservation reservation1;
 	private Timestamp startTime1 = new Timestamp(new Date().getTime());
 	private Timestamp endTime1 = new Timestamp(new Date().getTime()+3600000);
 	
@@ -55,7 +43,9 @@ public class ReservationControllerTest
 	public void testAddReservation(){
 		Room room10 = DBController.getInstance().selectRoomBy(Table_Room.COLUMN_ROOMNUMBER, 10).get(0);
 		assertTrue(reservationController.addReservation(startTime1, endTime1, room10, "test add Reservation", "Reservation Added!", DBController.getInstance().selectUserBy(Table_User.COLUMN_USERNAME, "gestl1")));
-		
+		for(Reservation reservation : DBController.getInstance().selectReservationBy(DBController.Table_Reservation.COLUMN_TITLE, "test add Reservation")){
+			assertTrue(reservationController.deleteReservation(reservation.getReservationID()));
+		}
 	}
 	
 	@Test
@@ -67,7 +57,11 @@ public class ReservationControllerTest
 				resID = resList.get(i).getReservationID();
 			}
 		}
-		assertNull(reservationController.deleteReservation(resID));
+		assertTrue(reservationController.deleteReservation(resID));
 	}
-
+	
+	@Test
+	public void testWrongReservation(){
+		assertFalse(reservationController.addReservation(null, null, null, null, null, null));
+	}
 }

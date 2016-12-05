@@ -23,28 +23,28 @@ import java.util.Map.Entry;
  * */
 public class Row {
 	private List<Entry<Object, Class<?>>> row;
-	public static Map<String, Class<?>> TYPE;
-	
+	private static Map<String, Class<?>> TYPE;
+
 	static {
 		TYPE = new HashMap<String,Class<?>>();
-		
+
 		TYPE.put("INT", Integer.class);
 		TYPE.put("TINYINT", Boolean.class);
 		TYPE.put("VARCHAR", String.class);
 		TYPE.put("TIMESTAMP", Timestamp.class);
 	}
-	
+
 	public Row(){
 		row = new ArrayList<Entry<Object, Class<?>>>();
 	}
-	
+
 	/**
 	 * Adds data into the row with the associated java type.
 	 * */
 	private <T> void add(T data){
 		row.add(new AbstractMap.SimpleImmutableEntry<Object,Class<?>>(data, data.getClass()));
 	}
-	
+
 	/**
 	 * Casts an sql-type into a java type and adds the data into the row.
 	 * */
@@ -55,23 +55,23 @@ public class Row {
 			row.add(new AbstractMap.SimpleImmutableEntry<Object,Class<?>>(null,null));
 		}
 	}
-	
+
 	/**
 	 * Fetches the results of an sql-query into an ArrayList with rows.
-	 * 
+	 *
 	 * @param resultSet - The resultSet from the database operation
 	 * @return A table containing the rows from the sql-query or null if the query was empty.
 	 * */
 	public static ArrayList<Row> formTable(ResultSet resultSet){
 		ArrayList<Row> table = new ArrayList<Row>();
-		
+
 		try {
 			ResultSetMetaData rsmd = resultSet.getMetaData();
 			int columnCount = rsmd.getColumnCount();
-			
+
 			while(resultSet.next()){
 				Row currentRow = new Row();
-				
+
 				for(int i=1; i<=columnCount; i++){
 					Object resultObject = resultSet.getObject(i);
 					String cloumnType = rsmd.getColumnTypeName(i);
@@ -82,7 +82,7 @@ public class Row {
 		} catch (SQLException e) {
 			// TODO: log exceptions
 		}
-		
+
 		return table;
 	}
 

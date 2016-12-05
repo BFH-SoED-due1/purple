@@ -33,12 +33,6 @@ public class LoginView implements ViewTemplate {
 	private LoginController loginController;
 	private ViewStructure viewStructure;
 
-	/**
-	 * Constructor: LoginView
-	 * 
-	 * @param viewStructure
-	 * @param loginController
-	 */
 	public LoginView(ViewStructure viewStructure, LoginController loginController) {
 		this.viewStructure = viewStructure;
 		this.loginController = loginController;
@@ -51,7 +45,7 @@ public class LoginView implements ViewTemplate {
 	public void initView() {
 		this.username.setInputPrompt("Benutzername");
 		this.password.setInputPrompt("Passwort");
-		
+
 		this.loginLayout.addComponent(this.username);
 		this.loginLayout.addComponent(this.password);
 		this.loginLayout.addComponent(this.loginButton);
@@ -62,7 +56,7 @@ public class LoginView implements ViewTemplate {
 		this.logoutLayout.addComponent(this.logoutButton);
 		setEventOnLogout();
 		this.logoutLayout.setStyleName("login");
-		
+
 		this.username.setImmediate(true);
 		this.password.setImmediate(true);
 
@@ -94,7 +88,8 @@ public class LoginView implements ViewTemplate {
 			public void buttonClick(ClickEvent event) {
 				if (LoginView.this.loginController.loginWithUser(LoginView.this.username.getValue(),
 						LoginView.this.password.getValue())) {
-					System.out.println("login with user " + LoginView.this.username.getValue()); //TODO: remove this 
+					//TODO: remove this
+					System.out.println("login with user " + LoginView.this.username.getValue());
 					LoginView.this.viewStructure.refreshLoginLogoutContent(LoginView.this.logoutLayout, true);
 					LoginView.this.username.addStyleName("normalTextField");
 					LoginView.this.password.addStyleName("normalTextField");

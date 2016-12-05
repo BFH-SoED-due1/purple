@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.AfterClass;
@@ -39,40 +40,85 @@ public class DBControllerTest {
 		assertNotNull(DBController.getInstance());
 	}
 
+	// --- SELECT ---
+	@Test
+	public void TestselectReservationsForUser(){
+		DBController controller = DBController.getInstance();
+		// Insert test user
+		controller.insertNewUser("fTest", "lTest", "eTest", "testUsername1", "pw", null, null);
+		User testUser = controller.selectUserBy(Table_User.COLUMN_USERNAME, "testUsername1").get(0);
+		// Insert test room
+		controller.insertNewRoom(999, "Test Room", 15);
+		Room testRoom = controller.selectRoomBy(Table_Room.COLUMN_ROOMNUMBER, 999).get(0);
+		// Insert test reservations for test user
+		Timestamp startDate = Timestamp.valueOf("2016-12-08 08:00:00.000000");
+		Timestamp endDate = Timestamp.valueOf("2016-12-08 08:00:00.000000");
+		ArrayList<User> hosts = new ArrayList<User>();
+		hosts.add(testUser);
+		// Insert 3 reservations in which the test user is a host
+		controller.insertNewReservation(startDate, endDate, testRoom, hosts, null, "Test Reservation 777", "Test Description 777");
+		controller.insertNewReservation(startDate, endDate, testRoom, hosts, null, "Test Reservation 888", "Test Description 888");
+		controller.insertNewReservation(startDate, endDate, testRoom, hosts, null, "Test Reservation 999", "Test Description 999");
+		// Insert 2 reservations in which the test user is only a participant
+		controller.insertNewReservation(startDate, endDate, testRoom, null, hosts, "Test Reservation 888", "Test Description 888");
+		controller.insertNewReservation(startDate, endDate, testRoom, null, hosts, "Test Reservation 999", "Test Description 999");
+		
+		List<Reservation> hostReservations = controller.selectReservationsForUser(testUser, true);
+		assertTrue(hostReservations.size() == 3);
+		for(Reservation reservation : hostReservations){
+			assertTrue(reservation.getParticipantList().isEmpty());
+			assertTrue(reservation.getHostList().size() == 1);
+			assertTrue(reservation.getHostList().get(0).getUserID() == testUser.getUserID());
+		}
+		
+		List<Reservation> participantReservations = controller.selectReservationsForUser(testUser, false);
+		assertTrue(participantReservations.size() == 2);
+		for(Reservation reservation : participantReservations){
+			assertTrue(reservation.getHostList().isEmpty());
+			assertTrue(reservation.getParticipantList().size() == 1);
+			assertTrue(reservation.getParticipantList().get(0).getUserID() == testUser.getUserID());
+		}
+		// Delete reservations
+		for(Reservation reservation : controller.selectReservationsForUser(testUser, true)){
+			assertTrue(controller.deleteReservation(reservation.getReservationID()));
+		}
+		for(Reservation reservation : controller.selectReservationsForUser(testUser, false)){
+			assertTrue(controller.deleteReservation(reservation.getReservationID()));
+		}
+		// Delete room
+		assertTrue(controller.deleteRoom(testRoom.getRoomID()));
+		// Delete test user
+		assertTrue(controller.deleteUser(testUser.getUserID()));
+	}
+	
+	@Test
+	public void testInsertNewRole(){
+		DBController controller = DBController.getInstance();
+		assertTrue(controller.insertNewRole("Test Role 999"));
+		assertTrue(controller.deleteRole(controller.selectRoleBy(Table_Role.COLUMN_ROLE, "Test Role 999").get(0).getId()));
+	}
+	
+	@Test
+	public void testInsertNewFunction(){
+		DBController controller = DBController.getInstance();
+		assertTrue(controller.insertNewFunction("Test Function 999"));
+		assertTrue(controller.deleteFunction(controller.selectFunctionBy(Table_Function.COLUMN_FUNCTION, "Test Function 999").get(0).getId()));
+	}
+	
 	@Test
 	public void testSelectFunctionByID(){
 		DBController controller = DBController.getInstance();
-		List<Function> functions = controller.selectFunctionsBy(Table_Function.COLUMN_ID,9);
+		List<Function> functions = controller.selectFunctionBy(Table_Function.COLUMN_ID,9);
 
 		assertTrue(functions.size() == 1);
 		assertTrue(functions.get(0).getId() == 9);
 		assertTrue(functions.get(0).getFunction().equals("Dozent"));
 	}
-	
-	@Test
-	public void testDeleteReservation(){
-		DBController controller = DBController.getInstance();
-		
-		// Insert test reservation
-		Timestamp startDate = Timestamp.valueOf("2016-12-08 08:00:00.000000");
-		Timestamp endDate = Timestamp.valueOf("2016-12-08 08:00:00.000000");
-		Room room = DBController.getInstance().selectRoomBy(Table_Room.COLUMN_ID, 1).get(0);
-		List<User> hosts = DBController.getInstance().selectUserBy(Table_User.COLUMN_ID, 1);
-		List<User> participants = DBController.getInstance().selectUserBy(Table_User.COLUMN_ID, 2);
-		String title = "Test Title";
-		String description = "Test Description";
-		assertTrue(controller.insertNewReservation(startDate, endDate, room, hosts, participants, title, description));
-		
-		// Delete test reservation
-		for(Reservation reservation : controller.selectReservationBy(Table_Reservation.COLUMN_TITLE, "Test Title")){
-			assertTrue(controller.deleteReservation(reservation.getReservationID()));
-		}
-	}
 
 	@Test
 	public void testSelectFunctionByFunction(){
 		DBController controller = DBController.getInstance();
-		List<Function> functions = controller.selectFunctionsBy(Table_Function.COLUMN_FUNCTION,"Student");
+		List<Function> functions = controller.selectFunctionBy(Table_Function.COLUMN_FUNCTION,"Student");
 
 		boolean hasStudentFunction = false;
 		for(Function function : functions) if(function.getFunction().equals("Student")) hasStudentFunction = true;
@@ -310,18 +356,130 @@ public class DBControllerTest {
 		assertTrue(reservations.size() >= 2);
 	}
 
+	// --- INSERT ---
 	@Test
 	public void testInsertNewReservation(){
 		// TODO: dont insert new reservation for same date and room
-//		DBController controller = DBController.getInstance();
-//		Timestamp startDate = Timestamp.valueOf("2016-12-08 08:00:00.000000");
-//		Timestamp endDate = Timestamp.valueOf("2016-12-08 08:00:00.000000");
-//		Room room = DBController.getInstance().selectRoomBy(Table_Room.COLUMN_ID, 1).get(0);
-//		List<User> hosts = DBController.getInstance().selectUserBy(Table_User.COLUMN_ID, 1);
-//		List<User> participants = DBController.getInstance().selectUserBy(Table_User.COLUMN_ID, 2);
-//		String title = "Test Title";
-//		String description = "Test Description";
-//		assertTrue(controller.insertNewReservation(startDate, endDate, room, hosts, participants, title, description));
+		DBController controller = DBController.getInstance();
+		Timestamp startDate = Timestamp.valueOf("2016-12-08 08:00:00.000000");
+		Timestamp endDate = Timestamp.valueOf("2016-12-08 08:00:00.000000");
+		Room room = DBController.getInstance().selectRoomBy(Table_Room.COLUMN_ID, 1).get(0);
+		List<User> hosts = DBController.getInstance().selectUserBy(Table_User.COLUMN_ID, 1);
+		List<User> participants = DBController.getInstance().selectUserBy(Table_User.COLUMN_ID, 2);
+		String title = "Test Title";
+		String description = "Test Description";
+		assertTrue(controller.insertNewReservation(startDate, endDate, room, hosts, participants, title, description));
+		// Delete test reservation
+		for(Reservation reservation : controller.selectReservationBy(Table_Reservation.COLUMN_TITLE, "Test Title")){
+			assertTrue(controller.deleteReservation(reservation.getReservationID()));
+		}
+		// Insert wrong reservation
+		room.setRoomID(-1);
+		assertFalse(controller.insertNewReservation(startDate, endDate, room, hosts, participants, title, description));
+	}
+	
+	@Test
+	public void testInsertNewUser(){
+		DBController controller = DBController.getInstance();
+		assertTrue(controller.insertNewUser("fName", "lName", "email", "username", "", null, null));
+		assertTrue(controller.deleteUser(controller.selectUserBy(Table_User.COLUMN_USERNAME, "username").get(0).getUserID()));
+	}
+	
+	// --- DELETE ---
+	@Test
+	public void testDeleteReservation(){
+		DBController controller = DBController.getInstance();
+		
+		// Insert test reservation
+		Timestamp startDate = Timestamp.valueOf("2016-12-08 08:00:00.000000");
+		Timestamp endDate = Timestamp.valueOf("2016-12-08 08:00:00.000000");
+		Room room = DBController.getInstance().selectRoomBy(Table_Room.COLUMN_ID, 1).get(0);
+		List<User> hosts = DBController.getInstance().selectUserBy(Table_User.COLUMN_ID, 1);
+		List<User> participants = DBController.getInstance().selectUserBy(Table_User.COLUMN_ID, 2);
+		String title = "Test Title";
+		String description = "Test Description";
+		assertTrue(controller.insertNewReservation(startDate, endDate, room, hosts, participants, title, description));
+		
+		// Delete test reservation
+		for(Reservation reservation : controller.selectReservationBy(Table_Reservation.COLUMN_TITLE, "Test Title")){
+			assertTrue(controller.deleteReservation(reservation.getReservationID()));
+		}
+	}
+	
+	// --- ROW ---
+	@Test
+	public void testNullResultSet(){
+		DBController controller = DBController.getInstance();
+		assertTrue(controller.selectFunctionBy(Table_Function.COLUMN_ID, -1).size() == 0);
+	}
+	
+	// --- ENUMS ---
+	@Test
+	public void testDBEnums(){
+		// Function
+		assertTrue(Table_Function.values().length == 3);
+		assertTrue(Table_Function.valueOf(Table_Function.class, "CLOUMN_ALL").equals(Table_Function.CLOUMN_ALL));
+		assertTrue(Table_Function.valueOf("CLOUMN_ALL").equals(Table_Function.CLOUMN_ALL));
+		assertTrue(Table_Function.valueOf(Table_Function.class, "COLUMN_ID").equals(Table_Function.COLUMN_ID));
+		assertTrue(Table_Function.valueOf("COLUMN_ID").equals(Table_Function.COLUMN_ID));
+		assertTrue(Table_Function.valueOf(Table_Function.class, "COLUMN_FUNCTION").equals(Table_Function.COLUMN_FUNCTION));
+		assertTrue(Table_Function.valueOf("COLUMN_FUNCTION").equals(Table_Function.COLUMN_FUNCTION));
+		// Role
+		assertTrue(Table_Role.values().length == 3);
+		assertTrue(Table_Role.valueOf(Table_Role.class, "CLOUMN_ALL").equals(Table_Role.CLOUMN_ALL));
+		assertTrue(Table_Role.valueOf("CLOUMN_ALL").equals(Table_Role.CLOUMN_ALL));
+		assertTrue(Table_Role.valueOf(Table_Role.class, "COLUMN_ID").equals(Table_Role.COLUMN_ID));
+		assertTrue(Table_Role.valueOf("COLUMN_ID").equals(Table_Role.COLUMN_ID));
+		assertTrue(Table_Role.valueOf(Table_Role.class, "COLUMN_ROLE").equals(Table_Role.COLUMN_ROLE));
+		assertTrue(Table_Role.valueOf("COLUMN_ROLE").equals(Table_Role.COLUMN_ROLE));
+		// Room
+		assertTrue(Table_Room.values().length == 5);
+		assertTrue(Table_Room.valueOf(Table_Room.class, "CLOUMN_ALL").equals(Table_Room.CLOUMN_ALL));
+		assertTrue(Table_Room.valueOf("CLOUMN_ALL").equals(Table_Room.CLOUMN_ALL));
+		assertTrue(Table_Room.valueOf(Table_Room.class, "COLUMN_ID").equals(Table_Room.COLUMN_ID));
+		assertTrue(Table_Room.valueOf("COLUMN_ID").equals(Table_Room.COLUMN_ID));
+		assertTrue(Table_Room.valueOf(Table_Room.class, "COLUMN_ROOMNUMBER").equals(Table_Room.COLUMN_ROOMNUMBER));
+		assertTrue(Table_Room.valueOf("COLUMN_ROOMNUMBER").equals(Table_Room.COLUMN_ROOMNUMBER));
+		assertTrue(Table_Room.valueOf(Table_Room.class, "COLUMN_NAME").equals(Table_Room.COLUMN_NAME));
+		assertTrue(Table_Room.valueOf("COLUMN_NAME").equals(Table_Room.COLUMN_NAME));
+		assertTrue(Table_Room.valueOf(Table_Room.class, "COLUMN_NUMBEROFSEATS").equals(Table_Room.COLUMN_NUMBEROFSEATS));
+		assertTrue(Table_Room.valueOf("COLUMN_NUMBEROFSEATS").equals(Table_Room.COLUMN_NUMBEROFSEATS));
+		// User
+		assertTrue(Table_User.values().length == 9);
+		assertTrue(Table_User.valueOf(Table_User.class, "CLOUMN_ALL").equals(Table_User.CLOUMN_ALL));
+		assertTrue(Table_User.valueOf("CLOUMN_ALL").equals(Table_User.CLOUMN_ALL));
+		assertTrue(Table_User.valueOf(Table_User.class, "COLUMN_ID").equals(Table_User.COLUMN_ID));
+		assertTrue(Table_User.valueOf("COLUMN_ID").equals(Table_User.COLUMN_ID));
+		assertTrue(Table_User.valueOf(Table_User.class, "COLUMN_FIRSTNAME").equals(Table_User.COLUMN_FIRSTNAME));
+		assertTrue(Table_User.valueOf("COLUMN_FIRSTNAME").equals(Table_User.COLUMN_FIRSTNAME));
+		assertTrue(Table_User.valueOf(Table_User.class, "COLUMN_LASTNAME").equals(Table_User.COLUMN_LASTNAME));
+		assertTrue(Table_User.valueOf("COLUMN_LASTNAME").equals(Table_User.COLUMN_LASTNAME));
+		assertTrue(Table_User.valueOf(Table_User.class, "COLUMN_EMAIL").equals(Table_User.COLUMN_EMAIL));
+		assertTrue(Table_User.valueOf("COLUMN_EMAIL").equals(Table_User.COLUMN_EMAIL));
+		assertTrue(Table_User.valueOf(Table_User.class, "COLUMN_USERNAME").equals(Table_User.COLUMN_USERNAME));
+		assertTrue(Table_User.valueOf("COLUMN_USERNAME").equals(Table_User.COLUMN_USERNAME));
+		assertTrue(Table_User.valueOf(Table_User.class, "COLUMN_PASSWORD").equals(Table_User.COLUMN_PASSWORD));
+		assertTrue(Table_User.valueOf("COLUMN_PASSWORD").equals(Table_User.COLUMN_PASSWORD));
+		assertTrue(Table_User.valueOf(Table_User.class, "COLUMN_FUNCTIONID").equals(Table_User.COLUMN_FUNCTIONID));
+		assertTrue(Table_User.valueOf("COLUMN_FUNCTIONID").equals(Table_User.COLUMN_FUNCTIONID));
+		assertTrue(Table_User.valueOf(Table_User.class, "COLUMN_ROLEID").equals(Table_User.COLUMN_ROLEID));
+		assertTrue(Table_User.valueOf("COLUMN_ROLEID").equals(Table_User.COLUMN_ROLEID));
+		// Reservation
+		assertTrue(Table_Reservation.values().length == 7);
+		assertTrue(Table_Reservation.valueOf(Table_Reservation.class, "CLOUMN_ALL").equals(Table_Reservation.CLOUMN_ALL));
+		assertTrue(Table_Reservation.valueOf("CLOUMN_ALL").equals(Table_Reservation.CLOUMN_ALL));
+		assertTrue(Table_Reservation.valueOf(Table_Reservation.class, "COLUMN_ID").equals(Table_Reservation.COLUMN_ID));
+		assertTrue(Table_Reservation.valueOf("COLUMN_ID").equals(Table_Reservation.COLUMN_ID));
+		assertTrue(Table_Reservation.valueOf(Table_Reservation.class, "COLUMN_STARTDATE").equals(Table_Reservation.COLUMN_STARTDATE));
+		assertTrue(Table_Reservation.valueOf("COLUMN_STARTDATE").equals(Table_Reservation.COLUMN_STARTDATE));
+		assertTrue(Table_Reservation.valueOf(Table_Reservation.class, "COLUMN_ENDDATE").equals(Table_Reservation.COLUMN_ENDDATE));
+		assertTrue(Table_Reservation.valueOf("COLUMN_ENDDATE").equals(Table_Reservation.COLUMN_ENDDATE));
+		assertTrue(Table_Reservation.valueOf(Table_Reservation.class, "COLUMN_ROOMID").equals(Table_Reservation.COLUMN_ROOMID));
+		assertTrue(Table_Reservation.valueOf("COLUMN_ROOMID").equals(Table_Reservation.COLUMN_ROOMID));
+		assertTrue(Table_Reservation.valueOf(Table_Reservation.class, "COLUMN_TITLE").equals(Table_Reservation.COLUMN_TITLE));
+		assertTrue(Table_Reservation.valueOf("COLUMN_TITLE").equals(Table_Reservation.COLUMN_TITLE));
+		assertTrue(Table_Reservation.valueOf(Table_Reservation.class, "COLUMN_DESCRIPTION").equals(Table_Reservation.COLUMN_DESCRIPTION));
+		assertTrue(Table_Reservation.valueOf("COLUMN_DESCRIPTION").equals(Table_Reservation.COLUMN_DESCRIPTION));
 	}
 
 	@AfterClass
@@ -334,6 +492,12 @@ public class DBControllerTest {
 			e.printStackTrace();
 		}
 		assertTrue(disconnected);
+		// Reconnect for further tests
+		try {
+			DBController.getInstance().connect();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-
 }

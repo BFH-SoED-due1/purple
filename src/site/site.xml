@@ -29,12 +29,15 @@
             -->
             <item name="About" href="index.html"/>
             <item name="The Vision" href="doc/vision.pdf"/>
-            <item name="Use Case Diagram" href="doc/Use-Case.pdf"/>
-            <item name="User Stories" href="doc/User-Stories.pdf"/>
-            <item name="Domain Model" href="doc/DomainModel.pdf"/>
-            <item name="Sprint 2" href="doc/Sprint_2.pdf"/>
-            <item name="Product Backlog" href="doc/Product_Backlog.pdf" />
-            <item name="UML updated" href="doc/UML_Klassendiagramm_updated.pdf" />
+            <item name="Sprint 1: Use Case Diagram" href="doc/Use-Case.pdf"/>
+            <item name="Sprint 1: User Stories" href="doc/User-Stories.pdf"/>
+            <item name="Sprint 1: Domain Model" href="doc/DomainModel.pdf"/>
+            <item name="Sprint 2: Doku" href="doc/Sprint_2.pdf"/>
+            <item name="Sprint 2: Product Backlog" href="doc/Product_Backlog.pdf" />
+            <item name="Sprint 2: UML updated" href="doc/UML_Klassendiagramm_updated.pdf" />
+	        <item name="Sprint 3: Product Backlog" href="doc/Sprint_3_Product_Backlog.pdf" />
+	        <item name="Sprint 3: Database Schema" href="doc/DB_Schema.pdf" />
+	        <item name="Sprint 3: UML updated" href="doc/Sprint_3_Klassendiagramm.pdf"/>
             <!--
             <item name="System Sequence Diagram" href="system_sequence_diagram.html" />
             <item name="Detailed Design Document" href="detailed_design_document.html" />

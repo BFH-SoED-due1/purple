@@ -17,9 +17,9 @@ package ch.bfh.ti.soed.hs16.srs.purple.model;
  *
  */
 public class HostUser extends User {
-	
+
 	private Function function;
-	
+
 	public HostUser(int userID, String lastname, String firstname, String emailAddress, String username, String password, Role role, Function function){
 		super(userID, lastname, firstname, emailAddress, username, password, role);
 		this.function = function;
@@ -27,9 +27,5 @@ public class HostUser extends User {
 
 	public Function getFunction() {
 		return function;
-	}
-
-	public void setFunction(Function function) {
-		this.function = function;
 	}
 }

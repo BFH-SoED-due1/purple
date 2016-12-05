@@ -12,7 +12,7 @@ import ch.bfh.ti.soed.hs16.srs.purple.model.User;
 import ch.bfh.ti.soed.hs16.srs.purple.view.RegistrationView;
 
 public class RegistrationController {
-	
+
 	// membervariables
 	private RegistrationView registrationView;
 	private User user;
@@ -20,8 +20,8 @@ public class RegistrationController {
 
 	/**
 	 * Constructor: RegistrationController
-	 * 
-	 * @param registrationView
+	 *
+	 * @param registrationView - The view of the registration
 	 */
 	public RegistrationController(RegistrationView registrationView) {
 		this.dbController = DBController.getInstance();
@@ -30,9 +30,9 @@ public class RegistrationController {
 
 	/**
 	 * Registers an user in the database.
-	 * 
-	 * @param user
-	 * @param role
+	 *
+	 * @param user - The user to register
+	 * @param function - The function of the user
 	 */
 	public void registerNewUser(User user, Function function) {
 		// TODO: bind this method to a "register"-event

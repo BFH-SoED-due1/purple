@@ -21,8 +21,8 @@ public class ValidationController {
 
 	/**
 	 * Function checks if the value of a textfield is empty or not.
-	 * 
-	 * @param textfield
+	 *
+	 * @param textfield - The textfield to be checked.
 	 */
 	public static void setTextFieldRequired(TextField textfield) {
 		textfield.setRequired(true);
@@ -31,8 +31,8 @@ public class ValidationController {
 
 	/**
 	 * Function checks if the value of a passwordfield is empty or not.
-	 * 
-	 * @param passwordField
+	 *
+	 * @param passwordField - The passwordfield to be checked
 	 */
 	public static void setPasswordFielRequired(PasswordField passwordField) {
 		passwordField.setRequired(true);
@@ -41,8 +41,8 @@ public class ValidationController {
 
 	/**
 	 * Function checks if the value of the textfield is an email address
-	 * 
-	 * @param textfield
+	 *
+	 * @param textfield - The textfield to be checked
 	 */
 	public static void checkIfEmail(TextField textfield) {
 		textfield.addValidator(new EmailValidator("Ungültige E-Mail Adresse"));
@@ -50,9 +50,9 @@ public class ValidationController {
 
 	/**
 	 * Function checks if the password is equal with the replied password.
-	 * 
-	 * @param passwordField
-	 * @param repliedPasswordField
+	 *
+	 * @param passwordField - The passwordfield to be checked
+	 * @param repliedPasswordField - The replied password
 	 */
 	public static void checkIfPasswordIsEqualWithRepliedPassword(PasswordField passwordField,
 			PasswordField repliedPasswordField) {
@@ -70,9 +70,9 @@ public class ValidationController {
 
 	/**
 	 * Function checks in the database if the username is already used.
-	 * 
-	 * @param username
-	 * @param dbController
+	 *
+	 * @param username - The "username"-textfield
+	 * @param dbController - Instance of DBController
 	 */
 	public static void checkIfUserAlredyExist(TextField username, DBController dbController) {
 		username.addValidator(new Validator() {
@@ -81,7 +81,7 @@ public class ValidationController {
 			public void validate(Object value) throws InvalidValueException {
 				List<User> users = dbController.selectUserBy(Table_User.COLUMN_USERNAME, username.getValue());
 
-				if (users != null && users.size() != 0) {
+				if (users.size() != 0) {
 					throw new InvalidValueException("Username ist bereits vergeben!");
 				}
 			}

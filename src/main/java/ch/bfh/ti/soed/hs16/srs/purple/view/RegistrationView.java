@@ -29,20 +29,20 @@ import ch.bfh.ti.soed.hs16.srs.purple.model.User;
 public class RegistrationView implements ViewTemplate {
 
 	// Membervariable
-	Label successFullRegistrationTitel = new Label("Erfolgreiche Registration");
-	Label successFullRegistration = new Label();
-	Label successFullLayout = new Label();
+	private Label successFullRegistrationTitel = new Label("Erfolgreiche Registration");
+	private Label successFullRegistration = new Label();
+	private Label successFullLayout = new Label();
 
-	Label title = new Label("Registrieren");
-	TextField lastName = new TextField("Name");
-	TextField firstName = new TextField("Vorname");
-	TextField email = new TextField("Email-Adresse");
-	TextField username = new TextField("Benutzername");
-	PasswordField password = new PasswordField("Passwort");
-	PasswordField passwordReply = new PasswordField("Passwort bestätigen");
-	Button register = new Button("Registrieren");
-	FormLayout registrationLayout = new FormLayout();
-	RegistrationController registrationController = new RegistrationController(this);
+	private Label title = new Label("Registrieren");
+	private TextField lastName = new TextField("Name");
+	private TextField firstName = new TextField("Vorname");
+	private TextField email = new TextField("Email-Adresse");
+	private TextField username = new TextField("Benutzername");
+	private PasswordField password = new PasswordField("Passwort");
+	private PasswordField passwordReply = new PasswordField("Passwort bestätigen");
+	private Button register = new Button("Registrieren");
+	private FormLayout registrationLayout = new FormLayout();
+	private RegistrationController registrationController = new RegistrationController(this);
 
 	/**
 	 * Function initlaizes the Components for the registrationview.

@@ -74,7 +74,7 @@ public class ReservationView implements ViewTemplate {
 				new User(4, "Aebischer", "Patrik", "ges@gestach.ch", "boesie", "passwort", new Role(1, "Wollschaf")));
 		this.hostList = users;
 		this.participant = participant;
-		
+
 
 		cl = new ClickListener() {
 
@@ -87,7 +87,7 @@ public class ReservationView implements ViewTemplate {
 
 	/**
 	 * Constructor: ReservationViews
-	 * 
+	 *
 	 * @param participant - participant list
 	 * @param hostList - List of possible hosts
 	 */
@@ -194,7 +194,7 @@ public class ReservationView implements ViewTemplate {
 	/**
 	 * Rückgabeparameter vom Kontroller an die View, damit die geeignete Ausgabe
 	 * für den Benutzer ausgegeben werden kann
-	 * 
+	 *
 	 * @param status - Der Status der SQL Abfrage
 	 */
 	public void setStatus(boolean status) {
@@ -205,7 +205,7 @@ public class ReservationView implements ViewTemplate {
 
 	/**
 	 * Gibt die Aktion zurück, für welche ein ButtonClickEvent ausgelöst wurde
-	 * 
+	 *
 	 * @return Die Aktion
 	 */
 	public ReservationAction getAction() {
@@ -214,7 +214,7 @@ public class ReservationView implements ViewTemplate {
 
 	/**
 	 * Die Daten zum ButtonClickEvent werden als Reservation Objekt ausgegeben
-	 * 
+	 *
 	 * @return Die Daten zur Reservation
 	 */
 	public Reservation getReservation() {
@@ -226,7 +226,7 @@ public class ReservationView implements ViewTemplate {
 
 	/**
 	 * Die Teilehmerliste setzen (falls nicht schon im Konstruktor geschehen)
-	 * 
+	 *
 	 * @param participant - A list of participants
 	 */
 	public void setParticipant(List<User> participant) {
