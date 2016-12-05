@@ -35,4 +35,24 @@
   @include valo;
 
   // Insert your own theme rules here
+  .logo {
+  	margin:15px;
+    font-size: 25px;
+  }
+
+  .contenPanel {
+	padding-left:15px;
+  }
+
+  .login {
+	padding: 15px;
+  }
+  
+  .errorTextField {
+  	 border-color: red;
+  }
+  
+  .normalTextField {
+  	border-color: #a3a3a3;
+  }
 }

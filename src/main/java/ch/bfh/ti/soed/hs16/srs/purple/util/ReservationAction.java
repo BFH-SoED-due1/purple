@@ -5,8 +5,8 @@
  *
  * Distributable under GPL license. See terms of license at gnu.org.
  */
-package ch.bfh.ti.soed.hs16.srs.purple.test;
+package ch.bfh.ti.soed.hs16.srs.purple.util;
 
-public class HostUserTest {
-	// TODO: needed?
+public enum ReservationAction {
+	INSERT, DELETE, NONE, EDIT;
 }

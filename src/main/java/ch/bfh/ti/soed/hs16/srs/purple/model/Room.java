@@ -7,8 +7,6 @@
  */
 package ch.bfh.ti.soed.hs16.srs.purple.model;
 
-import java.util.List;
-
 /**
  * Ein Raum kann reserviert werden.
  * Ein Raum besitzt eine Raumnummer, eine Anzahl an Sitzplätzen sowie unterschiedliche Gegenstände.
@@ -19,39 +17,35 @@ import java.util.List;
  *
  */
 public class Room {
-	private int roomID;
-	private int roomNumber;
-	private int numberOfSeats;
-	private List<Equipment> equipmentList;
-	private List<Reservation> reservationList;
-	public int getRoomID() {
-		return roomID;
-	}
-	public void setRoomID(int roomID) {
+	private Integer roomID;
+	private String name;
+	private Integer roomNumber;
+	private Integer numberOfSeats;
+
+	public Room(Integer roomID, Integer roomNumber, String name, Integer numberOfSeats){
 		this.roomID = roomID;
-	}
-	public int getRoomNumber() {
-		return roomNumber;
-	}
-	public void setRoomNumber(int roomNumber) {
+		this.name = name;
 		this.roomNumber = roomNumber;
-	}
-	public int getNumberOfSeats() {
-		return numberOfSeats;
-	}
-	public void setNumberOfSeats(int numberOfSeats) {
 		this.numberOfSeats = numberOfSeats;
 	}
-	public List<Equipment> getEquipmentList() {
-		return equipmentList;
+
+	public void setRoomID(Integer roomID) {
+		this.roomID = roomID;
 	}
-	public void setEquipmentList(List<Equipment> equipmentList) {
-		this.equipmentList = equipmentList;
+
+	public String getName() {
+		return name;
 	}
-	public List<Reservation> getReservationList() {
-		return reservationList;
+
+	public Integer getRoomID() {
+		return roomID;
 	}
-	public void setReservationList(List<Reservation> reservationList) {
-		this.reservationList = reservationList;
+
+	public Integer getRoomNumber() {
+		return roomNumber;
+	}
+
+	public Integer getNumberOfSeats() {
+		return numberOfSeats;
 	}
 }

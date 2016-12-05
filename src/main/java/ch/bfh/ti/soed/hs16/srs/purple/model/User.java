@@ -16,10 +16,9 @@ package ch.bfh.ti.soed.hs16.srs.purple.model;
  * - Username
  * - Passwort
  * Die Rolle des Benutzers wird in der Klasse UserRole definiert. Die Reservations-Applikation erlaubt die folgenden
- * drei Benutzerrollen:
- * - USER_ROLE_HOST: Der Veranstalter kann Reservationen tätigen.
- * - USER_ROLE_PARTICIPANT: Ist der Teilnehmer einer Reservation/Veranstaltung.
- * - USER_ROLE_ADMIN: Der Admin hat alle Rechte und wird verwendet um einem User die Veranstaltungsrechte zu geben.
+ * zwei Benutzerrollen:
+ * - USER_ROLE_MEMBER: Member.
+ * - USER_ROLE_ADMIN: Admin.
  *
  * @author Aebischer Patrik, Bösiger Elia, Gestach Lukas, Schildknecht Elias
  * @date 20.10.2016
@@ -27,72 +26,54 @@ package ch.bfh.ti.soed.hs16.srs.purple.model;
  *
  */
 public class User {
-	private int userID;
+	private Integer userID;
 	private String lastName;
 	private String firstName;
 	private String emailAddress;
 	private String username;
+	// TODO: encrypt password
 	private String password;
-	private UserRole userRole;
-	public static enum UserRole {
-		USER_ROLE_ADMIN,
-		USER_ROLE_HOST,
-		USER_ROLE_PARTICIPANT
-	}
+	private Role role;
 
-	public User(String lastname, String firstname, String emailAddress, String username, String password, UserRole userRole){
+	public User(Integer userID, String firstname, String lastname, String emailAddress, String username, String password, Role role){
+		this.userID = userID;
 		this.lastName = lastname;
 		this.firstName = firstname;
 		this.emailAddress = emailAddress;
 		this.username = username;
 		this.password = password;
-		this.userRole = userRole;
+		this.role = role;
 	}
 
 	public User() {
 		// Only for Testing
 	}
 
-	public int getUserID() {
+	public Integer getUserID() {
 		return userID;
 	}
-	public void setUserID(int userID) {
-		this.userID = userID;
-	}
+
 	public String getLastName() {
 		return lastName;
 	}
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+
 	public String getFirstName() {
 		return firstName;
 	}
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+
 	public String getEmailAddress() {
 		return emailAddress;
 	}
-	public void setEmailAddress(String emailAddress) {
-		this.emailAddress = emailAddress;
-	}
+
 	public String getUsername() {
 		return username;
 	}
-	public void setUsername(String username) {
-		this.username = username;
-	}
+
 	public String getPassword() {
 		return password;
 	}
-	public void setPassword(String password) {
-		this.password = password;
+
+	public Role getRole() {
+		return role;
 	}
-	public UserRole getUserRole() {
-		return userRole;
-	}
-	public void setUserRole(UserRole userRole) {
-		this.userRole = userRole;
-	};
 }

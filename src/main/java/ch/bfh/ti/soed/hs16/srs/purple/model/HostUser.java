@@ -7,7 +7,6 @@
  */
 package ch.bfh.ti.soed.hs16.srs.purple.model;
 
-import java.util.List;
 /**
  * HostUser ist von der User-Klasse abgeleitet.
  * Sie verfügt zusätzlich über die hostFunctionList, welche die Funktionen des Veranstalters definiert.
@@ -17,14 +16,16 @@ import java.util.List;
  * @version 1.0
  *
  */
-public class HostUser {
-	private List<HostFunction> hostFunctionList;
+public class HostUser extends User {
 
-	public List<HostFunction> getHostFunctionList() {
-		return hostFunctionList;
+	private Function function;
+
+	public HostUser(int userID, String lastname, String firstname, String emailAddress, String username, String password, Role role, Function function){
+		super(userID, lastname, firstname, emailAddress, username, password, role);
+		this.function = function;
 	}
 
-	public void setHostFunctionList(List<HostFunction> hostFunctionList) {
-		this.hostFunctionList = hostFunctionList;
+	public Function getFunction() {
+		return function;
 	}
 }

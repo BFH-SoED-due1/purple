@@ -7,6 +7,8 @@
  */
 package ch.bfh.ti.soed.hs16.srs.purple.model;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 /**
  * Eine Reservation definiert eine Reservation, die von einem Veranstalter erstellt wurde.
@@ -18,53 +20,63 @@ import java.util.List;
  *
  */
 public class Reservation {
-	private int reservationID;
+	private Integer reservationID;
 	private Room room;
-	private long startDate;
-	private long endDate;
+	private Timestamp startDate;
+	private Timestamp endDate;
 	private List<User> hostList;
 	private List<User> participantList;
+	private String title;
+	private String description;
 
-	public Reservation(Room r, long sd, long ed, List<User> hl, List<User> lp){
-
+	public Reservation(Integer reservationID, Timestamp startDate, Timestamp endDate, Room room, String title, String description){
+		this.reservationID = reservationID;
+		this.room = room;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.title = title;
+		this.description = description;
+		hostList = new ArrayList<User>();
+		participantList = new ArrayList<User>();
 	}
 
-	public Room getRoom()
-	{
+	public Room getRoom() {
 		return room;
 	}
-	public void setRoom(Room room)
-	{
-		this.room = room;
-	}
-	public int getReservationID() {
+
+	public Integer getReservationID() {
 		return reservationID;
 	}
-	public void setReservationID(int reservationID) {
-		this.reservationID = reservationID;
-	}
-	public long getStartDate() {
+
+	public Timestamp getStartDate() {
 		return startDate;
 	}
-	public void setStartDate(long startDate) {
-		this.startDate = startDate;
-	}
-	public long getEndDate() {
+
+	public Timestamp getEndDate() {
 		return endDate;
 	}
-	public void setEndDate(long endDate) {
-		this.endDate = endDate;
+
+	public void addHost(User host){
+		hostList.add(host);
 	}
+
+	public void addParticipant(User participant){
+		participantList.add(participant);
+	}
+
 	public List<User> getHostList() {
 		return hostList;
 	}
-	public void setHostList(List<User> hostList) {
-		this.hostList = hostList;
-	}
+
 	public List<User> getParticipantList() {
 		return participantList;
 	}
-	public void setParticipantList(List<User> participantList) {
-		this.participantList = participantList;
+
+	public String getTitle() {
+		return title;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 }
