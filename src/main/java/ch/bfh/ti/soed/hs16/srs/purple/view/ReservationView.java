@@ -89,10 +89,8 @@ public class ReservationView implements ViewTemplate {
 	/**
 	 * Constructor: ReservationViews
 	 * 
-	 * @param participant
-	 *            participant list
-	 * @param hostList
-	 *            List of possible hosts
+	 * @param participant - participant list
+	 * @param hostList - List of possible hosts
 	 */
 	public ReservationView(List<User> participant, List<User> hostList) {
 		this.participant = participant;
@@ -198,8 +196,7 @@ public class ReservationView implements ViewTemplate {
 	 * Rückgabeparameter vom Kontroller an die View, damit die geeignete Ausgabe
 	 * für den Benutzer ausgegeben werden kann
 	 * 
-	 * @param status
-	 *            Der Status der SQL Abfrage
+	 * @param status - Der Status der SQL Abfrage
 	 */
 	public void setStatus(boolean status) {
 		// Statusmeldung vom Controller
@@ -231,7 +228,7 @@ public class ReservationView implements ViewTemplate {
 	/**
 	 * Die Teilehmerliste setzen (falls nicht schon im Konstruktor geschehen)
 	 * 
-	 * @param participant
+	 * @param participant - A list of participants
 	 */
 	public void setParticipant(List<User> participant) {
 		this.participant = participant;

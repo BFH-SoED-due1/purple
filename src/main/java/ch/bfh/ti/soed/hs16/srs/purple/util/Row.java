@@ -52,12 +52,11 @@ public class Row {
 	/**
 	 * Fetches the results of an sql-query into an ArrayList with rows.
 	 * 
+	 * @param resultSet - The resultSet from the database operation
 	 * @return A table containing the rows from the sql-query or null if the query was empty.
 	 * */
 	public static ArrayList<Row> formTable(ResultSet resultSet){
 		ArrayList<Row> table = new ArrayList<Row>();
-		
-		if(resultSet == null) return null;
 		
 		try {
 			ResultSetMetaData rsmd = resultSet.getMetaData();
@@ -74,7 +73,7 @@ public class Row {
 				table.add(currentRow);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			// TODO: log exceptions
 		}
 		
 		return table;
