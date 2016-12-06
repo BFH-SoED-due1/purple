@@ -39,6 +39,28 @@ public class Reservation {
 		hostList = new ArrayList<User>();
 		participantList = new ArrayList<User>();
 	}
+	
+	public Reservation(Integer reservationID, Timestamp startDate, Timestamp endDate, Room room, String title, String description, List<User> hosts){
+		this.reservationID = reservationID;
+		this.room = room;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.title = title;
+		this.description = description;
+		hostList = hosts;
+		participantList = new ArrayList<User>();
+	}
+	
+	public Reservation(Integer reservationID, Timestamp startDate, Timestamp endDate, Room room, String title, String description, List<User> hosts, List<User> participants){
+		this.reservationID = reservationID;
+		this.room = room;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.title = title;
+		this.description = description;
+		hostList = hosts;
+		participantList = participants;
+	}
 
 	public Room getRoom() {
 		return room;

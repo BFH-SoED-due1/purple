@@ -7,16 +7,11 @@
  */
 package ch.bfh.ti.soed.hs16.srs.purple.controller;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-
 import ch.bfh.ti.soed.hs16.srs.purple.model.Reservation;
-import ch.bfh.ti.soed.hs16.srs.purple.model.Room;
 import ch.bfh.ti.soed.hs16.srs.purple.model.User;
+import ch.bfh.ti.soed.hs16.srs.purple.util.Email;
 import ch.bfh.ti.soed.hs16.srs.purple.view.ReservationView;
 
 public class ReservationController {
@@ -24,11 +19,10 @@ public class ReservationController {
 	private User user;
 	private DBController dbController;
 
-	private List<User> hosts = new ArrayList<User>();
+	private static String DOMAIN = "Unsere Website";
 
-	public ReservationController(User actUser) {
+	public ReservationController() {
 		dbController = DBController.getInstance();
-		hosts.add(actUser);
 	}
 
 //	private ClickListener clickListener = new ClickListener() {
@@ -72,16 +66,15 @@ public class ReservationController {
 	 *            : participants of the reservation
 	 * @return true = success, false = fail
 	 */
-	public boolean addReservation(java.sql.Timestamp start, Timestamp end, Room room, String title, String description,
-			List<User> participants) {
-		if (this.dbController.insertNewReservation(start, end, room, this.hosts, participants, title, description)) {
-			sendEmail(this.hosts, participants);
+	public boolean addReservation(Reservation res) {
+		if (this.dbController.insertNewReservation(res.getStartDate(), res.getEndDate(), res.getRoom(), res.getHostList(), res.getParticipantList(), res.getTitle(), res.getDescription())) {
+			sendEmail(res);
 			getAllReservations();
 			return true;
 		}
 		return false;
 	}
-
+	
 	/**
 	 * Delete a reservation from the DB
 	 *
@@ -104,6 +97,20 @@ public class ReservationController {
 //		// anderes dazwischen reservieren könnte?
 //	}
 
+	/*
+	 * accept a reservation
+	 */
+	public void acceptReservation(int resID){
+		
+	}
+	
+	/*
+	 * cancel a reservation
+	 */
+	public void canelReservation(int resID){
+		
+	}
+	
 	/**
 	 * Send an E-Mail to the hosts and participants of a reservation
 	 *
@@ -112,17 +119,25 @@ public class ReservationController {
 	 * @param participants
 	 *            : Participants of the reservation
 	 */
-	public void sendEmail(List<User> hosts, List<User> participants) {
-		// SimpleEmail mail = new SimpleEmail();
+	public void sendEmail(Reservation reservation) {
+		for (int i = 0; i < reservation.getHostList().size(); i++){
+			String message =	"Hallo " + reservation.getHostList().get(i).getUsername() + "<br>" + 
+								reservation.getHostList().get(0).getUsername() + " hat dich als Veranstalter für folgenden Termin hinzugefügt: <br>" + 
+								"Thema: " + reservation.getTitle() + "<br>" +
+								"Raum: " + reservation.getRoom().getName() + "<br>" +
+								"Beginn: " + reservation.getStartDate().toString() + "<br>" +
+								"Ende: " + reservation.getEndDate().toString() + "<br>" +
+								"Bitte logge dich auf " + DOMAIN + " ein und sage entweder zu oder ab.";
+			Email mail = new Email(reservation.getHostList().get(i).getEmailAddress(), "Neuer Termin", message);
+		//	Email mail = new Email("christianwenger@hotmail.com", "Neuer Termin", message);
+			mail.send();
+		}
 	}
 
 	// /**
 	// * Get All reservations from the DB
 	// */
 	public List<Reservation> getAllReservations() {
-		// // vermutlich ists doch besser, immer alle Reservationen an die View
-		// zu
-		// // übergeben...
 		return this.dbController.selectAllReservations();
 	}
 
