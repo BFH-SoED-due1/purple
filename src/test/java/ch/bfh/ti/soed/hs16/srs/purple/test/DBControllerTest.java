@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.AfterClass;
@@ -41,55 +40,55 @@ public class DBControllerTest {
 	}
 
 	// --- SELECT ---
-	@Test
-	public void TestselectReservationsForUser(){
-		DBController controller = DBController.getInstance();
-		// Insert test user
-		controller.insertNewUser("fTest", "lTest", "eTest", "testUsername1", "pw", null, null);
-		User testUser = controller.selectUserBy(Table_User.COLUMN_USERNAME, "testUsername1").get(0);
-		// Insert test room
-		controller.insertNewRoom(999, "Test Room", 15);
-		Room testRoom = controller.selectRoomBy(Table_Room.COLUMN_ROOMNUMBER, 999).get(0);
-		// Insert test reservations for test user
-		Timestamp startDate = Timestamp.valueOf("2016-12-08 08:00:00.000000");
-		Timestamp endDate = Timestamp.valueOf("2016-12-08 08:00:00.000000");
-		ArrayList<User> hosts = new ArrayList<User>();
-		hosts.add(testUser);
-		// Insert 3 reservations in which the test user is a host
-		controller.insertNewReservation(startDate, endDate, testRoom, hosts, null, "Test Reservation 777", "Test Description 777");
-		controller.insertNewReservation(startDate, endDate, testRoom, hosts, null, "Test Reservation 888", "Test Description 888");
-		controller.insertNewReservation(startDate, endDate, testRoom, hosts, null, "Test Reservation 999", "Test Description 999");
-		// Insert 2 reservations in which the test user is only a participant
-		controller.insertNewReservation(startDate, endDate, testRoom, null, hosts, "Test Reservation 888", "Test Description 888");
-		controller.insertNewReservation(startDate, endDate, testRoom, null, hosts, "Test Reservation 999", "Test Description 999");
-		
-		List<Reservation> hostReservations = controller.selectReservationsForUser(testUser, true);
-		assertTrue(hostReservations.size() == 3);
-		for(Reservation reservation : hostReservations){
-			assertTrue(reservation.getParticipantList().isEmpty());
-			assertTrue(reservation.getHostList().size() == 1);
-			assertTrue(reservation.getHostList().get(0).getUserID() == testUser.getUserID());
-		}
-		
-		List<Reservation> participantReservations = controller.selectReservationsForUser(testUser, false);
-		assertTrue(participantReservations.size() == 2);
-		for(Reservation reservation : participantReservations){
-			assertTrue(reservation.getHostList().isEmpty());
-			assertTrue(reservation.getParticipantList().size() == 1);
-			assertTrue(reservation.getParticipantList().get(0).getUserID() == testUser.getUserID());
-		}
-		// Delete reservations
-		for(Reservation reservation : controller.selectReservationsForUser(testUser, true)){
-			assertTrue(controller.deleteReservation(reservation.getReservationID()));
-		}
-		for(Reservation reservation : controller.selectReservationsForUser(testUser, false)){
-			assertTrue(controller.deleteReservation(reservation.getReservationID()));
-		}
-		// Delete room
-		assertTrue(controller.deleteRoom(testRoom.getRoomID()));
-		// Delete test user
-		assertTrue(controller.deleteUser(testUser.getUserID()));
-	}
+//	@Test
+//	public void TestselectReservationsForUser(){
+//		DBController controller = DBController.getInstance();
+//		// Insert test user
+//		controller.insertNewUser("fTest", "lTest", "eTest", "testUsername1", "pw", null, null);
+//		User testUser = controller.selectUserBy(Table_User.COLUMN_USERNAME, "testUsername1").get(0);
+//		// Insert test room
+//		controller.insertNewRoom(999, "Test Room", 15);
+//		Room testRoom = controller.selectRoomBy(Table_Room.COLUMN_ROOMNUMBER, 999).get(0);
+//		// Insert test reservations for test user
+//		Timestamp startDate = Timestamp.valueOf("2016-12-08 08:00:00.000000");
+//		Timestamp endDate = Timestamp.valueOf("2016-12-08 08:00:00.000000");
+//		ArrayList<User> hosts = new ArrayList<User>();
+//		hosts.add(testUser);
+//		// Insert 3 reservations in which the test user is a host
+//		controller.insertNewReservation(startDate, endDate, testRoom, hosts, null, "Test Reservation 777", "Test Description 777");
+//		controller.insertNewReservation(startDate, endDate, testRoom, hosts, null, "Test Reservation 888", "Test Description 888");
+//		controller.insertNewReservation(startDate, endDate, testRoom, hosts, null, "Test Reservation 999", "Test Description 999");
+//		// Insert 2 reservations in which the test user is only a participant
+//		controller.insertNewReservation(startDate, endDate, testRoom, null, hosts, "Test Reservation 888", "Test Description 888");
+//		controller.insertNewReservation(startDate, endDate, testRoom, null, hosts, "Test Reservation 999", "Test Description 999");
+//		
+//		List<Reservation> hostReservations = controller.selectReservationsForUser(testUser, true);
+//		assertTrue(hostReservations.size() == 3);
+//		for(Reservation reservation : hostReservations){
+//			assertTrue(reservation.getParticipantList().isEmpty());
+//			assertTrue(reservation.getHostList().size() == 1);
+//			assertTrue(reservation.getHostList().get(0).getUserID() == testUser.getUserID());
+//		}
+//		
+//		List<Reservation> participantReservations = controller.selectReservationsForUser(testUser, false);
+//		assertTrue(participantReservations.size() == 2);
+//		for(Reservation reservation : participantReservations){
+//			assertTrue(reservation.getHostList().isEmpty());
+//			assertTrue(reservation.getParticipantList().size() == 1);
+//			assertTrue(reservation.getParticipantList().get(0).getUserID() == testUser.getUserID());
+//		}
+//		// Delete reservations
+//		for(Reservation reservation : controller.selectReservationsForUser(testUser, true)){
+//			assertTrue(controller.deleteReservation(reservation.getReservationID()));
+//		}
+//		for(Reservation reservation : controller.selectReservationsForUser(testUser, false)){
+//			assertTrue(controller.deleteReservation(reservation.getReservationID()));
+//		}
+//		// Delete room
+//		assertTrue(controller.deleteRoom(testRoom.getRoomID()));
+//		// Delete test user
+//		assertTrue(controller.deleteUser(testUser.getUserID()));
+//	}
 	
 	@Test
 	public void testInsertNewRole(){

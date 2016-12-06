@@ -10,8 +10,19 @@ package ch.bfh.ti.soed.hs16.srs.purple.view;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+
+import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController;
+import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController.Table_Room;
+import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController.Table_User;
+import ch.bfh.ti.soed.hs16.srs.purple.controller.ReservationController;
+import ch.bfh.ti.soed.hs16.srs.purple.model.Reservation;
+import ch.bfh.ti.soed.hs16.srs.purple.model.Role;
+import ch.bfh.ti.soed.hs16.srs.purple.model.Room;
+import ch.bfh.ti.soed.hs16.srs.purple.model.User;
+import ch.bfh.ti.soed.hs16.srs.purple.util.ReservationAction;
 
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Button;
@@ -31,17 +42,7 @@ import com.vaadin.ui.components.calendar.CalendarComponentEvents.EventClick;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents.EventClickHandler;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents.RangeSelectEvent;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents.RangeSelectHandler;
-import com.vaadin.ui.components.calendar.event.BasicEvent;
-
-import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController;
-import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController.Table_Room;
-import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController.Table_User;
-import ch.bfh.ti.soed.hs16.srs.purple.controller.ReservationController;
-import ch.bfh.ti.soed.hs16.srs.purple.model.Reservation;
-import ch.bfh.ti.soed.hs16.srs.purple.model.Role;
-import ch.bfh.ti.soed.hs16.srs.purple.model.Room;
-import ch.bfh.ti.soed.hs16.srs.purple.model.User;
-import ch.bfh.ti.soed.hs16.srs.purple.util.ReservationAction;
+import com.vaadin.ui.components.calendar.event.CalendarEvent;
 
 public class ReservationView implements ViewTemplate {
 
@@ -49,8 +50,7 @@ public class ReservationView implements ViewTemplate {
 	
 	// membervariables
 	private List<User> participant, hostList;
-	private ClickListener clSaveButton;
-	private ClickListener clDeleteButton;
+	private ClickListener clButton;
 	private Reservation res;
 	private ReservationAction reservationAction = ReservationAction.NONE;
 
@@ -63,6 +63,7 @@ public class ReservationView implements ViewTemplate {
 	private TextField description;
 	private ListSelect hosts;
 	private ListSelect participantList;
+	private Button saveButton, deleteButton;
 	private Window popUpWindow;
 	private VerticalLayout layout = new VerticalLayout();
 	
@@ -126,129 +127,49 @@ public class ReservationView implements ViewTemplate {
 			public void rangeSelect(RangeSelectEvent event) {
 				reservationAction = ReservationAction.INSERT;
 				System.out.println("Range selected");
-				final VerticalLayout reservationLayout = new VerticalLayout();
-				reservationLayout.setMargin(true);
-				popUpWindow = new Window();
-				popUpWindow.center();
-				popUpWindow.setModal(true);
-				startDate = new DateField("Startdatum", event.getStart());
-				startDate.setLocale(VaadinSession.getCurrent().getLocale());
-				endDate = new DateField("Enddatum", event.getEnd());
-				endDate.setLocale(VaadinSession.getCurrent().getLocale());
-				title = new TextField("Titel");
-				description = new TextField("Beschreibung");
-				hosts = new ListSelect("Reservierender");
-				hosts.setMultiSelect(true);
-				hosts.clear();
-				for (int i = 0; i < hostList.size(); i++) {
-					hosts.addItem(i);
-					hosts.setItemCaption(i, hostList.get(i).getUsername());
-				}
-				hosts.select(0);
-				hosts.setRows(hostList.size() > 5 ? 5 : hostList.size());
-				participantList = new ListSelect("Teilnehmer");
-				participantList.setMultiSelect(true);
-				participantList.clear();
-				for (int i = 0; i < participant.size(); i++) {
-					participantList.addItem(i);
-					participantList.setItemCaption(i, participant.get(i).getUsername());
-				}
-				participantList.setRows(participant.size() > 5 ? 5 : participant.size());
-				Button saveButton = new Button("Speichern");
-				saveButton.addClickListener(clSaveButton);
-			//	Button deleteButton = new Button("Löschen");
-			//	deleteButton.addClickListener(clDeleteButton);
-				reservationLayout.addComponents(startDate, endDate, title, description, hosts, participantList,
-						saveButton);
-				popUpWindow.setContent(reservationLayout);
-				popUpWindow.setWidth("300px");
-				popUpWindow.setHeight("400px");
-				popUpWindow.setCaption("Neue Reservierung");
-				UI.getCurrent().addWindow(popUpWindow);
-				// cal.addEvent(new BasicEvent("Aebischers Wule", "Aebischer hat
-				// immer eine Wule!", event.getStart()));
+				
 			}
 		});
 
-		this.clSaveButton = new ClickListener() {
+		clButton = new ClickListener() {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Timestamp startTime = new Timestamp(startDate.getValue().getTime());
-				Timestamp endTime = new Timestamp(endDate.getValue().getTime());
-				Room room = DBController.getInstance().selectRoomBy(Table_Room.COLUMN_ROOMNUMBER, 10).get(0);
-				List<User> hosts = new ArrayList<User>();
-				hosts.add(DBController.getInstance().selectUserBy(Table_User.COLUMN_USERNAME, "aep").get(0));
-				if(resCont.addReservation(new Reservation(-1, startTime, endTime, room, title.getValue(), description.getValue(), hosts))){
-					popUpWindow.close();
-					calendarUpdate();
+				if(event.getButton() == saveButton) //God save the queen
+				{
+					Timestamp startTime = new Timestamp(startDate.getValue().getTime());
+					Timestamp endTime = new Timestamp(endDate.getValue().getTime());
+					Room room = DBController.getInstance().selectRoomBy(Table_Room.COLUMN_ROOMNUMBER, 10).get(0); //TODO
+					List<User> hosts = new ArrayList<User>();
+					hosts.add(DBController.getInstance().selectUserBy(Table_User.COLUMN_USERNAME, "aep").get(0));
+					System.out.println(VaadinSession.getCurrent().getAttribute(USER_SESSION_ATTRIBUTE));
+					if(resCont.addReservation(new Reservation(-1, startTime, endTime, room, title.getValue(), description.getValue(), hosts))){
+						popUpWindow.close();
+						calendarUpdate();
+					}
 				}
-			}
-		};
-		
-		this.clDeleteButton = new ClickListener(){
-			@Override
-			public void buttonClick(ClickEvent event){
-				
-			//	resCont.deleteReservation(this.startDate, this.endDate, this.actRoom);
-				System.out.println("Löschen");//resCont.deleteReservation(resID);
-				System.out.println();
+				if(event.getButton() == deleteButton) //Move the reservation into the trash
+				{
+					Window sindSieSicherWindow = new Window();
+					sindSieSicherWindow.setCaption("Löschen bestätigen");
+					
+					resCont.deleteReservation(res.getReservationID());
+					cal.removeEvent(res);
+					res = null;
+					popUpWindow.close();
+				}
 			}
 		};
 		
 		cal.setHandler(new EventClickHandler() {
 			@Override
 			public void eventClick(EventClick event) {
-				BasicEvent e = (BasicEvent) event.getCalendarEvent();
+				Reservation e = (Reservation) event.getCalendarEvent();
 
 				// Do something with it
-			//	new Notification("Event clicked: " + e.getCaption(), e.getDescription()).show(Page.getCurrent());
+				//	new Notification("Event clicked: " + e.getCaption(), e.getDescription()).show(Page.getCurrent());
 				
-				
-			//	reservationAction = ReservationAction.INSERT;
-				System.out.println("Event Clicked");
-				final VerticalLayout reservationLayout = new VerticalLayout();
-				reservationLayout.setMargin(true);
-				Window popUpWindow1 = new Window();
-				popUpWindow1.center();
-				popUpWindow1.setModal(true);
-				startDate = new DateField("Startdatum", e.getStart());
-				startDate.setLocale(VaadinSession.getCurrent().getLocale());
-				endDate = new DateField("Enddatum", e.getEnd());
-				endDate.setLocale(VaadinSession.getCurrent().getLocale());
-				title = new TextField("Titel");
-				description = new TextField("Beschreibung");
-			/*	hosts = new ListSelect("Reservierender");
-				hosts.setMultiSelect(true);
-				hosts.clear();
-				for (int i = 0; i < hostList.size(); i++) {
-					hosts.addItem(i);
-					hosts.setItemCaption(i, hostList.get(i).getUsername());
-				}
-				hosts.select(0);
-				hosts.setRows(hostList.size() > 5 ? 5 : hostList.size());
-				participantList = new ListSelect("Teilnehmer");
-				participantList.setMultiSelect(true);
-				participantList.clear();
-				for (int i = 0; i < participant.size(); i++) {
-					participantList.addItem(i);
-					participantList.setItemCaption(i, participant.get(i).getUsername());
-				}
-				participantList.setRows(participant.size() > 5 ? 5 : participant.size());*/
-				Button saveButton = new Button("Speichern");
-				saveButton.addClickListener(clSaveButton);
-				Button deleteButton = new Button("Löschen");
-				deleteButton.addClickListener(clDeleteButton);
-				reservationLayout.addComponents(startDate, endDate,
-						saveButton, deleteButton);
-				popUpWindow1.setContent(reservationLayout);
-				popUpWindow1.setWidth("300px");
-				popUpWindow1.setHeight("400px");
-				popUpWindow1.setCaption("Neue Reservierung");
-				UI.getCurrent().addWindow(popUpWindow1);
-				// cal.addEvent(new BasicEvent("Aebischers Wule", "Aebischer hat
-				// immer eine Wule!", event.getStart()));
-				
+				showPopup(e);
 			}
 		});
 
@@ -257,6 +178,60 @@ public class ReservationView implements ViewTemplate {
 		this.layout.addComponents(cal);
 		this.layout.setMargin(true);
 		this.layout.setSpacing(true);
+	}
+	
+	/**
+	 * Shows the popup window where a reservation can be modified, deleted or inserted
+	 * @param res The Reservation Object (for a new reservation, fill the startDate with the current Timestamp!)
+	 */
+	private void showPopup(Reservation res)
+	{
+		this.res = res; //Update the member
+		final VerticalLayout reservationLayout = new VerticalLayout();
+		reservationLayout.setMargin(true);
+		popUpWindow = new Window();
+		popUpWindow.center();
+		popUpWindow.setModal(true);
+		startDate = new DateField("Startdatum");
+		startDate.setLocale(VaadinSession.getCurrent().getLocale());
+		startDate.setValue(new Date(res.getStartDate().getTime()));
+		endDate = new DateField("Enddatum");
+		endDate.setValue(new Date(res.getEndDate().getTime()));
+		endDate.setLocale(VaadinSession.getCurrent().getLocale());
+		title = new TextField("Titel");
+		title.setValue(res.getTitle());
+		description = new TextField("Beschreibung");
+		description.setValue(res.getDescription());
+		hosts = new ListSelect("Reservierender");
+		hosts.setMultiSelect(true);
+		hosts.clear();
+		for (int i = 0; i < hostList.size(); i++) {
+			hosts.addItem(i);
+			hosts.setItemCaption(i, hostList.get(i).getUsername());
+		}
+		hosts.select(0);
+		hosts.setRows(hostList.size() > 5 ? 5 : hostList.size());
+		participantList = new ListSelect("Teilnehmer");
+		participantList.setMultiSelect(true);
+		participantList.clear();
+		for (int i = 0; i < participant.size(); i++) {
+			participantList.addItem(i);
+			participantList.setItemCaption(i, participant.get(i).getUsername());
+		}
+		participantList.setRows(participant.size() > 5 ? 5 : participant.size());
+		saveButton = new Button("Speichern");
+		saveButton.addClickListener(clButton);
+		deleteButton = new Button("Löschen");
+		deleteButton.addClickListener(clButton);
+		reservationLayout.addComponents(startDate, endDate, title, description, hosts, participantList,
+				saveButton);
+		popUpWindow.setContent(reservationLayout);
+		popUpWindow.setWidth("300px");
+		popUpWindow.setHeight("400px");
+		popUpWindow.setCaption("Neue Reservierung");
+		UI.getCurrent().addWindow(popUpWindow);
+		// cal.addEvent(new BasicEvent("Aebischers Wule", "Aebischer hat
+		// immer eine Wule!", event.getStart()));
 	}
 	
 	/**
@@ -305,9 +280,13 @@ public class ReservationView implements ViewTemplate {
 	 * Updates the calendar
 	 */
 	public void calendarUpdate(){
+		List<CalendarEvent> tmp = cal.getEvents(cal.getStartDate(), cal.getEndDate());
+		for(int i = 0;i < tmp.size();i++)
+			cal.removeEvent(tmp.get(i));
 		List<Reservation> res = resCont.getAllReservations();
 		for(int i = 0; i < res.size(); i++){
-			this.cal.addEvent(new BasicEvent(res.get(i).getTitle(), res.get(i).getDescription(), res.get(i).getStartDate(), res.get(i).getEndDate()));
+			//cal.addEvent(new BasicEvent(res.get(i).getTitle(), res.get(i).getDescription(), res.get(i).getStartDate(), res.get(i).getEndDate()));
+			cal.addEvent(res.get(i));
 		}
 	}
 	
