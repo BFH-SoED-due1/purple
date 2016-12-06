@@ -10,9 +10,35 @@ package ch.bfh.ti.soed.hs16.srs.purple.view;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+
+import org.vaadin.dialogs.ConfirmDialog;
+
+import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.datefield.Resolution;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Calendar;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.DateField;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.ListSelect;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.components.calendar.CalendarComponentEvents.EventClick;
+import com.vaadin.ui.components.calendar.CalendarComponentEvents.EventClickHandler;
+import com.vaadin.ui.components.calendar.CalendarComponentEvents.RangeSelectEvent;
+import com.vaadin.ui.components.calendar.CalendarComponentEvents.RangeSelectHandler;
+import com.vaadin.ui.components.calendar.event.CalendarEvent;
 
 import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController;
 import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController.Table_Room;
@@ -23,26 +49,6 @@ import ch.bfh.ti.soed.hs16.srs.purple.model.Role;
 import ch.bfh.ti.soed.hs16.srs.purple.model.Room;
 import ch.bfh.ti.soed.hs16.srs.purple.model.User;
 import ch.bfh.ti.soed.hs16.srs.purple.util.ReservationAction;
-
-import com.vaadin.server.VaadinSession;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Calendar;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.DateField;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.ListSelect;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.components.calendar.CalendarComponentEvents.EventClick;
-import com.vaadin.ui.components.calendar.CalendarComponentEvents.EventClickHandler;
-import com.vaadin.ui.components.calendar.CalendarComponentEvents.RangeSelectEvent;
-import com.vaadin.ui.components.calendar.CalendarComponentEvents.RangeSelectHandler;
-import com.vaadin.ui.components.calendar.event.CalendarEvent;
 
 public class ReservationView implements ViewTemplate {
 
@@ -60,7 +66,7 @@ public class ReservationView implements ViewTemplate {
 	private DateField startDate;
 	private DateField endDate;
 	private TextField title;
-	private TextField description;
+	private TextArea description;
 	private ListSelect hosts;
 	private ListSelect participantList;
 	private Button saveButton, deleteButton;
@@ -74,8 +80,7 @@ public class ReservationView implements ViewTemplate {
 	 */
 	@SuppressWarnings("serial")
 	public ReservationView() {
-		// Nur für Testzwecke
-		// TODO: Read this from db
+		// TODO: Vom Kontroller nehmen
 		ArrayList<User> users = new ArrayList<User>();
 		users.add(new User(3, "Gestach", "Lukas", "lukas@gestach.ch", "gestachl", "passwort", new Role(1, "Admin")));
 		users.add(new User(4, "Aebischer", "Patrik", "ges@gestach.ch", "aebip1", "passwort", new Role(1, "Wollschaf")));
@@ -109,7 +114,6 @@ public class ReservationView implements ViewTemplate {
 	public void initView() {
 
 		this.siteTitle.addStyleName("h2");
-	//	final Calendar cal = new Calendar();
 		GregorianCalendar start = new GregorianCalendar();
 		GregorianCalendar end = new GregorianCalendar();
 		end.add(GregorianCalendar.DAY_OF_YEAR, 40);
@@ -125,9 +129,7 @@ public class ReservationView implements ViewTemplate {
 
 			@Override
 			public void rangeSelect(RangeSelectEvent event) {
-				reservationAction = ReservationAction.INSERT;
-				System.out.println("Range selected");
-				
+				showPopup(new Reservation(-1, new Timestamp(event.getStart().getTime()), new Timestamp(event.getEnd().getTime()), new Room(0, 400, "TestRoom", 160), "", ""));
 			}
 		});
 
@@ -137,12 +139,16 @@ public class ReservationView implements ViewTemplate {
 			public void buttonClick(ClickEvent event) {
 				if(event.getButton() == saveButton) //God save the queen
 				{
+					if(title.isReadOnly())
+					{
+						setEditable(true);
+						return;
+					}
 					Timestamp startTime = new Timestamp(startDate.getValue().getTime());
 					Timestamp endTime = new Timestamp(endDate.getValue().getTime());
-					Room room = DBController.getInstance().selectRoomBy(Table_Room.COLUMN_ROOMNUMBER, 10).get(0); //TODO
+					Room room = DBController.getInstance().selectRoomBy(Table_Room.COLUMN_ROOMNUMBER, 10).get(0); //TODO vom Kontroller nehmen
 					List<User> hosts = new ArrayList<User>();
-					hosts.add(DBController.getInstance().selectUserBy(Table_User.COLUMN_USERNAME, "aep").get(0));
-					System.out.println(VaadinSession.getCurrent().getAttribute(USER_SESSION_ATTRIBUTE));
+					hosts.add(DBController.getInstance().selectUserBy(Table_User.COLUMN_USERNAME, "aep").get(0)); //TODO vom Kontroller nehmen
 					if(resCont.addReservation(new Reservation(-1, startTime, endTime, room, title.getValue(), description.getValue(), hosts))){
 						popUpWindow.close();
 						calendarUpdate();
@@ -150,13 +156,20 @@ public class ReservationView implements ViewTemplate {
 				}
 				if(event.getButton() == deleteButton) //Move the reservation into the trash
 				{
-					Window sindSieSicherWindow = new Window();
-					sindSieSicherWindow.setCaption("Löschen bestätigen");
-					
-					resCont.deleteReservation(res.getReservationID());
-					cal.removeEvent(res);
-					res = null;
-					popUpWindow.close();
+					//Confirm
+					ConfirmDialog.show(UI.getCurrent(), "Löschen bestätigen", "Die Reservation wirklich löschen?", "Ja", "Abbrechen", new ConfirmDialog.Listener() {
+						
+						@Override
+						public void onClose(ConfirmDialog arg0) {
+							if(arg0.isConfirmed())
+							{
+								resCont.deleteReservation(res.getReservationID());
+								cal.removeEvent(res);
+								res = null;
+								popUpWindow.close();
+							}
+						}
+					});
 				}
 			}
 		};
@@ -164,17 +177,15 @@ public class ReservationView implements ViewTemplate {
 		cal.setHandler(new EventClickHandler() {
 			@Override
 			public void eventClick(EventClick event) {
+				//show the reservation details if clicked on it
 				Reservation e = (Reservation) event.getCalendarEvent();
 
-				// Do something with it
-				//	new Notification("Event clicked: " + e.getCaption(), e.getDescription()).show(Page.getCurrent());
-				
 				showPopup(e);
 			}
 		});
 
 		calendarUpdate();
-		this.layout.addComponent(this.siteTitle);
+		this.layout.addComponent(siteTitle);
 		this.layout.addComponents(cal);
 		this.layout.setMargin(true);
 		this.layout.setSpacing(true);
@@ -187,51 +198,109 @@ public class ReservationView implements ViewTemplate {
 	private void showPopup(Reservation res)
 	{
 		this.res = res; //Update the member
-		final VerticalLayout reservationLayout = new VerticalLayout();
-		reservationLayout.setMargin(true);
+		boolean newRes = res.getReservationID() > 0 ? false : true;
+		final GridLayout gridLayout = new GridLayout(3, 5);
 		popUpWindow = new Window();
 		popUpWindow.center();
 		popUpWindow.setModal(true);
 		startDate = new DateField("Startdatum");
 		startDate.setLocale(VaadinSession.getCurrent().getLocale());
-		startDate.setValue(new Date(res.getStartDate().getTime()));
+		startDate.setDateFormat("dd.MM.yyyy HH:mm");
+		startDate.setValue(res.getStart());
+		startDate.setResolution(Resolution.HOUR);
 		endDate = new DateField("Enddatum");
-		endDate.setValue(new Date(res.getEndDate().getTime()));
+		endDate.setValue(res.getEnd());
+		endDate.setDateFormat("dd.MM.yyyy HH:mm");
 		endDate.setLocale(VaadinSession.getCurrent().getLocale());
+		endDate.setResolution(Resolution.HOUR);
 		title = new TextField("Titel");
 		title.setValue(res.getTitle());
-		description = new TextField("Beschreibung");
+		title.setWidth(100, Unit.PERCENTAGE);
+		description = new TextArea("Beschreibung");
 		description.setValue(res.getDescription());
+		description.setRows(3);
+		description.setWidth(100, Unit.PERCENTAGE);
 		hosts = new ListSelect("Reservierender");
 		hosts.setMultiSelect(true);
 		hosts.clear();
+		List<User> resHosts = null;
+		if(!newRes)
+			resHosts = res.getHostList();
 		for (int i = 0; i < hostList.size(); i++) {
 			hosts.addItem(i);
 			hosts.setItemCaption(i, hostList.get(i).getUsername());
+			if(!newRes && resHosts != null)
+				if(contain(hostList.get(i), resHosts))
+					hosts.select(i);
 		}
 		hosts.select(0);
 		hosts.setRows(hostList.size() > 5 ? 5 : hostList.size());
 		participantList = new ListSelect("Teilnehmer");
 		participantList.setMultiSelect(true);
 		participantList.clear();
+		List<User> resPart = null;
+		if(!newRes)
+			resPart = res.getParticipantList();
 		for (int i = 0; i < participant.size(); i++) {
 			participantList.addItem(i);
 			participantList.setItemCaption(i, participant.get(i).getUsername());
+			if(!newRes && resPart != null)
+				if(contain(hostList.get(i), resPart))
+					hosts.select(i);
 		}
 		participantList.setRows(participant.size() > 5 ? 5 : participant.size());
 		saveButton = new Button("Speichern");
 		saveButton.addClickListener(clButton);
 		deleteButton = new Button("Löschen");
 		deleteButton.addClickListener(clButton);
-		reservationLayout.addComponents(startDate, endDate, title, description, hosts, participantList,
-				saveButton);
-		popUpWindow.setContent(reservationLayout);
-		popUpWindow.setWidth("300px");
-		popUpWindow.setHeight("400px");
-		popUpWindow.setCaption("Neue Reservierung");
+		deleteButton.setVisible(res.getReservationID() > 0 ? true : false);
+		if(!newRes)
+			setEditable(false);
+		gridLayout.addComponent(startDate, 0, 0);
+		gridLayout.addComponent(endDate, 0, 1);
+		gridLayout.addComponent(hosts, 1, 0, 1, 2);
+		gridLayout.addComponent(participantList, 2, 0, 2, 2);
+		gridLayout.addComponent(title, 0, 2);
+		gridLayout.addComponent(description, 0, 3, 1, 3);
+		gridLayout.addComponent(saveButton, 0, 4);
+		gridLayout.addComponent(deleteButton, 1, 4);
+		gridLayout.setSpacing(true);
+		gridLayout.setMargin(new MarginInfo(false, false, false, true));
+		gridLayout.setWidth(100, Unit.PERCENTAGE);
+		popUpWindow.setContent(gridLayout);
+		popUpWindow.setWidth("600px");
+		popUpWindow.setHeight("450px");
+		popUpWindow.setCaption(res.getReservationID() > 0 ? "Reservierungsdetails" : "Neue Reservierung");
 		UI.getCurrent().addWindow(popUpWindow);
 		// cal.addEvent(new BasicEvent("Aebischers Wule", "Aebischer hat
 		// immer eine Wule!", event.getStart()));
+	}
+	
+	/**
+	 * compare the userList in the reservation with a single user
+	 * @param inList user for comparing
+	 * @param inRes userList of users in the reservation
+	 * @return true if the user is in the userList, false otherwise
+	 */
+	private boolean contain(User inList, List<User> inRes)
+	{
+		for(int x = 0;x < inRes.size();x++)
+			if(inRes.contains(inList))
+				return true;
+		return false;
+	}
+	
+	private void setEditable(boolean editable)
+	{
+		saveButton.setCaption(editable ? "Speichern" : "Bearbeiten");
+		popUpWindow.setCaption(editable ? "Reservierung bearbeiten" : "Reservierungsdetails");
+		editable = !editable;
+		title.setReadOnly(editable);
+		description.setReadOnly(editable);
+		startDate.setReadOnly(editable);
+		endDate.setReadOnly(editable);
+		participantList.setReadOnly(editable);
+		hosts.setReadOnly(editable);
 	}
 	
 	/**
