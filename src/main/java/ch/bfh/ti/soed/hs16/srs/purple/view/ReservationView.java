@@ -15,6 +15,16 @@ import java.util.List;
 
 import org.vaadin.dialogs.ConfirmDialog;
 
+import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController;
+import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController.Table_Room;
+import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController.Table_User;
+import ch.bfh.ti.soed.hs16.srs.purple.controller.ReservationController;
+import ch.bfh.ti.soed.hs16.srs.purple.model.Reservation;
+import ch.bfh.ti.soed.hs16.srs.purple.model.Role;
+import ch.bfh.ti.soed.hs16.srs.purple.model.Room;
+import ch.bfh.ti.soed.hs16.srs.purple.model.User;
+import ch.bfh.ti.soed.hs16.srs.purple.util.ReservationAction;
+
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
@@ -39,16 +49,6 @@ import com.vaadin.ui.components.calendar.CalendarComponentEvents.EventClickHandl
 import com.vaadin.ui.components.calendar.CalendarComponentEvents.RangeSelectEvent;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents.RangeSelectHandler;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
-
-import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController;
-import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController.Table_Room;
-import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController.Table_User;
-import ch.bfh.ti.soed.hs16.srs.purple.controller.ReservationController;
-import ch.bfh.ti.soed.hs16.srs.purple.model.Reservation;
-import ch.bfh.ti.soed.hs16.srs.purple.model.Role;
-import ch.bfh.ti.soed.hs16.srs.purple.model.Room;
-import ch.bfh.ti.soed.hs16.srs.purple.model.User;
-import ch.bfh.ti.soed.hs16.srs.purple.util.ReservationAction;
 
 public class ReservationView implements ViewTemplate {
 
@@ -78,7 +78,6 @@ public class ReservationView implements ViewTemplate {
 	/**
 	 * Constructor: ReservationView
 	 */
-	@SuppressWarnings("serial")
 	public ReservationView() {
 		// TODO: Vom Kontroller nehmen
 		ArrayList<User> users = new ArrayList<User>();
@@ -313,39 +312,6 @@ public class ReservationView implements ViewTemplate {
 	}
 
 	/**
-	 * Rückgabeparameter vom Kontroller an die View, damit die geeignete Ausgabe
-	 * für den Benutzer ausgegeben werden kann
-	 *
-	 * @param status - Der Status der SQL Abfrage
-	 */
-	public void setStatus(boolean status) {
-		// Statusmeldung vom Controller
-		// Fenster schliessen oä. bei Success, Fehlermeldung anzeigen sonst
-		// TODO
-	}
-
-	/**
-	 * Gibt die Aktion zurück, für welche ein ButtonClickEvent ausgelöst wurde
-	 *
-	 * @return Die Aktion
-	 */
-	public ReservationAction getAction() {
-		return reservationAction;
-	}
-
-	/**
-	 * Die Daten zum ButtonClickEvent werden als Reservation Objekt ausgegeben
-	 *
-	 * @return Die Daten zur Reservation
-	 */
-	public Reservation getReservation() {
-		// TODO
-		// res = new Reservation(0, startDate, endDate, room, title,
-		// description)
-		return res;
-	}
-
-	/**
 	 * Updates the calendar
 	 */
 	public void calendarUpdate(){
@@ -357,14 +323,5 @@ public class ReservationView implements ViewTemplate {
 			//cal.addEvent(new BasicEvent(res.get(i).getTitle(), res.get(i).getDescription(), res.get(i).getStartDate(), res.get(i).getEndDate()));
 			cal.addEvent(res.get(i));
 		}
-	}
-	
-	/**
-	 * Die Teilehmerliste setzen (falls nicht schon im Konstruktor geschehen)
-	 *
-	 * @param participant - A list of participants
-	 */
-	public void setParticipant(List<User> participant) {
-		this.participant = participant;
 	}
 }
