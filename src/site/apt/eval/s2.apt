@@ -3,7 +3,7 @@
 		-------------
 		Eric Dubuis
 		-------------
-		October 25, 2016
+		October 25, 2016; updated December 10, 2016
 
 Deliverable 2
 
@@ -97,6 +97,49 @@ example, in the Sprint Plan document, however.)
 	50 points at most per team member are attributed to this deliverable. Points may
 	not be equally distributed among team members. (However, this is the goal.)
 
+*-------------------------------------------+---------------*-----------------*
+| Item										| Max. points	| Points received |
+*-------------------------------------------+---------------*-----------------*
+| Product backlog items at the beginning\	| 		 6		| 		 6		  |
+| COMMENTS:\								| 				| 				  |
+| - 										| 				| 				  |
+*-------------------------------------------+---------------*-----------------*
+| Sprint backlog items / tasks\				| 		 6		| 		 6		  |
+| COMMENTS:\								| 				| 				  |
+| -											| 				| 				  |
+*-------------------------------------------+---------------*-----------------*
+| List of finished print backlog items\		| 		 6		| 		 6		  |
+| COMMENTS:\								| 				| 				  |
+| - Okay									| 				| 				  |
+*-------------------------------------------+---------------*-----------------*
+| Production classes and interfaces\		| 		 6		| 		 5		  |
+| COMMENTS:\								| 				| 				  |
+| - Unused fields\ 							| 				| 				  |
+| - Rest: okay 								| 				| 				  |
+*-------------------------------------------+---------------*-----------------*
+| Working infrastructure\					| 		 8		| 		 8		  |
+| COMMENTS:\								| 				| 			  	  |
+| - UI: progress okay 						| 				| 				  |
+*-------------------------------------------+---------------*-----------------*
+| JUnit tests, code coverage\				| 		 8		| 		 8		  |
+| COMMENTS:\								| 				| 			  	  |
+| - Good 									| 				| 				  |
+*-------------------------------------------+---------------*-----------------*
+| Checkstyle report\						| 		 6		| 		 6		  |
+| COMMENTS:\								| 				| 			  	  |
+| - Okay									| 				| 				  |
+*-------------------------------------------+---------------*-----------------*
+| Update of existing documents, if any\		| 		 4		| 		 4		  |
+| COMMENTS:\								| 				| 			  	  |
+| - Okay									| 				| 				  |
+*-------------------------------------------+---------------*-----------------*
+| Miscellaneous\							| 				| 		 		  |
+| COMMENTS:\								| 				| 			  	  |
+| - None									| 				| 				  |
+*-------------------------------------------+---------------*-----------------*
+| Total										| 		50		| 		49		  |
+*-------------------------------------------+---------------*-----------------*
+Distribution of points for this deliverable.
 
 
 * Deadline
