@@ -188,6 +188,7 @@ public class DBController {
 	}
 
 	// --- INSERT METHODS ---
+	// TODO: insert only reservation and assign it to user
 	public boolean insertNewReservation(Timestamp startDate, Timestamp endDate, Room room, List<User> hosts, List<User> participants, String title, String description){
 		if(room == null) return false;
 		String insertReservation = "INSERT INTO reservation(IDReservation, StartDate, EndDate, RoomID, Title, Description) "

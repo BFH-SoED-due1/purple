@@ -18,7 +18,6 @@ import java.util.List;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController;
@@ -42,8 +41,7 @@ public class DBControllerTest {
 	}
 
 	// --- SELECT ---
-	// @Test
-	@Ignore // TODO Enable test
+	@Test 
 	public void TestselectReservationsForUser() {
 		DBController controller = DBController.getInstance();
 		// Insert test user
@@ -58,24 +56,24 @@ public class DBControllerTest {
 		ArrayList<User> hosts = new ArrayList<User>();
 		hosts.add(testUser);
 		// Insert 3 reservations in which the test user is a host
-		controller.insertNewReservation(startDate, endDate, testRoom, hosts, null, "Test Reservation 777",
-				"Test Description 777");
-		controller.insertNewReservation(startDate, endDate, testRoom, hosts, null, "Test Reservation 888",
-				"Test Description 888");
-		controller.insertNewReservation(startDate, endDate, testRoom, hosts, null, "Test Reservation 999",
-				"Test Description 999");
+		controller.insertNewReservation(startDate, endDate, testRoom, hosts, null, "Test Reservation Host 1",
+				"Test Description Host 1");
+		controller.insertNewReservation(startDate, endDate, testRoom, hosts, null, "Test Reservation Host 2",
+				"Test Description Host 2");
+		controller.insertNewReservation(startDate, endDate, testRoom, hosts, null, "Test Reservation Host 3",
+				"Test Description Host 3");
 		// Insert 2 reservations in which the test user is only a participant
-		controller.insertNewReservation(startDate, endDate, testRoom, null, hosts, "Test Reservation 888",
-				"Test Description 888");
-		controller.insertNewReservation(startDate, endDate, testRoom, null, hosts, "Test Reservation 999",
-				"Test Description 999");
+		controller.insertNewReservation(startDate, endDate, testRoom, null, hosts, "Test Reservation Participant 1",
+				"Test Description Participant 1");
+		controller.insertNewReservation(startDate, endDate, testRoom, null, hosts, "Test Reservation Participant 2",
+				"Test Description Participant 2");
 
 		List<Reservation> hostReservations = controller.selectReservationsForUser(testUser, true);
 		assertTrue(hostReservations.size() == 3);
 		for (Reservation reservation : hostReservations) {
 			assertTrue(reservation.getParticipantList().isEmpty());
 			assertTrue(reservation.getHostList().size() == 1);
-			assertTrue(reservation.getHostList().get(0).getUserID() == testUser.getUserID());
+			assertTrue(reservation.getHostList().get(0).getUserID().equals(testUser.getUserID()));
 		}
 
 		List<Reservation> participantReservations = controller.selectReservationsForUser(testUser, false);
@@ -83,7 +81,7 @@ public class DBControllerTest {
 		for (Reservation reservation : participantReservations) {
 			assertTrue(reservation.getHostList().isEmpty());
 			assertTrue(reservation.getParticipantList().size() == 1);
-			assertTrue(reservation.getParticipantList().get(0).getUserID() == testUser.getUserID());
+			assertTrue(reservation.getParticipantList().get(0).getUserID().equals(testUser.getUserID()));
 		}
 		// Delete reservations
 		for (Reservation reservation : controller.selectReservationsForUser(testUser, true)) {
@@ -275,17 +273,21 @@ public class DBControllerTest {
 	@Test
 	public void testSelectUserByPassword() {
 		DBController controller = DBController.getInstance();
-		List<User> users = controller.selectUserBy(Table_User.COLUMN_PASSWORD, "pTest");
+		controller.insertNewUser("ftestSelectUserByPasswordTest", "ltestSelectUserByPasswordTest", "eftestSelectUserByPasswordTest", "utestSelectUserByPasswordTest", "ptestSelectUserByPasswordTest", null, null);
+		List<User> users = controller.selectUserBy(Table_User.COLUMN_PASSWORD, "ptestSelectUserByPasswordTest");
 
 		boolean hasPassword = false;
+		User testUser = null;
 		for (User user : users) {
-			if (user.getPassword().equals("pTest")) {
+			if (user.getPassword().equals("ptestSelectUserByPasswordTest")) {
 				hasPassword = true;
 				assertTrue(user.getClass().equals(User.class));
 				assertTrue(user.getRole() == null);
+				testUser = user;
 			}
 		}
 		assertTrue(hasPassword);
+		controller.deleteUser(testUser.getUserID());
 	}
 
 	@Test
@@ -331,22 +333,21 @@ public class DBControllerTest {
 		assertTrue(users.size() >= 4);
 	}
 
-	// @Test
-	@Ignore // TODO Enable test
+	@Test
 	public void testSelectReservationByID() {
 		DBController controller = DBController.getInstance();
-		List<Reservation> reservations = controller.selectReservationBy(Table_Reservation.COLUMN_ID, 1);
+		List<Reservation> reservations = controller.selectReservationBy(Table_Reservation.COLUMN_ID, 679);
 
 		assertTrue(reservations.size() == 1);
-		Timestamp toCompareStart = Timestamp.valueOf("2016-12-05 08:00:00.000000");
-		Timestamp toCompareEnd = Timestamp.valueOf("2016-12-05 12:00:00.000000");
+		Timestamp toCompareStart = Timestamp.valueOf("2016-12-16 00:00:00.000000");
+		Timestamp toCompareEnd = Timestamp.valueOf("2016-12-16 02:00:00.000000 	");
 		assertTrue(reservations.get(0).getStartDate().getTime() == toCompareStart.getTime());
 		assertTrue(reservations.get(0).getEndDate().getTime() == toCompareEnd.getTime());
 		assertTrue(reservations.get(0).getRoom().getRoomID() == 1);
-		assertTrue(reservations.get(0).getHostList().size() == 2);
-		assertTrue(reservations.get(0).getParticipantList().size() == 2);
-		assertTrue(reservations.get(0).getTitle().equals("Reservation 1"));
-		assertTrue(reservations.get(0).getDescription().equals("Description 1"));
+		assertTrue(reservations.get(0).getHostList().size() == 0);
+		assertTrue(reservations.get(0).getParticipantList().size() == 0);
+		assertTrue(reservations.get(0).getTitle().equals("testSelectReservationByID"));
+		assertTrue(reservations.get(0).getDescription().equals("DO NOT DELETE -> USED IN TESTS"));
 	}
 
 	@Test
