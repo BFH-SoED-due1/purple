@@ -10,6 +10,7 @@ package ch.bfh.ti.soed.hs16.srs.purple.controller;
 import java.util.List;
 
 import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController.Table_Reservation;
+import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController.Table_Room;
 import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController.Table_User;
 import ch.bfh.ti.soed.hs16.srs.purple.model.Reservation;
 import ch.bfh.ti.soed.hs16.srs.purple.model.Room;
@@ -116,6 +117,11 @@ public class ReservationController {
 		
 	}
 	
+	public Room getRoom(int roomID)
+	{
+		return dbController.selectRoomBy(Table_Room.COLUMN_ID, roomID).get(0);
+	}
+	
 	/**
 	 * Get all rooms form the DB
 	 * @return List of all rooms
@@ -187,7 +193,7 @@ public class ReservationController {
 		
 		for (int i = 0; i < reservation.getParticipantList().size(); i++){
 			String message =	"Hallo " + reservation.getParticipantList().get(i).getUsername() + "<br>" + 
-								reservation.getHostList().get(0).getUsername() + " hat dich als Veranstalter für folgenden Termin hinzugefügt: <br>" + 
+								reservation.getHostList().get(0).getUsername() + " hat dich als Teilnehmer für folgenden Termin hinzugefügt: <br>" + 
 								"Thema: " + reservation.getTitle() + "<br>" +
 								"Raum: " + reservation.getRoom().getName() + "<br>" +
 								"Beginn: " + reservation.getStartDate().toString() + "<br>" +
