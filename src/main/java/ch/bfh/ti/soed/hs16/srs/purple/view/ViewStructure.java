@@ -37,10 +37,10 @@ import ch.bfh.ti.soed.hs16.srs.purple.controller.LoginController;
 public class ViewStructure extends UI {
 
 	// static
-	private static String OVERVIEW_TITLE = "Übersicht";
-	private static String RESERVATION_TITLE = "Reservation";
-	private static String[] MENU_ITEMS = { OVERVIEW_TITLE, RESERVATION_TITLE };
-	private static int MENU_HEIGHT = 35;
+	private final static String MENU_RESERVATION = "Reservation";
+	private final static String MENU_USER_PROFILE = "Benutzerprofil";
+	private static String[] MENU_ITEMS = { MENU_RESERVATION, MENU_USER_PROFILE };
+	private final static int MENU_HEIGHT = 35;
 
 	// member variables
 	private GridLayout fullSite = new GridLayout(2, 3);
@@ -55,11 +55,13 @@ public class ViewStructure extends UI {
 	private RegistrationView registrationView = new RegistrationView();
 	private LoginView loginView = new LoginView(this, loginController);
 	private ReservationView reservationView = new ReservationView();
+	private UserProfileView userProfileView = new UserProfileView();
 
 	/**
 	 * Function inits the components of the graphical userinterface (GUI).
 	 *
-	 * @param vaadinRequest - The vaadin request
+	 * @param vaadinRequest
+	 *            - The vaadin request
 	 */
 	@Override
 	protected void init(VaadinRequest vaadinRequest) {
@@ -70,9 +72,11 @@ public class ViewStructure extends UI {
 		this.contentPanel.setImmediate(true);
 		this.logo.addStyleName("logo");
 
-		initMenu();
 		this.reservationView.initView();
 		this.registrationView.initView();
+		this.userProfileView.initView();
+
+		initMenu();
 
 		if (this.loginController.isUserLoggedInOnSession()) {
 			this.menu.setVisible(true);
@@ -101,6 +105,7 @@ public class ViewStructure extends UI {
 
 		this.fullSite.setSizeFull();
 		this.setContent(this.fullSite);
+
 	}
 
 	/**
@@ -111,8 +116,16 @@ public class ViewStructure extends UI {
 		MenuBar.Command menuSelected = new MenuBar.Command() {
 			@Override
 			public void menuSelected(MenuBar.MenuItem selectedItem) {
-				System.out.println("Menu selected: " + selectedItem.getText());
-				// TODO:Menu is clicked
+
+				switch (selectedItem.getText()) {
+				case (MENU_RESERVATION):
+					setContent(ViewStructure.this.reservationView);
+					break;
+				case (MENU_USER_PROFILE):
+					setContent(ViewStructure.this.userProfileView);
+					break;
+
+				}
 			}
 		};
 
@@ -125,10 +138,13 @@ public class ViewStructure extends UI {
 	}
 
 	/**
-	 * Function updates the login/logout part of the view. The menu will also be removed on logout and added on login.
+	 * Function updates the login/logout part of the view. The menu will also be
+	 * removed on logout and added on login.
 	 *
-	 * @param layout - The layout
-	 * @param loggedIn - logged in or not
+	 * @param layout
+	 *            - The layout
+	 * @param loggedIn
+	 *            - logged in or not
 	 */
 	public void refreshLoginLogoutContent(HorizontalLayout layout, boolean loggedIn) {
 		if (loggedIn) {

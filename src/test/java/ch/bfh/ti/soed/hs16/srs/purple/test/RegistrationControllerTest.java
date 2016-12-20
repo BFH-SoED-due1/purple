@@ -19,8 +19,6 @@ import ch.bfh.ti.soed.hs16.srs.purple.model.Role;
 import ch.bfh.ti.soed.hs16.srs.purple.model.User;
 import ch.bfh.ti.soed.hs16.srs.purple.view.RegistrationView;
 
-
-
 public class RegistrationControllerTest {
 
 	@Test
@@ -32,14 +30,15 @@ public class RegistrationControllerTest {
 		RegistrationController rc = new RegistrationController(registrationView);
 		assertNotNull(rc);
 	}
-	
+
 	@Test
-	public void testRegisterNewUser(){
+	public void testRegisterNewUser() {
 		RegistrationView registrationView = new RegistrationView();
 		DBController dbCont = DBController.getInstance();
 		RegistrationController rc = new RegistrationController(registrationView);
-		
-		rc.registerNewUser(new User(46, "Testaep3", "Testaep3", "Testaep3", "Testaep3", "Testaep3", new Role(1, "Test")), new Function(45, "TestFunction"));
+
+		rc.registerNewUser(new User(46, "Testaep3", "Testaep3", "Testaep3", "Testaep3", "Testaep3", new Role(1, "Test"),
+				new Function(45, "TestFunction")));
 		assertNotNull(dbCont.selectUserBy(Table_User.COLUMN_FIRSTNAME, "Testaep3"));
 		dbCont.deleteUser(dbCont.selectUserBy(Table_User.COLUMN_USERNAME, "Testaep3").get(0).getUserID());
 	}

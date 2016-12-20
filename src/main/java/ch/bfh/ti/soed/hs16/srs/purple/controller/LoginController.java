@@ -18,7 +18,7 @@ import ch.bfh.ti.soed.hs16.srs.purple.model.User;
 public class LoginController {
 
 	// static
-	private static String USER_SESSION_ATTRIBUTE = "user";
+	public static String USER_SESSION_ATTRIBUTE = "user";
 
 	// membervariables
 	private User user;
@@ -31,8 +31,10 @@ public class LoginController {
 	/**
 	 * Function logs an user in with the given username and password
 	 *
-	 * @param username - The username of the user
-	 * @param password - The password of the user
+	 * @param username
+	 *            - The username of the user
+	 * @param password
+	 *            - The password of the user
 	 *
 	 * @return true if user logged in, false if user was not found with the
 	 *         username and password
@@ -40,7 +42,7 @@ public class LoginController {
 	public boolean loginWithUser(String username, String password) {
 		if (username != null && password != null && !username.isEmpty() && !password.isEmpty()) {
 			if (checkIfUserExists(username) && checkPasswordForUsername(password)) {
-				if(VaadinSession.getCurrent() != null){
+				if (VaadinSession.getCurrent() != null) {
 					VaadinSession.getCurrent().setAttribute(USER_SESSION_ATTRIBUTE, username);
 				}
 				return true;
@@ -53,7 +55,8 @@ public class LoginController {
 	 * Function checks if the user exists in the Database. If the user exists
 	 * the membervariable 'user' is set with this user.
 	 *
-	 * @param username - The username of the user
+	 * @param username
+	 *            - The username of the user
 	 * @return true if user exists, false if he doesn't exist
 	 */
 	private boolean checkIfUserExists(String username) {
@@ -77,7 +80,8 @@ public class LoginController {
 	/**
 	 * Function checks if the entered password is valid for the user
 	 *
-	 * @param password - The password of the user
+	 * @param password
+	 *            - The password of the user
 	 * @return true if password is valid, false if the password is false for the
 	 *         user
 	 */
@@ -95,7 +99,8 @@ public class LoginController {
 	 * @return true if the user is logged in - false otherwise.
 	 */
 	public boolean isUserLoggedInOnSession() {
-		if (VaadinSession.getCurrent() != null && VaadinSession.getCurrent().getAttribute(USER_SESSION_ATTRIBUTE) != null) {
+		if (VaadinSession.getCurrent() != null
+				&& VaadinSession.getCurrent().getAttribute(USER_SESSION_ATTRIBUTE) != null) {
 			return true;
 		}
 		return false;

@@ -8,8 +8,8 @@
 package ch.bfh.ti.soed.hs16.srs.purple.model;
 
 /**
- * Function definiert eine Funktion eines Benutzers.
- * Ein Beispiel für eine Funktion eines Benutzers ist Physikprofessor.
+ * Function definiert eine Funktion eines Benutzers. Ein Beispiel für eine
+ * Funktion eines Benutzers ist Physikprofessor.
  *
  * @author Aebischer Patrik, Bösiger Elia, Gestach Lukas, Schildknecht Elias
  * @date 20.10.2016
@@ -21,7 +21,7 @@ public class Function {
 	private Integer id;
 	private String function;
 
-	public Function(Integer id, String function){
+	public Function(Integer id, String function) {
 		this.id = id;
 		this.function = function;
 	}
@@ -32,5 +32,10 @@ public class Function {
 
 	public String getFunction() {
 		return function;
+	}
+
+	@Override
+	public String toString() {
+		return this.getFunction();
 	}
 }

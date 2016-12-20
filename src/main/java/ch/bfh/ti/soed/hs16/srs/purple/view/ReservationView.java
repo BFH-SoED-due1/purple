@@ -65,16 +65,17 @@ public class ReservationView implements ViewTemplate {
 		// Nur für Testzwecke
 		// TODO: Read this from db
 		ArrayList<User> users = new ArrayList<User>();
-		users.add(new User(3, "Gestach", "Lukas", "lukas@gestach.ch", "gestachl", "passwort", new Role(1, "Admin")));
-		users.add(new User(4, "Aebischer", "Patrik", "ges@gestach.ch", "aebip1", "passwort", new Role(1, "Wollschaf")));
+		users.add(new User(3, "Gestach", "Lukas", "lukas@gestach.ch", "gestachl", "passwort", new Role(1, "Admin"),
+				null));
+		users.add(new User(4, "Aebischer", "Patrik", "ges@gestach.ch", "aebip1", "passwort", new Role(1, "Wollschaf"),
+				null));
 		ArrayList<User> participant = new ArrayList<User>();
-		participant.add(
-				new User(3, "Gestach", "Lukas", "lukas@gestach.ch", "teilnehmer", "passwort", new Role(1, "Admin")));
-		participant.add(
-				new User(4, "Aebischer", "Patrik", "ges@gestach.ch", "boesie", "passwort", new Role(1, "Wollschaf")));
+		participant.add(new User(3, "Gestach", "Lukas", "lukas@gestach.ch", "teilnehmer", "passwort",
+				new Role(1, "Admin"), null));
+		participant.add(new User(4, "Aebischer", "Patrik", "ges@gestach.ch", "boesie", "passwort",
+				new Role(1, "Wollschaf"), null));
 		this.hostList = users;
 		this.participant = participant;
-
 
 		cl = new ClickListener() {
 
@@ -88,8 +89,10 @@ public class ReservationView implements ViewTemplate {
 	/**
 	 * Constructor: ReservationViews
 	 *
-	 * @param participant - participant list
-	 * @param hostList - List of possible hosts
+	 * @param participant
+	 *            - participant list
+	 * @param hostList
+	 *            - List of possible hosts
 	 */
 	public ReservationView(List<User> participant, List<User> hostList) {
 		this.participant = participant;
@@ -195,7 +198,8 @@ public class ReservationView implements ViewTemplate {
 	 * Rückgabeparameter vom Kontroller an die View, damit die geeignete Ausgabe
 	 * für den Benutzer ausgegeben werden kann
 	 *
-	 * @param status - Der Status der SQL Abfrage
+	 * @param status
+	 *            - Der Status der SQL Abfrage
 	 */
 	public void setStatus(boolean status) {
 		// Statusmeldung vom Controller
@@ -227,7 +231,8 @@ public class ReservationView implements ViewTemplate {
 	/**
 	 * Die Teilehmerliste setzen (falls nicht schon im Konstruktor geschehen)
 	 *
-	 * @param participant - A list of participants
+	 * @param participant
+	 *            - A list of participants
 	 */
 	public void setParticipant(List<User> participant) {
 		this.participant = participant;
