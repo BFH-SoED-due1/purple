@@ -12,14 +12,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Set;
 
 import org.vaadin.dialogs.ConfirmDialog;
-
-import ch.bfh.ti.soed.hs16.srs.purple.controller.ReservationController;
-import ch.bfh.ti.soed.hs16.srs.purple.model.Reservation;
-import ch.bfh.ti.soed.hs16.srs.purple.model.Role;
-import ch.bfh.ti.soed.hs16.srs.purple.model.Room;
-import ch.bfh.ti.soed.hs16.srs.purple.model.User;
 
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.VaadinSession;
@@ -47,6 +42,11 @@ import com.vaadin.ui.components.calendar.CalendarComponentEvents.RangeSelectEven
 import com.vaadin.ui.components.calendar.CalendarComponentEvents.RangeSelectHandler;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
 
+import ch.bfh.ti.soed.hs16.srs.purple.controller.ReservationController;
+import ch.bfh.ti.soed.hs16.srs.purple.model.Reservation;
+import ch.bfh.ti.soed.hs16.srs.purple.model.Room;
+import ch.bfh.ti.soed.hs16.srs.purple.model.User;
+
 public class ReservationView implements ViewTemplate {
 
 	private ReservationController resCont = new ReservationController();
@@ -56,6 +56,8 @@ public class ReservationView implements ViewTemplate {
 	private List<Room> roomList;
 	private ClickListener clButton;
 	private Reservation res;
+	private User actualUser;
+	private Room actualRoom;
 
 	// UI Components
 	private final Calendar cal = new Calendar();
@@ -77,17 +79,8 @@ public class ReservationView implements ViewTemplate {
 	 * Constructor: ReservationView
 	 */
 	public ReservationView() {
-		// TODO: Vom Kontroller nehmen
-		ArrayList<User> users = new ArrayList<User>();
-		users.add(new User(3, "Gestach", "Lukas", "lukas@gestach.ch", "gestachl", "passwort", new Role(1, "Admin")));
-		users.add(new User(4, "Aebischer", "Patrik", "ges@gestach.ch", "aebip1", "passwort", new Role(1, "Wollschaf")));
-		ArrayList<User> participant = new ArrayList<User>();
-		participant.add(
-				new User(3, "Gestach", "Lukas", "lukas@gestach.ch", "teilnehmer", "passwort", new Role(1, "Admin")));
-		participant.add(
-				new User(4, "Aebischer", "Patrik", "ges@gestach.ch", "boesie", "passwort", new Role(1, "Wollschaf")));
-		this.hostList = resCont.getAllUsers();
-		this.participant = resCont.getAllUsers();
+		hostList = resCont.getAllUsers();
+		participant = resCont.getAllUsers();
 		roomList = resCont.getAllRooms();
 	}
 
@@ -127,12 +120,13 @@ public class ReservationView implements ViewTemplate {
 
 			@Override
 			public void rangeSelect(RangeSelectEvent event) {
-				showPopup(new Reservation(-1, new Timestamp(event.getStart().getTime()), new Timestamp(event.getEnd().getTime()), new Room(0, 400, "TestRoom", 160), "", ""));
+				showPopup(new Reservation(-1, new Timestamp(event.getStart().getTime()), new Timestamp(event.getEnd().getTime()), null, "", ""));
 			}
 		});
 
 		clButton = new ClickListener() {
 
+			@SuppressWarnings("unchecked")
 			@Override
 			public void buttonClick(ClickEvent event) {
 				if(event.getButton() == saveButton) //God save the queen
@@ -144,22 +138,31 @@ public class ReservationView implements ViewTemplate {
 					}
 					Timestamp startTime = new Timestamp(startDate.getValue().getTime());
 					Timestamp endTime = new Timestamp(endDate.getValue().getTime());
-					//Room room = DBController.getInstance().selectRoomBy(Table_Room.COLUMN_ROOMNUMBER, 10).get(0); //TODO vom Kontroller nehmen
 					List<User> hosts = new ArrayList<User>();
-					//hosts.add(DBController.getInstance().selectUserBy(Table_User.COLUMN_USERNAME, "aep").get(0)); //TODO vom Kontroller nehmen
-					ReservationView.this.hosts.getValue(); //TODO Hostliste auslesen
-					//hosts.add(0, resCont.getSessionUser(USER_SESSION_ATTRIBUTE));
+					Set<Integer> temp = (Set<Integer>) ReservationView.this.hosts.getValue();
+					for(int id : temp)
+						for(int y = 0;y < hostList.size();y++)
+							if(hostList.get(y).getUserID() == id)
+								hosts.add(hostList.get(y));
+					List<User> participants = new ArrayList<User>();
+					Set<Integer> temp2 = (Set<Integer>) ReservationView.this.participantList.getValue();
+					for(int id : temp2)
+						for(int y = 0;y < hostList.size();y++)
+							if(hostList.get(y).getUserID() == id)
+								participants.add(hostList.get(y));
 					
+					System.out.println(hosts.get(0).getUsername());
 					if(res.getReservationID() > 0) //Edit
 					{
+						Reservation newRes = new Reservation(res.getReservationID(), startTime, endTime, resCont.getRoom((int) rooms.getValue()), title.getValue(), description.getValue(), hosts, participants);
 						resCont.deleteReservation(res.getReservationID());
-						resCont.addReservation(res);
+						resCont.addReservation(newRes);
 						popUpWindow.close();
 						calendarUpdate();
 					}
 					else //Neu
 					{
-						if(resCont.addReservation(new Reservation(-1, startTime, endTime, resCont.getRoom((int) rooms.getValue()), title.getValue(), description.getValue(), hosts))){
+						if(resCont.addReservation(new Reservation(-1, startTime, endTime, resCont.getRoom((int) rooms.getValue()), title.getValue(), description.getValue(), hosts, participants))){
 							popUpWindow.close();
 							calendarUpdate();
 						}
@@ -210,6 +213,7 @@ public class ReservationView implements ViewTemplate {
 	{
 		this.res = res; //Update the member
 		boolean newRes = res.getReservationID() > 0 ? false : true;
+		boolean isHost = isHost(actualUser, res.getHostList());
 		final GridLayout gridLayout = new GridLayout(3, 5);
 		popUpWindow = new Window();
 		popUpWindow.center();
@@ -234,33 +238,45 @@ public class ReservationView implements ViewTemplate {
 		hosts = new ListSelect("Reservierender");
 		hosts.setMultiSelect(true);
 		hosts.clear();
-		List<User> resHosts = null;
-		if(!newRes)
-			resHosts = res.getHostList();
 		for (int i = 0; i < hostList.size(); i++) {
 			hosts.addItem(hostList.get(i).getUserID());
-			hosts.setItemCaption(i, hostList.get(i).getUsername());
-			if(!newRes && resHosts != null)
-				if(contain(hostList.get(i), resHosts))
-					hosts.select(hostList.get(i).getUserID());
+			hosts.setItemCaption(hostList.get(i).getUserID(), hostList.get(i).getUsername());
 		}
+		//select the hosts in list
+		if(!newRes)
+		{
+			List<User> resHosts = res.getHostList();
+			for(int i = 0;i < resHosts.size();i++)
+				for(int y = 0;y < hostList.size();y++)
+					if(hostList.get(y).getUserID() == resHosts.get(i).getUserID())
+						hosts.select(resHosts.get(i).getUserID());
+		}
+		else
+			hosts.select(actualUser.getUserID());
 		hosts.select(0);
 		hosts.setRows(hostList.size() > 5 ? 5 : hostList.size());
 		participantList = new ListSelect("Teilnehmer");
 		participantList.setMultiSelect(true);
 		participantList.clear();
-		List<User> resPart = null;
-		if(!newRes)
-			resPart = res.getParticipantList();
+		
 		for (int i = 0; i < participant.size(); i++) {
-			participantList.addItem(i);
-			participantList.setItemCaption(i, participant.get(i).getUsername());
-			if(!newRes && resPart != null)
-				if(contain(hostList.get(i), resPart))
-					hosts.select(hostList.get(i).getUserID());
+			participantList.addItem(participant.get(i).getUserID());
+			participantList.setItemCaption(participant.get(i).getUserID(), participant.get(i).getUsername());
 		}
+		//select the participants in list
+		if(!newRes)
+		{
+			List<User> resPart = res.getParticipantList();
+			for(int i = 0;i < resPart.size();i++)
+				for(int y = 0;y < participant.size();y++)
+					if(participant.get(y).getUserID() == resPart.get(i).getUserID())
+						participantList.select(resPart.get(i).getUserID());
+		}
+		else
+			participantList.select(actualUser.getUserID());
 		participantList.setRows(participant.size() > 5 ? 5 : participant.size());
 		rooms = new NativeSelect("Raum");
+		rooms.clear();
 		rooms.setNullSelectionAllowed(false);
 		for(int i = 0;i < roomList.size();i++)
 		{
@@ -284,8 +300,11 @@ public class ReservationView implements ViewTemplate {
 		gridLayout.addComponent(title, 0, 2);
 		gridLayout.addComponent(rooms, 1, 2, 2, 2);
 		gridLayout.addComponent(description, 0, 3, 1, 3);
-		gridLayout.addComponent(saveButton, 0, 4);
-		gridLayout.addComponent(deleteButton, 1, 4);
+		if(isHost || newRes) //show buttons for edit and delete only if the user is host or its a new reservation
+		{
+			gridLayout.addComponent(saveButton, 0, 4);
+			gridLayout.addComponent(deleteButton, 1, 4);
+		}
 		gridLayout.setSpacing(true);
 		gridLayout.setMargin(new MarginInfo(false, false, false, true));
 		gridLayout.setWidth(100, Unit.PERCENTAGE);
@@ -294,24 +313,19 @@ public class ReservationView implements ViewTemplate {
 		popUpWindow.setHeight("450px");
 		popUpWindow.setCaption(res.getReservationID() > 0 ? "Reservierungsdetails" : "Neue Reservierung");
 		UI.getCurrent().addWindow(popUpWindow);
-		// cal.addEvent(new BasicEvent("Aebischers Wule", "Aebischer hat
-		// immer eine Wule!", event.getStart()));
 	}
 	
 	/**
-	 * compare the userList in the reservation with a single user
-	 * @param inList user for comparing
-	 * @param inRes userList of users in the reservation
-	 * @return true if the user is in the userList, false otherwise
+	 * Checks if the user is in the hostList
+	 * @param user the user to be checked
+	 * @param hostList the hostList of the reservation
+	 * @return true if the user is in the hostList, false otherwise
 	 */
-	private boolean contain(User inList, List<User> inRes)
+	private boolean isHost(User user, List<User> hostList)
 	{
-		for(int x = 0;x < inRes.size();x++)
-			if(inRes.contains(inList))
-			{
-				System.out.println("Gefunden");
+		for(int i = 0;i < hostList.size();i++)
+			if(hostList.get(i).getUserID() == user.getUserID())
 				return true;
-			}
 		return false;
 	}
 	
@@ -334,6 +348,7 @@ public class ReservationView implements ViewTemplate {
 	 */
 	@Override
 	public void display(Component content) {
+		actualUser = resCont.getSessionUser((String) VaadinSession.getCurrent().getAttribute(USER_SESSION_ATTRIBUTE));
 		Panel contentPanel = (Panel) content;
 		contentPanel.setContent(this.layout);
 	}
