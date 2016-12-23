@@ -7,9 +7,6 @@
  */
 package ch.bfh.ti.soed.hs16.srs.purple.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import org.junit.Test;
 
 import ch.bfh.ti.soed.hs16.srs.purple.model.User;
@@ -17,58 +14,57 @@ import ch.bfh.ti.soed.hs16.srs.purple.model.User;
 public class UserTest {
 
 	// TODO: Test (Elias)
-	
 	@Test
-	public void testSetNewUser(){
-//		User user = new User("lastName", "firstName", "mail", "username", "password", User.UserRole.USER_ROLE_ADMIN);
-//
-//		assertNotNull(user.getUserID());
-//		 TODO: Swap the arguments in all assertEquals methods:
-//		 assertEquals(user.getLastName(), "lastName");
-//		 assertEquals(user.getFirstName(), "firstName");
-//		 assertEquals(user.getEmailAddress(), "mail");
-//		 assertEquals(user.getUsername(), "username");
-//		 assertEquals(user.getPassword(), "password");
-//		 assertEquals(user.getUserRole(), User.UserRole.USER_ROLE_ADMIN);
+	public void testSetNewUser() {
+		// User user = new User("lastName", "firstName", "mail", "username",
+		// "password", User.UserRole.USER_ROLE_ADMIN);
+		//
+		// assertNotNull(user.getUserID());
+		// TODO: Swap the arguments in all assertEquals methods:
+		// assertEquals(user.getLastName(), "lastName");
+		// assertEquals(user.getFirstName(), "firstName");
+		// assertEquals(user.getEmailAddress(), "mail");
+		// assertEquals(user.getUsername(), "username");
+		// assertEquals(user.getPassword(), "password");
+		// assertEquals(user.getUserRole(), User.UserRole.USER_ROLE_ADMIN);
 	}
 
 	@Test
-	public void testChangePassword(){
-//		User user = new User("lastName", "firstName", "mail", "username", "password", User.UserRole.USER_ROLE_ADMIN);
-//		user.setPassword("newPassword");
-//
-//		assertEquals(user.getPassword(), "newPassword");
+	public void testChangePassword() {
+		// User user = new User("lastName", "firstName", "mail", "username",
+		// "password", User.UserRole.USER_ROLE_ADMIN);
+		// user.setPassword("newPassword");
+		//
+		// assertEquals(user.getPassword(), "newPassword");
 	}
 
 	@Test
-	public void testGetterAndSetter()
-	{
-//		User u = new User();
-//		u.setEmailAddress("test@test.ch");
-//		u.setFirstName("Max");
-//		u.setLastName("Mustermann");
-//		u.setPassword("sehrgeheim!!!");
-//		u.setUserID(53);
-//		u.setUsername("meinUsername");
-//		u.setUserRole(UserRole.USER_ROLE_ADMIN);
-//		assertEquals(u.getEmailAddress(), "test@test.ch");
-//		assertEquals(u.getFirstName(), "Max");
-//		assertEquals(u.getLastName(), "Mustermann");
-//		assertEquals(u.getPassword(), "sehrgeheim!!!");
-//		assertEquals(u.getUserID(), 53);
-//		assertEquals(u.getUsername(), "meinUsername");
-//		assertEquals(u.getUserRole(), UserRole.USER_ROLE_ADMIN);
+	public void testGetterAndSetter() {
+		// User u = new User();
+		// u.setEmailAddress("test@test.ch");
+		// u.setFirstName("Max");
+		// u.setLastName("Mustermann");
+		// u.setPassword("sehrgeheim!!!");
+		// u.setUserID(53);
+		// u.setUsername("meinUsername");
+		// u.setUserRole(UserRole.USER_ROLE_ADMIN);
+		// assertEquals(u.getEmailAddress(), "test@test.ch");
+		// assertEquals(u.getFirstName(), "Max");
+		// assertEquals(u.getLastName(), "Mustermann");
+		// assertEquals(u.getPassword(), "sehrgeheim!!!");
+		// assertEquals(u.getUserID(), 53);
+		// assertEquals(u.getUsername(), "meinUsername");
+		// assertEquals(u.getUserRole(), UserRole.USER_ROLE_ADMIN);
 	}
 
 	@Test
-	public void testDifferentRoles()
-	{
+	public void testDifferentRoles() {
 		User u = new User();
-//		u.setUserRole(UserRole.USER_ROLE_HOST);
-//		assertEquals(u.getUserRole(), UserRole.USER_ROLE_HOST);
-//		u.setUserRole(UserRole.USER_ROLE_PARTICIPANT);
-//		assertEquals(u.getUserRole(), UserRole.USER_ROLE_PARTICIPANT);
-//		assertNotNull(UserRole.values());
-//		assertNotNull(UserRole.valueOf("USER_ROLE_ADMIN"));
+		// u.setUserRole(UserRole.USER_ROLE_HOST);
+		// assertEquals(u.getUserRole(), UserRole.USER_ROLE_HOST);
+		// u.setUserRole(UserRole.USER_ROLE_PARTICIPANT);
+		// assertEquals(u.getUserRole(), UserRole.USER_ROLE_PARTICIPANT);
+		// assertNotNull(UserRole.values());
+		// assertNotNull(UserRole.valueOf("USER_ROLE_ADMIN"));
 	}
 }

@@ -81,13 +81,15 @@ public class ReservationView implements ViewTemplate {
 	public ReservationView() {
 		// TODO: Vom Kontroller nehmen
 		ArrayList<User> users = new ArrayList<User>();
-		users.add(new User(3, "Gestach", "Lukas", "lukas@gestach.ch", "gestachl", "passwort", new Role(1, "Admin")));
-		users.add(new User(4, "Aebischer", "Patrik", "ges@gestach.ch", "aebip1", "passwort", new Role(1, "Wollschaf")));
+		users.add(new User(3, "Gestach", "Lukas", "lukas@gestach.ch", "gestachl", "passwort", new Role(1, "Admin"),
+				null));
+		users.add(new User(4, "Aebischer", "Patrik", "ges@gestach.ch", "aebip1", "passwort", new Role(1, "Wollschaf"),
+				null));
 		ArrayList<User> participant = new ArrayList<User>();
-		participant.add(
-				new User(3, "Gestach", "Lukas", "lukas@gestach.ch", "teilnehmer", "passwort", new Role(1, "Admin")));
-		participant.add(
-				new User(4, "Aebischer", "Patrik", "ges@gestach.ch", "boesie", "passwort", new Role(1, "Wollschaf")));
+		participant.add(new User(3, "Gestach", "Lukas", "lukas@gestach.ch", "teilnehmer", "passwort",
+				new Role(1, "Admin"), null));
+		participant.add(new User(4, "Aebischer", "Patrik", "ges@gestach.ch", "boesie", "passwort",
+				new Role(1, "Wollschaf"), null));
 		this.hostList = users;
 		this.participant = participant;
 	}
@@ -95,8 +97,10 @@ public class ReservationView implements ViewTemplate {
 	/**
 	 * Constructor: ReservationViews
 	 *
-	 * @param participant - participant list
-	 * @param hostList - List of possible hosts
+	 * @param participant
+	 *            - participant list
+	 * @param hostList
+	 *            - List of possible hosts
 	 */
 	public ReservationView(List<User> participant, List<User> hostList) {
 		this.participant = participant;

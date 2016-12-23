@@ -11,7 +11,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import ch.bfh.ti.soed.hs16.srs.purple.view.GeneralView;
+import ch.bfh.ti.soed.hs16.srs.purple.view.UserProfileView;
 
 public class GeneralViewTest
 {
@@ -19,7 +19,7 @@ public class GeneralViewTest
 	@Test
 	public void GVTest()
 	{
-		GeneralView gv = new GeneralView();
+		UserProfileView gv = new UserProfileView();
 		assertNotNull(gv);
 	}
 
