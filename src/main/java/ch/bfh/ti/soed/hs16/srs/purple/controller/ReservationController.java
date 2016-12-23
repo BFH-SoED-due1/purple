@@ -56,18 +56,7 @@ public class ReservationController {
 	/**
 	 * Add a reservation to the DB
 	 *
-	 * @param start
-	 *            : startime of the reservation
-	 * @param end
-	 *            : endtime of the reservation
-	 * @param room
-	 *            : reservated room
-	 * @param title
-	 *            : title of the reservation
-	 * @param description
-	 *            : description of the reservation
-	 * @param participants
-	 *            : participants of the reservation
+	 * @param res - The reservation
 	 * @return true = success, false = fail
 	 */
 	public boolean addReservation(Reservation res) {
@@ -132,7 +121,8 @@ public class ReservationController {
 	
 	/**
 	 * Get all reservations form one specific room
-	 * @param roomID: ID of a room
+	 * @param roomID - ID of a room
+	 * 
 	 * @return List of all reservations from a specific room
 	 */
 	public List<Reservation> getAllReservationsFromRoom(int roomID){
@@ -141,7 +131,7 @@ public class ReservationController {
 	
 	/**
 	 * Get all reservations from one specific user
-	 * @param userID: ID of an user
+	 * @param user - ID of an user
 	 * @return List of all reservations from a specific user
 	 */
 	public List<Reservation> getAllReservationsFromUser(User user){
@@ -159,7 +149,7 @@ public class ReservationController {
 
 	/**
 	 * Get VaadinSession-user from the DB
-	 * @param user: String with a valid username
+	 * @param user - String with a valid username
 	 * @return Userobject from user with the name at parameter user
 	 */
 	public User getSessionUser(String user){
@@ -176,7 +166,7 @@ public class ReservationController {
 	
 	/**
 	 * Sends an E-Mail to the hosts and participants of a reservation
-	 * @param reservation: Object
+	 * @param reservation - Object
 	 */
 	public void sendEmail(Reservation reservation) {
 		for (int i = 0; i < reservation.getHostList().size(); i++){

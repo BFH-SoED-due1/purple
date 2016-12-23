@@ -492,15 +492,51 @@ public class DBController {
 		}
 		return reservations;
 	}
+	
+	/**
+	 * Returns all free rooms between the given time interval.
+	 * 
+	 * @param startDate - Interval begin.
+	 * @param endDate - Interval end.
+	 * @return A list containing all free rooms between the given time interval.
+	 * */
+	public List<Room> selectFreeRooms(Timestamp startDate, Timestamp endDate) {
+		List<Room> freeRooms = new ArrayList<Room>();
+		// Get all reservations before and after the given time interval
+		
+		String selectStmt = "SELECT distinct(roomid) "
+				+ "FROM reservation "
+				+ "WHERE roomid "
+				+ "NOT IN("
+					+ "SELECT roomid "
+					+ "FROM reservation "
+					+ "WHERE (startdate <= '"+startDate+"' AND enddate >= '"+endDate+"') "
+						+ "OR (startdate BETWEEN '"+startDate+"' AND '"+endDate+"') "
+						+ "OR (enddate BETWEEN '"+startDate+"' AND '"+endDate+"'))";
+		for (Row row : executeSelect(selectStmt)) {
+			Integer roomid = (Integer) row.getRow().get(0).getKey();
+			// get room java-instances
+			freeRooms.add(selectRoomBy(Table_Room.COLUMN_ID, roomid).get(0));
+		}
+		
+		// Get free rooms without assigned reservations
+		String selectFreeRoomsStmt = "SELECT idroom FROM room WHERE idroom NOT IN (SELECT distinct(idroom) "
+				+ "FROM room JOIN reservation ON room.idroom = reservation.roomid)";
+		for (Row row : executeSelect(selectFreeRoomsStmt)) {
+			Integer idRoom = (Integer) row.getRow().get(0).getKey();
+			// get room java-instances
+			freeRooms.add(selectRoomBy(Table_Room.COLUMN_ID, idRoom).get(0));
+		}
+		return freeRooms;
+	}
 
 	/**
 	 * Function updates an user.
 	 * 
 	 * @param user
 	 *            user to update
-	 * @param userId
+	 * @param userID
 	 *            userId to update
-	 * @return
 	 */
 	public boolean updateUser(User user, int userID) {
 		String function;

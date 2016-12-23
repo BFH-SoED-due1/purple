@@ -36,8 +36,6 @@ public class RegistrationController {
 	 *
 	 * @param user
 	 *            - The user to register
-	 * @param function
-	 *            - The function of the user
 	 */
 	public void registerNewUser(User user) {
 		// TODO: bind this method to a "register"-event
