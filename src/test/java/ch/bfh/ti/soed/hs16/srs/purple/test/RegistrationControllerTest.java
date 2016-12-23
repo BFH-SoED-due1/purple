@@ -37,8 +37,8 @@ public class RegistrationControllerTest {
 		DBController dbCont = DBController.getInstance();
 		RegistrationController rc = new RegistrationController(registrationView);
 
-		rc.registerNewUser(new User(46, "Testaep3", "Testaep3", "Testaep3", "Testaep3", "Testaep3", new Role(1, "Test"),
-				new Function(45, "TestFunction")));
+		rc.registerNewUser(new User(46, "Testaep3", "Testaep3", "Testaep3", "Testaep3", "Testaep3", null,
+				null));
 		assertNotNull(dbCont.selectUserBy(Table_User.COLUMN_FIRSTNAME, "Testaep3"));
 		dbCont.deleteUser(dbCont.selectUserBy(Table_User.COLUMN_USERNAME, "Testaep3").get(0).getUserID());
 	}
