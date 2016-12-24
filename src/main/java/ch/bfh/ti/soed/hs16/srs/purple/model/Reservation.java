@@ -29,6 +29,7 @@ public class Reservation extends BasicEvent{
 	private Timestamp endDate;
 	private List<User> hostList;
 	private List<User> participantList;
+	private List<User> acceptedParticipantsList;
 	private String title;
 	private String description;
 
@@ -46,6 +47,7 @@ public class Reservation extends BasicEvent{
 		setDescription(description);
 		hostList = new ArrayList<User>();
 		participantList = new ArrayList<User>();
+		acceptedParticipantsList = new ArrayList<User>();
 	}
 	
 	public Reservation(Integer reservationID, Timestamp startDate, Timestamp endDate, Room room, String title, String description, List<User> hosts){
@@ -79,6 +81,14 @@ public class Reservation extends BasicEvent{
 		hostList = hosts;
 		participantList = participants;
 	}
+	
+	public boolean hasUserAcceptedReservation(User user){
+		boolean hasAccepted = false;
+		for(User acceptedUser : acceptedParticipantsList){
+			if(user.getUserID().equals(acceptedUser.getUserID())) hasAccepted = true;
+		}
+		return hasAccepted;
+	}
 
 	public Room getRoom() {
 		return room;
@@ -103,6 +113,10 @@ public class Reservation extends BasicEvent{
 	public void addParticipant(User participant){
 		participantList.add(participant);
 	}
+	
+	public void addAcceptedParticipant(User participant) {
+		acceptedParticipantsList.add(participant);
+	}
 
 	public List<User> getHostList() {
 		return hostList;
@@ -118,5 +132,9 @@ public class Reservation extends BasicEvent{
 
 	public String getDescription() {
 		return description;
+	}
+
+	public List<User> getAcceptedParticipantsList() {
+		return acceptedParticipantsList;
 	}
 }

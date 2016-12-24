@@ -42,7 +42,7 @@ public class DBControllerTest {
 
 	// --- SELECT ---
 	@Test 
-	public void TestselectReservationsForUser() {
+	public void testselectReservationsForUser() {
 		DBController controller = DBController.getInstance();
 		// Insert test user
 		controller.insertNewUser("fTest", "lTest", "eTest", "testUsername1", "pw", null, null);
@@ -336,18 +336,30 @@ public class DBControllerTest {
 	@Test
 	public void testSelectReservationByID() {
 		DBController controller = DBController.getInstance();
-		List<Reservation> reservations = controller.selectReservationBy(Table_Reservation.COLUMN_ID, 679);
-
+		
+		// Insert test room
+		assertTrue(controller.insertNewRoom(-1, "Test Room", 55));
+		Room testRoom = controller.selectRoomBy(Table_Room.COLUMN_ROOMNUMBER, -1).get(0);
+		
+		// Insert test reservation
+		Timestamp startDate = Timestamp.valueOf("2016-12-08 08:00:00.000000");
+		Timestamp endDate = Timestamp.valueOf("2016-12-08 08:00:00.000000");
+		controller.insertNewReservation(startDate, endDate, testRoom, null, null, "testSelectReservationByID Title", "testSelectReservationByID Description");
+		
+		List<Reservation> reservations = controller.selectReservationBy(Table_Reservation.COLUMN_ROOMID, testRoom.getRoomID());
 		assertTrue(reservations.size() == 1);
-		Timestamp toCompareStart = Timestamp.valueOf("2016-12-16 00:00:00.000000");
-		Timestamp toCompareEnd = Timestamp.valueOf("2016-12-16 02:00:00.000000 	");
+		Timestamp toCompareStart = Timestamp.valueOf("2016-12-08 08:00:00.000000");
+		Timestamp toCompareEnd = Timestamp.valueOf("2016-12-08 08:00:00.000000");
 		assertTrue(reservations.get(0).getStartDate().getTime() == toCompareStart.getTime());
 		assertTrue(reservations.get(0).getEndDate().getTime() == toCompareEnd.getTime());
-		assertTrue(reservations.get(0).getRoom().getRoomID() == 1);
+		assertTrue(reservations.get(0).getRoom().getRoomID().equals(testRoom.getRoomID()));
 		assertTrue(reservations.get(0).getHostList().size() == 0);
 		assertTrue(reservations.get(0).getParticipantList().size() == 0);
-		assertTrue(reservations.get(0).getTitle().equals("testSelectReservationByID"));
-		assertTrue(reservations.get(0).getDescription().equals("DO NOT DELETE -> USED IN TESTS"));
+		assertTrue(reservations.get(0).getTitle().equals("testSelectReservationByID Title"));
+		assertTrue(reservations.get(0).getDescription().equals("testSelectReservationByID Description"));
+		
+		// Delete test room (all reservations for this room will also be deleted)
+		assertTrue(controller.deleteRoom(testRoom.getRoomID()));
 	}
 
 	@Test
@@ -451,6 +463,23 @@ public class DBControllerTest {
 		// Delete test room (reservations for this room will also be delete by the database cause of the foreign key)
 		assertTrue(controller.deleteRoom(testRoom1.getRoomID()));
 		assertTrue(controller.deleteRoom(testRoom2.getRoomID()));
+	}
+	
+	@Test
+	public void testAcceptedReservations() {
+		DBController controller = DBController.getInstance();
+		
+		// Insert test room
+		controller.insertNewRoom(-1, "Test Room", 55);
+		Room testRoom = controller.selectRoomBy(Table_Room.COLUMN_ROOMNUMBER, -1).get(0);
+		
+		// Insert test reservation
+		Timestamp startDate1 = Timestamp.valueOf("2018-12-08 08:00:00.000000");
+		Timestamp endDate1 = Timestamp.valueOf("2018-12-08 12:00:00.000000");
+		assertTrue(controller.insertNewReservation(startDate1, endDate1, testRoom, null, null, "Test free room 1", "Test free room des 1"));
+		
+		// Delete test room (reservations for this room will also be delete by the database cause of the foreign key)
+		assertTrue(controller.deleteRoom(testRoom.getRoomID()));
 	}
 
 	// --- INSERT ---
