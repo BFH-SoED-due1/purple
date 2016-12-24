@@ -55,4 +55,12 @@
   .normalTextField {
   	border-color: #a3a3a3;
   }
+  
+  .v-calendar-event-gruen::before, .v-calendar-event-gruen {
+  	color: #33FF33 !important;
+  }
+  
+  .v-calendar-event-gruen .v-calendar-event-content {
+  	background-color: rgba(51, 255, 51, 0.2) !important;
+  }
 }

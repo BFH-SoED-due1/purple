@@ -34,8 +34,9 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.components.calendar.CalendarComponentEvents.DateClickEvent;
+import com.vaadin.ui.components.calendar.CalendarComponentEvents.DateClickHandler;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents.EventClick;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents.EventClickHandler;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents.RangeSelectEvent;
@@ -68,10 +69,11 @@ public class ReservationView implements ViewTemplate {
 	private TextArea description;
 	private ListSelect hosts;
 	private ListSelect participantList;
+	private NativeSelect viewSelect;
 	private NativeSelect rooms;
 	private Button saveButton, deleteButton;
 	private Window popUpWindow;
-	private VerticalLayout layout = new VerticalLayout();
+	private GridLayout layout = new GridLayout(2, 2);
 	
 	private static String USER_SESSION_ATTRIBUTE = "user";
 	
@@ -85,28 +87,13 @@ public class ReservationView implements ViewTemplate {
 	}
 
 	/**
-	 * Constructor: ReservationViews
-	 *
-	 * @param participant
-	 *            - participant list
-	 * @param hostList
-	 *            - List of possible hosts
-	 */
-	public ReservationView(List<User> participant, List<User> hostList) {
-		this.participant = participant;
-		this.hostList = hostList;
-		if (participant == null || hostList == null)
-			throw new NullPointerException();
-	}
-
-	/**
 	 * Function initalizes the reservation view
 	 */
 	@SuppressWarnings("serial")
 	@Override
 	public void initView() {
 
-		this.siteTitle.addStyleName("h2");
+		siteTitle.addStyleName("h2");
 		GregorianCalendar start = new GregorianCalendar();
 		GregorianCalendar end = new GregorianCalendar();
 		end.add(GregorianCalendar.DAY_OF_YEAR, 40);
@@ -123,6 +110,27 @@ public class ReservationView implements ViewTemplate {
 			@Override
 			public void rangeSelect(RangeSelectEvent event) {
 				showPopup(new Reservation(-1, new Timestamp(event.getStart().getTime()), new Timestamp(event.getEnd().getTime()), null, "", ""));
+			}
+		});
+		
+		/**
+		 * DateClickHandler
+		 * switches between dayli and monthly view
+		 */
+		cal.setHandler(new DateClickHandler() {
+			
+			@Override
+			public void dateClick(DateClickEvent event) {
+				if(cal.getEndDate().getTime() - cal.getStartDate().getTime() == 0)
+				{
+					cal.setStartDate(start.getTime());
+					cal.setEndDate(end.getTime());
+				}
+				else
+				{
+					cal.setStartDate(event.getDate());
+					cal.setEndDate(event.getDate());
+				}
 			}
 		});
 
@@ -199,12 +207,22 @@ public class ReservationView implements ViewTemplate {
 				showPopup(e);
 			}
 		});
+		
+		viewSelect = new NativeSelect();
+		viewSelect.addItem(1);
+		viewSelect.setItemCaption(1, "Übersicht");
+		viewSelect.addItem(2);
+		viewSelect.setItemCaption(2, "Eigene Reservationen");
+		viewSelect.select(1);
 
-		calendarUpdate();
-		this.layout.addComponent(siteTitle);
-		this.layout.addComponents(cal);
-		this.layout.setMargin(true);
-		this.layout.setSpacing(true);
+		layout.addComponent(siteTitle, 0, 0);
+		layout.addComponent(cal, 0, 1, 1, 1);
+		layout.addComponent(viewSelect, 1, 0);
+		layout.setRowExpandRatio(0, 0.1f);
+		layout.setRowExpandRatio(1, 20);
+		//layout.setMargin(true);
+		//layout.setSpacing(true);
+		layout.setSizeFull();
 	}
 	
 	/**
@@ -351,8 +369,9 @@ public class ReservationView implements ViewTemplate {
 	@Override
 	public void display(Component content) {
 		actualUser = resCont.getSessionUser((String) VaadinSession.getCurrent().getAttribute(USER_SESSION_ATTRIBUTE));
+		calendarUpdate();
 		Panel contentPanel = (Panel) content;
-		contentPanel.setContent(this.layout);
+		contentPanel.setContent(layout);
 	}
 
 	/**
@@ -365,7 +384,8 @@ public class ReservationView implements ViewTemplate {
 			cal.removeEvent(tmp.get(i));
 		List<Reservation> res = resCont.getAllReservations(); //TODO getReservations from to
 		for(int i = 0; i < res.size(); i++){
-			//cal.addEvent(new BasicEvent(res.get(i).getTitle(), res.get(i).getDescription(), res.get(i).getStartDate(), res.get(i).getEndDate()));
+			if(isHost(actualUser, res.get(i).getHostList()))
+				res.get(i).setStyleName("gruen");
 			cal.addEvent(res.get(i));
 		}
 	}
