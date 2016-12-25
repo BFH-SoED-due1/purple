@@ -82,6 +82,10 @@ public class Reservation extends BasicEvent{
 		participantList = participants;
 	}
 	
+	public boolean haveAllParticipantsAccepted() {
+		return participantList.size() == acceptedParticipantsList.size();
+	}
+	
 	public boolean hasUserAcceptedReservation(User user){
 		boolean hasAccepted = false;
 		for(User acceptedUser : acceptedParticipantsList){

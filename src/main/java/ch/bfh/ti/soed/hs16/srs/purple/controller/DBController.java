@@ -533,15 +533,26 @@ public class DBController {
 	 * User must be assigned to the reservation.
 	 * */
 	public boolean updateHostReservation(User user, Reservation reservation, boolean isHost) {
-		String updateStmt = "UPDATE userreservation SET host = "+isHost+" WHERE userid = "+user.getUserID()+" AND reservationid = "+reservation.getReservationID();
+		boolean hasAccepted = reservation.hasUserAcceptedReservation(user);
+		String updateStmt = "UPDATE userreservation SET host = "+isHost+", accept = "+hasAccepted+" WHERE userid = "+user.getUserID()+" AND reservationid = "+reservation.getReservationID();
 		boolean success = executeUpdate(updateStmt).isSuccess();
 		if(success) {
 			if(isHost) {
 				reservation.addHost(user);
-				reservation.getParticipantList().remove(user);
+				User toDelete = null;
+				for(User participant : reservation.getParticipantList()) {
+					if(participant.getUserID().equals(user.getUserID())) toDelete = participant;
+				}
+				reservation.getParticipantList().remove(toDelete);
+				if(hasAccepted) reservation.getAcceptedParticipantsList().remove(toDelete);
 			} else {
-				reservation.getHostList().remove(user);
+				User toDelete = null;
+				for(User host : reservation.getHostList()) {
+					if(host.getUserID().equals(user.getUserID())) toDelete = host;
+				}
+				reservation.getHostList().remove(toDelete);
 				reservation.addParticipant(user);
+				if(hasAccepted) reservation.getAcceptedParticipantsList().add(user);
 			}
 		}
 		return success;
@@ -558,7 +569,11 @@ public class DBController {
 			if(accept) {
 				reservation.addAcceptedParticipant(user);
 			} else {
-				reservation.getAcceptedParticipantsList().remove(user);
+				User toDelete = null;
+				for(User acceptedParticipant : reservation.getAcceptedParticipantsList()) {
+					if(acceptedParticipant.getUserID().equals(user.getUserID())) toDelete = acceptedParticipant;
+				}
+				reservation.getAcceptedParticipantsList().remove(toDelete);
 			}
 		}
 		return updateSucces;
@@ -569,10 +584,10 @@ public class DBController {
 	 * User must be assigned to the reservation.
 	 * */
 	public boolean updateAcceptReservation(User user, List<Reservation> reservations, boolean accept) {
-		String updateStmt = "UPDATE userreservation SET accept = "+accept+" WHERE userid = "+user.getUserID()+" AND ";
+		String updateStmt = "UPDATE userreservation SET accept = "+accept+" WHERE ";
 		for(Reservation reservation : reservations)  {
-			updateStmt += "reservationid = "+reservation.getReservationID();
-			if(reservations.indexOf(reservation) <= reservations.size()) updateStmt +=" OR ";
+			updateStmt += "(userid = "+user.getUserID()+" AND reservationid = "+reservation.getReservationID()+")";
+			if(reservations.indexOf(reservation) < reservations.size() - 1) updateStmt +=" OR ";
 		}
 		boolean success = executeUpdate(updateStmt).isSuccess();
 		if(success) {
@@ -580,13 +595,16 @@ public class DBController {
 				if(accept) {
 					reservation.addAcceptedParticipant(user);
 				} else {
-					reservation.getAcceptedParticipantsList().remove(user);
+					User toDelete = null;
+					for(User acceptedParticipant : reservation.getAcceptedParticipantsList()) {
+						if(acceptedParticipant.getUserID().equals(user.getUserID())) toDelete = acceptedParticipant;
+					}
+					reservation.getAcceptedParticipantsList().remove(toDelete);
 				}
 			}
 		}
 		return success;
 	}
-	
 
 	/**
 	 * Function updates an user.

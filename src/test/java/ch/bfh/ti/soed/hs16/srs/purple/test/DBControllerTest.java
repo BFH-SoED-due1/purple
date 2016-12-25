@@ -526,11 +526,281 @@ public class DBControllerTest {
 		String title = "Test Title";
 		String description = "Test Description";
 		assertTrue(controller.insertNewReservation(startDate, endDate, room, hosts, participants, title, description));
-
+		
 		// Delete test reservation
 		for (Reservation reservation : controller.selectReservationBy(Table_Reservation.COLUMN_TITLE, "Test Title")) {
 			assertTrue(controller.deleteReservation(reservation.getReservationID()));
 		}
+	}
+	
+	// --- UPDATE ---
+	@Test
+	public void testUpateHostReservation() {
+		DBController controller = DBController.getInstance();
+		
+		// Insert test function
+		assertTrue(controller.insertNewFunction("testUpateHostReservation Function"));
+		Function testFunction = controller.selectFunctionBy(Table_Function.COLUMN_FUNCTION, "testUpateHostReservation Function").get(0);
+		
+		// Insert test role
+		assertTrue(controller.insertNewRole("testUpateHostReservation Role"));
+		Role testRole = controller.selectRoleBy(Table_Role.COLUMN_ROLE, "testUpateHostReservation Role").get(0);
+		
+		// Insert test host
+		String fName = "ftestUpateHostReservation Host";
+		String lName = "ltestUpateHostReservation Host";
+		String email = "etestUpateHostReservation Host";
+		String uname = "utestUpateHostReservation Host";
+		String pw = "ptestUpateHostReservation Host";
+		assertTrue(controller.insertNewUser(fName, lName, email, uname, pw, testFunction, testRole));
+		User testHost = controller.selectUserBy(Table_User.COLUMN_USERNAME, uname).get(0);
+		List<User> hosts = new ArrayList<User>();
+		hosts.add(testHost);
+		
+		// Insert test participants
+		fName = "ftestUpateHostReservation Participant 1";
+		lName = "ltestUpateHostReservation Participant 1";
+		email = "etestUpateHostReservation Participant 1";
+		uname = "utestUpateHostReservation Participant 1";
+		pw = "ptestUpateHostReservation Participant 1";
+		assertTrue(controller.insertNewUser(fName, lName, email, uname, pw, testFunction, testRole));
+		User testParticipant1 = controller.selectUserBy(Table_User.COLUMN_USERNAME, uname).get(0);
+		
+		fName = "ftestUpateHostReservation Participant 2";
+		lName = "ltestUpateHostReservation Participant 2";
+		email = "etestUpateHostReservation Participant 2";
+		uname = "utestUpateHostReservation Participant 2";
+		pw = "ptestUpateHostReservation Participant 2";
+		assertTrue(controller.insertNewUser(fName, lName, email, uname, pw, testFunction, testRole));
+		User testParticipant2 = controller.selectUserBy(Table_User.COLUMN_USERNAME, uname).get(0);
+		
+		List<User> participants = new ArrayList<User>();
+		participants.add(testParticipant1);
+		participants.add(testParticipant2);
+		
+		// Insert test room
+		controller.insertNewRoom(-1, "Test Room", 55);
+		Room testRoom = controller.selectRoomBy(Table_Room.COLUMN_ROOMNUMBER, -1).get(0);
+		
+		// Insert test reservations in which the user 1 is the host
+		Timestamp startDate = Timestamp.valueOf("2018-12-08 08:00:00.000000");
+		Timestamp endDate = Timestamp.valueOf("2018-12-08 12:00:00.000000");
+		assertTrue(controller.insertNewReservation(startDate, endDate, testRoom, hosts, participants, "Test Update Host", "Test Update Host Description"));
+		
+		Reservation testReservation = controller.selectReservationBy(Table_Reservation.COLUMN_ROOMID, testRoom.getRoomID()).get(0);
+		assertTrue(testReservation.getHostList().size() == 1);
+		assertTrue(testReservation.getHostList().get(0).getUserID().equals(testHost.getUserID()));
+		assertTrue(testReservation.getParticipantList().size() == 2);
+		assertTrue(testReservation.getAcceptedParticipantsList().size() == 0);
+		assertFalse(testReservation.hasUserAcceptedReservation(testHost));
+		assertFalse(testReservation.hasUserAcceptedReservation(testParticipant1));
+		assertFalse(testReservation.hasUserAcceptedReservation(testParticipant2));
+		
+		// Set participant 1 also to host
+		assertTrue(controller.updateHostReservation(testParticipant1, testReservation, true));
+		// Test if reservation object is updated
+		assertTrue(testReservation.getHostList().size() == 2);
+		assertTrue(testReservation.getParticipantList().size() == 1);
+		assertTrue(testReservation.getHostList().contains(testParticipant1));
+		assertFalse(testReservation.getParticipantList().contains(testParticipant1));
+		assertTrue(testReservation.getAcceptedParticipantsList().size() == 0);
+		// Test if the update method has updated the database
+		Reservation testSelectReservation = controller.selectReservationBy(Table_Reservation.COLUMN_ID, testReservation.getReservationID()).get(0);
+		assertTrue(testSelectReservation.getHostList().size() == 2);
+		assertTrue(testReservation.getParticipantList().size() == 1);
+		assertTrue(testReservation.getHostList().get(1).getUserID().equals(testParticipant1.getUserID()));
+		assertFalse(testReservation.getParticipantList().get(0).getUserID().equals(testParticipant1.getUserID()));
+		
+		// Set participant 2 also to host
+		assertTrue(controller.updateHostReservation(testParticipant2, testReservation, true));
+		// Test if reservation object is updated
+		assertTrue(testReservation.getHostList().size() == 3);
+		assertTrue(testReservation.getParticipantList().size() == 0);
+		assertTrue(testReservation.getHostList().contains(testParticipant2));
+		assertFalse(testReservation.getParticipantList().contains(testParticipant2));
+		assertTrue(testReservation.getAcceptedParticipantsList().size() == 0);
+		// Test if the update method has updated the database
+		testSelectReservation = controller.selectReservationBy(Table_Reservation.COLUMN_ID, testReservation.getReservationID()).get(0);
+		assertTrue(testSelectReservation.getHostList().size() == 3);
+		assertTrue(testReservation.getParticipantList().size() == 0);
+		assertTrue(testReservation.getHostList().get(2).getUserID().equals(testParticipant2.getUserID()));
+		
+		// Delete function
+		assertTrue(controller.deleteFunction(testFunction.getId()));
+		// Delete role
+		assertTrue(controller.deleteRole(testRole.getId()));
+		// Delete room (Deletes also all reservations)
+		assertTrue(controller.deleteRoom(testRoom.getRoomID()));
+		// Delete users
+		assertTrue(controller.deleteUser(testHost.getUserID()));
+		assertTrue(controller.deleteUser(testParticipant1.getUserID()));
+		assertTrue(controller.deleteUser(testParticipant2.getUserID()));
+	}
+	
+	@Test
+	public void testUpdateAcceptReservation() {
+		DBController controller = DBController.getInstance();
+		// Insert test host
+		String fName = "ftestUpdateAcceptReservation Host";
+		String lName = "ltestUpdateAcceptReservation Host";
+		String email = "etestUpdateAcceptReservation Host";
+		String uname = "utestUpdateAcceptReservation Host";
+		String pw = "ptestUpdateAcceptReservation Host";
+		assertTrue(controller.insertNewUser(fName, lName, email, uname, pw, null, null));
+		User testHost = controller.selectUserBy(Table_User.COLUMN_USERNAME, uname).get(0);
+		List<User> hosts = new ArrayList<User>();
+		hosts.add(testHost);
+		
+		// Insert test participants
+		fName = "ftestUpdateAcceptReservation Participant 1";
+		lName = "ltestUpdateAcceptReservation Participant 1";
+		email = "etestUpdateAcceptReservation Participant 1";
+		uname = "utestUpdateAcceptReservation Participant 1";
+		pw = "ptestUpdateAcceptReservation Participant 1";
+		assertTrue(controller.insertNewUser(fName, lName, email, uname, pw, null, null));
+		User testParticipant1 = controller.selectUserBy(Table_User.COLUMN_USERNAME, uname).get(0);
+		
+		fName = "ftestUpdateAcceptReservation Participant 2";
+		lName = "ltestUpdateAcceptReservation Participant 2";
+		email = "etestUpdateAcceptReservation Participant 2";
+		uname = "utestUpdateAcceptReservation Participant 2";
+		pw = "ptestUpdateAcceptReservation Participant 2";
+		assertTrue(controller.insertNewUser(fName, lName, email, uname, pw, null, null));
+		User testParticipant2 = controller.selectUserBy(Table_User.COLUMN_USERNAME, uname).get(0);
+		
+		List<User> participants = new ArrayList<User>();
+		participants.add(testParticipant1);
+		participants.add(testParticipant2);
+		
+		// Insert test room
+		controller.insertNewRoom(-5, "Test Room", 55);
+		Room testRoom = controller.selectRoomBy(Table_Room.COLUMN_ROOMNUMBER, -5).get(0);
+		
+		// Insert test reservations in which the user 1 is the host
+		Timestamp startDate = Timestamp.valueOf("2018-12-08 08:00:00.000000");
+		Timestamp endDate = Timestamp.valueOf("2018-12-08 12:00:00.000000");
+		assertTrue(controller.insertNewReservation(startDate, endDate, testRoom, hosts, participants, "Test Update Accept", "Test Update Accept Description"));
+		
+		// Default nobody should have accepted the reservation
+		Reservation testReservation = controller.selectReservationBy(Table_Reservation.COLUMN_ROOMID, testRoom.getRoomID()).get(0);
+		assertTrue(testReservation.getHostList().size() == 1);
+		assertTrue(testReservation.getParticipantList().size() == 2);
+		assertTrue(testReservation.getAcceptedParticipantsList().size() == 0);
+		assertFalse(testReservation.hasUserAcceptedReservation(testHost));
+		assertFalse(testReservation.hasUserAcceptedReservation(testParticipant1));
+		assertFalse(testReservation.hasUserAcceptedReservation(testParticipant2));
+		
+		// Accept reservation for participant 2
+		controller.updateAcceptReservation(testParticipant2, testReservation, true);
+		// Test if user object is updated
+		assertTrue(testReservation.getHostList().size() == 1);
+		assertTrue(testReservation.getParticipantList().size() == 2);
+		assertTrue(testReservation.getAcceptedParticipantsList().size() == 1);
+		assertFalse(testReservation.hasUserAcceptedReservation(testHost));
+		assertFalse(testReservation.hasUserAcceptedReservation(testParticipant1));
+		assertTrue(testReservation.hasUserAcceptedReservation(testParticipant2));
+		// Test if the update method has updated the database
+		Reservation testSelectReservation = controller.selectReservationBy(Table_Reservation.COLUMN_ID, testReservation.getReservationID()).get(0);
+		assertTrue(testSelectReservation.getHostList().size() == 1);
+		assertTrue(testSelectReservation.getParticipantList().size() == 2);
+		assertTrue(testSelectReservation.getAcceptedParticipantsList().size() == 1);
+		assertTrue(testSelectReservation.getAcceptedParticipantsList().get(0).getUserID().equals(testParticipant2.getUserID()));
+		assertFalse(testSelectReservation.hasUserAcceptedReservation(testHost));
+		assertFalse(testSelectReservation.hasUserAcceptedReservation(testParticipant1));
+		assertTrue(testSelectReservation.hasUserAcceptedReservation(testParticipant2));
+		
+		// Accept reservation for participant 1
+		controller.updateAcceptReservation(testParticipant1, testReservation, true);
+		// Test if user object is updated
+		assertTrue(testReservation.getHostList().size() == 1);
+		assertTrue(testReservation.getParticipantList().size() == 2);
+		assertTrue(testReservation.getAcceptedParticipantsList().size() == 2);
+		assertFalse(testReservation.hasUserAcceptedReservation(testHost));
+		assertTrue(testReservation.hasUserAcceptedReservation(testParticipant1));
+		assertTrue(testReservation.hasUserAcceptedReservation(testParticipant2));
+		assertTrue(testReservation.haveAllParticipantsAccepted());
+		// Test if the update method has updated the database
+		testSelectReservation = controller.selectReservationBy(Table_Reservation.COLUMN_ID, testReservation.getReservationID()).get(0);
+		assertTrue(testSelectReservation.getHostList().size() == 1);
+		assertTrue(testSelectReservation.getParticipantList().size() == 2);
+		assertTrue(testSelectReservation.getAcceptedParticipantsList().size() == 2);
+		assertTrue(testSelectReservation.getAcceptedParticipantsList().get(0).getUserID().equals(testParticipant1.getUserID()));
+		assertTrue(testSelectReservation.getAcceptedParticipantsList().get(1).getUserID().equals(testParticipant2.getUserID()));
+		assertFalse(testSelectReservation.hasUserAcceptedReservation(testHost));
+		assertTrue(testSelectReservation.hasUserAcceptedReservation(testParticipant1));
+		assertTrue(testSelectReservation.hasUserAcceptedReservation(testParticipant2));
+		assertTrue(testSelectReservation.haveAllParticipantsAccepted());
+		
+		// Cancel reservation for participant 1 & 2
+		controller.updateAcceptReservation(testParticipant1, testReservation, false);
+		controller.updateAcceptReservation(testParticipant2, testReservation, false);
+		// Test if user object is updated
+		assertTrue(testReservation.getHostList().size() == 1);
+		assertTrue(testReservation.getParticipantList().size() == 2);
+		assertTrue(testReservation.getAcceptedParticipantsList().size() == 0);
+		assertFalse(testReservation.hasUserAcceptedReservation(testHost));
+		assertFalse(testReservation.hasUserAcceptedReservation(testParticipant1));
+		assertFalse(testReservation.hasUserAcceptedReservation(testParticipant2));
+		// Test if the update method has updated the database
+		testSelectReservation = controller.selectReservationBy(Table_Reservation.COLUMN_ID, testReservation.getReservationID()).get(0);
+		assertTrue(testSelectReservation.getHostList().size() == 1);
+		assertTrue(testSelectReservation.getParticipantList().size() == 2);
+		assertTrue(testSelectReservation.getAcceptedParticipantsList().size() == 0);
+		assertFalse(testSelectReservation.hasUserAcceptedReservation(testHost));
+		assertFalse(testSelectReservation.hasUserAcceptedReservation(testParticipant1));
+		assertFalse(testSelectReservation.hasUserAcceptedReservation(testParticipant2));
+		
+		// Create second reservation
+		startDate = Timestamp.valueOf("2018-12-08 08:00:00.000000");
+		endDate = Timestamp.valueOf("2018-12-08 12:00:00.000000");
+		assertTrue(controller.insertNewReservation(startDate, endDate, testRoom, hosts, participants, "Test Update Accept 2", "Test Update Accept Description 2"));
+		
+		// Accept both reservations for participant 1
+		Reservation testReservation2 = controller.selectReservationBy(Table_Reservation.COLUMN_TITLE, "Test Update Accept 2").get(0);
+		List<Reservation> reservations = new ArrayList<Reservation>();
+		reservations.add(testReservation);
+		reservations.add(testReservation2);
+		// No reservation should be accepted by participant 1 at beginning
+		assertTrue(testReservation2.getHostList().size() == 1);
+		assertTrue(testReservation2.getParticipantList().size() == 2);
+		assertTrue(testReservation2.getAcceptedParticipantsList().size() == 0);
+		assertFalse(testReservation.hasUserAcceptedReservation(testParticipant1));
+		assertFalse(testReservation2.hasUserAcceptedReservation(testParticipant1));
+		// Accept
+		// Test if reservation objects are updated
+		assertTrue(controller.updateAcceptReservation(testParticipant1, reservations, true));
+		assertTrue(testReservation.getAcceptedParticipantsList().size() == 1);
+		assertTrue(testReservation.hasUserAcceptedReservation(testParticipant1));
+		assertTrue(testReservation2.getAcceptedParticipantsList().size() == 1);
+		assertTrue(testReservation2.hasUserAcceptedReservation(testParticipant1));
+		// Test if database is updated
+		testSelectReservation = controller.selectReservationBy(Table_Reservation.COLUMN_ID, testReservation.getReservationID()).get(0);
+		Reservation testSelectReservation2 = controller.selectReservationBy(Table_Reservation.COLUMN_ID, testReservation2.getReservationID()).get(0);
+		assertTrue(testSelectReservation.getAcceptedParticipantsList().size() == 1);
+		assertTrue(testSelectReservation.hasUserAcceptedReservation(testParticipant1));
+		assertTrue(testSelectReservation2.getAcceptedParticipantsList().size() == 1);
+		assertTrue(testSelectReservation2.hasUserAcceptedReservation(testParticipant1));
+		
+		// Cancel both reservation for participant 1
+		assertTrue(controller.updateAcceptReservation(testParticipant1, reservations, false));
+		assertTrue(testReservation.getAcceptedParticipantsList().size() == 0);
+		assertTrue(testReservation2.getAcceptedParticipantsList().size() == 0);
+		assertFalse(testReservation.hasUserAcceptedReservation(testParticipant1));
+		assertFalse(testReservation2.hasUserAcceptedReservation(testParticipant1));
+		// Test if database is updated
+		testSelectReservation = controller.selectReservationBy(Table_Reservation.COLUMN_ID, testReservation.getReservationID()).get(0);
+		testSelectReservation2 = controller.selectReservationBy(Table_Reservation.COLUMN_ID, testReservation2.getReservationID()).get(0);
+		assertTrue(testSelectReservation.getAcceptedParticipantsList().size() == 0);
+		assertFalse(testSelectReservation.hasUserAcceptedReservation(testParticipant1));
+		assertTrue(testSelectReservation2.getAcceptedParticipantsList().size() == 0);
+		assertFalse(testSelectReservation2.hasUserAcceptedReservation(testParticipant1));
+		
+		// Delete room (Deletes also all reservations)
+		assertTrue(controller.deleteRoom(testRoom.getRoomID()));
+		// Delete users
+		assertTrue(controller.deleteUser(testHost.getUserID()));
+		assertTrue(controller.deleteUser(testParticipant1.getUserID()));
+		assertTrue(controller.deleteUser(testParticipant2.getUserID()));
 	}
 
 	// --- ROW ---
