@@ -16,10 +16,14 @@ import java.util.Set;
 
 import org.vaadin.dialogs.ConfirmDialog;
 
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.datefield.Resolution;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -41,7 +45,6 @@ import com.vaadin.ui.components.calendar.CalendarComponentEvents.EventClick;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents.EventClickHandler;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents.RangeSelectEvent;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents.RangeSelectHandler;
-import com.vaadin.ui.components.calendar.event.CalendarEvent;
 
 import ch.bfh.ti.soed.hs16.srs.purple.controller.ReservationController;
 import ch.bfh.ti.soed.hs16.srs.purple.model.Reservation;
@@ -55,6 +58,7 @@ public class ReservationView implements ViewTemplate {
 	// membervariables
 	private List<User> participant, hostList;
 	private List<Room> roomList;
+	private List<Reservation> resList;
 	private ClickListener clButton;
 	private Reservation res;
 	private User actualUser;
@@ -75,6 +79,9 @@ public class ReservationView implements ViewTemplate {
 	private Window popUpWindow;
 	private GridLayout layout = new GridLayout(2, 2);
 	
+	//Container for calendar
+	private final BeanItemContainer<Reservation> calEvents = new BeanItemContainer<>(Reservation.class);
+	
 	private static String USER_SESSION_ATTRIBUTE = "user";
 	
 	/**
@@ -84,6 +91,7 @@ public class ReservationView implements ViewTemplate {
 		hostList = resCont.getAllUsers();
 		participant = resCont.getAllUsers();
 		roomList = resCont.getAllRooms();
+		resList = resCont.getAllReservations();
 	}
 
 	/**
@@ -146,6 +154,11 @@ public class ReservationView implements ViewTemplate {
 						setEditable(true);
 						return;
 					}
+					//Validating checks
+					if(title.getValue().length() < 3)
+						title.setStyleName("errorTextField");
+					if(rooms.getValue() == null)
+						return;
 					Timestamp startTime = new Timestamp(startDate.getValue().getTime());
 					Timestamp endTime = new Timestamp(endDate.getValue().getTime());
 					List<User> hosts = new ArrayList<User>();
@@ -208,16 +221,49 @@ public class ReservationView implements ViewTemplate {
 			}
 		});
 		
+		ValueChangeListener vcl = new ValueChangeListener() {
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				int val = (int) viewSelect.getValue();
+				if(val == -1)
+				{
+					resList = resCont.getAllReservations();
+				}
+				if(val == -2)
+				{
+					resList = resCont.getAllReservationsFromUser(actualUser);
+				}
+				if(val > 0) //Raum
+				{
+					for(int i = 0;i < roomList.size();i++)
+						if(roomList.get(i).getRoomID() == val)
+							actualRoom = roomList.get(i);
+					resList = resCont.getAllReservationsFromRoom(actualRoom.getRoomID());
+				}
+				calendarUpdate();
+			}
+		};
+		
 		viewSelect = new NativeSelect();
-		viewSelect.addItem(1);
-		viewSelect.setItemCaption(1, "Übersicht");
-		viewSelect.addItem(2);
-		viewSelect.setItemCaption(2, "Eigene Reservationen");
-		viewSelect.select(1);
+		viewSelect.addItem(-1);
+		viewSelect.setItemCaption(-1, "Übersicht");
+		viewSelect.addItem(-2);
+		viewSelect.setItemCaption(-2, "Eigene Reservationen");
+		viewSelect.select(-1);
+		viewSelect.addValueChangeListener(vcl);
+		viewSelect.addItem(0);
+		viewSelect.setItemCaption(0, "--- Räume ---");
+		for(int i = 0;i < roomList.size();i++)
+		{
+			viewSelect.addItem(roomList.get(i).getRoomID());
+			viewSelect.setItemCaption(roomList.get(i).getRoomID(), roomList.get(i).getName() + "(" + roomList.get(i).getNumberOfSeats() + " Plätze)");
+		}
 
 		layout.addComponent(siteTitle, 0, 0);
 		layout.addComponent(cal, 0, 1, 1, 1);
 		layout.addComponent(viewSelect, 1, 0);
+		layout.setComponentAlignment(viewSelect, Alignment.MIDDLE_RIGHT);
 		layout.setRowExpandRatio(0, 0.1f);
 		layout.setRowExpandRatio(1, 20);
 		//layout.setMargin(true);
@@ -305,6 +351,8 @@ public class ReservationView implements ViewTemplate {
 			rooms.setItemCaption(roomList.get(i).getRoomID(), caption);
 			if(!newRes)
 				rooms.select(res.getRoom().getRoomID());
+			if(newRes && actualRoom != null)
+				rooms.select(actualRoom.getRoomID());
 		}
 		saveButton = new Button("Speichern");
 		saveButton.addClickListener(clButton);
@@ -378,15 +426,13 @@ public class ReservationView implements ViewTemplate {
 	 * Updates the calendar
 	 */
 	private void calendarUpdate(){
-		List<CalendarEvent> tmp = cal.getEvents(cal.getStartDate(), cal.getEndDate());
-		System.out.println(tmp.size());
-		for(int i = 0;i < tmp.size();i++)
-			cal.removeEvent(tmp.get(i));
-		List<Reservation> res = resCont.getAllReservations(); //TODO getReservations from to
-		for(int i = 0; i < res.size(); i++){
-			if(isHost(actualUser, res.get(i).getHostList()))
-				res.get(i).setStyleName("gruen");
-			cal.addEvent(res.get(i));
-		}
+		calEvents.removeAllItems();
+		for(int i = 0; i < resList.size(); i++)
+			if(isHost(actualUser, resList.get(i).getHostList()))
+				resList.get(i).setStyleName("gruen");
+		calEvents.addAll(resList);
+		calEvents.sort(new Object[]{"start"}, new boolean[]{true});
+		
+		cal.setContainerDataSource(calEvents);
 	}
 }
