@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2016 Berner Fachhochschule, Switzerland.
+ *
+ * Project Smart Reservation System.
+ *
+ * Distributable under GPL license. See terms of license at gnu.org.
+ */
 package ch.bfh.ti.soed.hs16.srs.purple.util;
 
 import java.io.IOException;
@@ -28,7 +35,7 @@ public class Email {
 	private TrustManager[] trustAllCerts;
 	private SSLContext sc;
 	private URL site;
-	
+
 	/**
 	 * Konstruktor der Email Klasse. Es werden alle Parameter direkt hier übergeben
 	 * @param to Empfänger
@@ -39,19 +46,22 @@ public class Email {
 		this.to = to;
 		this.subject = subject;
 		this.message = message;
-		
+
 		//Trust all Certs, so we can use our own certified ssl certificate -> more security
 		trustAllCerts = new TrustManager[] { new X509TrustManager() {
-		      public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+		      @Override
+			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
 		        return null;
 		      }
 
-		      public void checkClientTrusted(X509Certificate[] certs, String authType) {
+		      @Override
+			public void checkClientTrusted(X509Certificate[] certs, String authType) {
 		      }
 
-		      public void checkServerTrusted(X509Certificate[] certs, String authType) {
+		      @Override
+			public void checkServerTrusted(X509Certificate[] certs, String authType) {
 		      }
-		    } 
+		    }
 		};
 		try {
 			sc = SSLContext.getInstance("SSL");
@@ -62,14 +72,15 @@ public class Email {
 			e.printStackTrace();
 		}
 		HostnameVerifier allHostsValid = new HostnameVerifier() {
-	        public boolean verify(String hostname, SSLSession session) {
+	        @Override
+			public boolean verify(String hostname, SSLSession session) {
 	          return true;
 	        }
 	    };
 	    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 	    // Install the all-trusting host verifier
 	    HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-		
+
 		try {
 			//site = new URL(Resources.getSystem().getString(R.string.php_url));
 			this.site = new URL("https://sds-ranking.ch/bfh/reservation.php");
@@ -77,7 +88,7 @@ public class Email {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Liefert den Empfänger zurück
 	 * @return Den Empfänger als String
@@ -134,7 +145,7 @@ public class Email {
 	{
 		String data, response = "false";
 		data = "to=" + to + "&subject=" + subject + "&message=" + message;
-		try 
+		try
 		{
 			if(con == null)
 			{
@@ -148,7 +159,7 @@ public class Email {
 			out.flush();
 			out.close();
 			response = read();
-		} 
+		}
 		catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -156,7 +167,7 @@ public class Email {
 			return true;
 		return false;
 	}
-	
+
 	private String read()
 	{
 		try

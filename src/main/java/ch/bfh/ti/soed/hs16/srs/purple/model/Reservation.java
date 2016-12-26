@@ -23,15 +23,15 @@ import com.vaadin.ui.components.calendar.event.BasicEvent;
  */
 @SuppressWarnings("serial")
 public class Reservation extends BasicEvent{
-	private Integer reservationID;
-	private Room room;
-	private Timestamp startDate;
-	private Timestamp endDate;
-	private List<User> hostList;
-	private List<User> participantList;
+	private final Integer reservationID;
+	private final Room room;
+	private final Timestamp startDate;
+	private final Timestamp endDate;
+	private final List<User> hostList;
+	private final List<User> participantList;
 	private List<User> acceptedParticipantsList;
-	private String title;
-	private String description;
+	private final String title;
+	private final String description;
 
 	public Reservation(Integer reservationID, Timestamp startDate, Timestamp endDate, Room room, String title, String description){
 		super();
@@ -49,7 +49,7 @@ public class Reservation extends BasicEvent{
 		participantList = new ArrayList<User>();
 		acceptedParticipantsList = new ArrayList<User>();
 	}
-	
+
 	public Reservation(Integer reservationID, Timestamp startDate, Timestamp endDate, Room room, String title, String description, List<User> hosts){
 		super();
 		this.reservationID = reservationID;
@@ -65,7 +65,7 @@ public class Reservation extends BasicEvent{
 		hostList = hosts;
 		participantList = new ArrayList<User>();
 	}
-	
+
 	public Reservation(Integer reservationID, Timestamp startDate, Timestamp endDate, Room room, String title, String description, List<User> hosts, List<User> participants){
 		super();
 		this.reservationID = reservationID;
@@ -81,11 +81,11 @@ public class Reservation extends BasicEvent{
 		hostList = hosts;
 		participantList = participants;
 	}
-	
+
 	public boolean haveAllParticipantsAccepted() {
 		return participantList.size() == acceptedParticipantsList.size();
 	}
-	
+
 	public boolean hasUserAcceptedReservation(User user){
 		boolean hasAccepted = false;
 		for(User acceptedUser : acceptedParticipantsList){
@@ -117,7 +117,7 @@ public class Reservation extends BasicEvent{
 	public void addParticipant(User participant){
 		participantList.add(participant);
 	}
-	
+
 	public void addAcceptedParticipant(User participant) {
 		acceptedParticipantsList.add(participant);
 	}
@@ -134,6 +134,7 @@ public class Reservation extends BasicEvent{
 		return title;
 	}
 
+	@Override
 	public String getDescription() {
 		return description;
 	}

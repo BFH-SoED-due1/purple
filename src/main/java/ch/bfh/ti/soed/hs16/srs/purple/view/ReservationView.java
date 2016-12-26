@@ -53,11 +53,11 @@ import ch.bfh.ti.soed.hs16.srs.purple.model.User;
 
 public class ReservationView implements ViewTemplate {
 
-	private ReservationController resCont = new ReservationController();
-	
+	private final ReservationController resCont = new ReservationController();
+
 	// membervariables
-	private List<User> participant, hostList;
-	private List<Room> roomList;
+	private final List<User> participant, hostList;
+	private final List<Room> roomList;
 	private List<Reservation> resList;
 	private ClickListener clButton;
 	private Reservation res;
@@ -67,7 +67,7 @@ public class ReservationView implements ViewTemplate {
 
 	// UI Components
 	private final Calendar cal = new Calendar();
-	private Label siteTitle = new Label("Reservation");
+	private final Label siteTitle = new Label("Reservation");
 	private DateField startDate;
 	private DateField endDate;
 	private TextField title;
@@ -78,13 +78,13 @@ public class ReservationView implements ViewTemplate {
 	private NativeSelect rooms;
 	private Button saveButton, deleteButton;
 	private Window popUpWindow;
-	private GridLayout layout = new GridLayout(2, 2);
-	
+	private final GridLayout layout = new GridLayout(2, 2);
+
 	//Container for calendar
 	private final BeanItemContainer<Reservation> calEvents = new BeanItemContainer<>(Reservation.class);
-	
+
 	private static String USER_SESSION_ATTRIBUTE = "user";
-	
+
 	/**
 	 * Constructor: ReservationView
 	 */
@@ -125,13 +125,13 @@ public class ReservationView implements ViewTemplate {
 				showPopup(new Reservation(-1, start, ende, null, "", ""));
 			}
 		});
-		
+
 		/**
 		 * DateClickHandler
 		 * switches between dayli and monthly view
 		 */
 		cal.setHandler(new DateClickHandler() {
-			
+
 			@Override
 			public void dateClick(DateClickEvent event) {
 				if(cal.getEndDate().getTime() - cal.getStartDate().getTime() == 0)
@@ -182,7 +182,7 @@ public class ReservationView implements ViewTemplate {
 						for(int y = 0;y < hostList.size();y++)
 							if(hostList.get(y).getUserID() == id && !isHost(hostList.get(y), hosts)) //Teilnehmer nur speichern, wenn er nicht bereits Host ist
 								participants.add(hostList.get(y));
-					
+
 					System.out.println(hosts.get(0).getUsername());
 					if(res.getReservationID() > 0) //Edit
 					{
@@ -205,7 +205,7 @@ public class ReservationView implements ViewTemplate {
 				{
 					//Confirm
 					ConfirmDialog.show(UI.getCurrent(), "Löschen bestätigen", "Die Reservation wirklich löschen?", "Ja", "Abbrechen", new ConfirmDialog.Listener() {
-						
+
 						@Override
 						public void onClose(ConfirmDialog arg0) {
 							if(arg0.isConfirmed())
@@ -220,7 +220,7 @@ public class ReservationView implements ViewTemplate {
 				}
 			}
 		};
-		
+
 		cal.setHandler(new EventClickHandler() {
 			@Override
 			public void eventClick(EventClick event) {
@@ -230,9 +230,9 @@ public class ReservationView implements ViewTemplate {
 				showPopup(e);
 			}
 		});
-		
+
 		ValueChangeListener vcl = new ValueChangeListener() {
-			
+
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				int val = (int) viewSelect.getValue();
@@ -241,7 +241,7 @@ public class ReservationView implements ViewTemplate {
 				calendarUpdate();
 			}
 		};
-		
+
 		viewSelect = new NativeSelect();
 		viewSelect.addItem(-1);
 		viewSelect.setItemCaption(-1, "Übersicht");
@@ -267,7 +267,7 @@ public class ReservationView implements ViewTemplate {
 		//layout.setSpacing(true);
 		layout.setSizeFull();
 	}
-	
+
 	/**
 	 * Shows the popup window where a reservation can be modified, deleted or inserted
 	 * @param res The Reservation Object (for a new reservation, fill the startDate with the current Timestamp!)
@@ -279,7 +279,7 @@ public class ReservationView implements ViewTemplate {
 		boolean isHost = isHost(actualUser, res.getHostList());
 		final GridLayout gridLayout = new GridLayout(3, 5);
 		ValueChangeListener vcl = new ValueChangeListener() {
-			
+
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				//TODO: refresh the free rooms in the given time space
@@ -332,7 +332,7 @@ public class ReservationView implements ViewTemplate {
 		participantList = new ListSelect("Teilnehmer");
 		participantList.setMultiSelect(true);
 		participantList.clear();
-		
+
 		for (int i = 0; i < participant.size(); i++) {
 			participantList.addItem(participant.get(i).getUserID());
 			participantList.setItemCaption(participant.get(i).getUserID(), participant.get(i).getUsername());
@@ -389,7 +389,7 @@ public class ReservationView implements ViewTemplate {
 		popUpWindow.setCaption(res.getReservationID() > 0 ? "Reservierungsdetails" : "Neue Reservierung");
 		UI.getCurrent().addWindow(popUpWindow);
 	}
-	
+
 	/**
 	 * Checks if the user is in the hostList
 	 * @param user the user to be checked
@@ -403,7 +403,7 @@ public class ReservationView implements ViewTemplate {
 				return true;
 		return false;
 	}
-	
+
 	private void setEditable(boolean editable)
 	{
 		saveButton.setCaption(editable ? "Speichern" : "Bearbeiten");
@@ -417,7 +417,7 @@ public class ReservationView implements ViewTemplate {
 		participantList.setReadOnly(editable);
 		hosts.setReadOnly(editable);
 	}
-	
+
 	/**
 	 * Function shows the view on the content panel
 	 */
@@ -454,7 +454,7 @@ public class ReservationView implements ViewTemplate {
 				resList.get(i).setStyleName("gruen");
 		calEvents.addAll(resList);
 		calEvents.sort(new Object[]{"start"}, new boolean[]{true});
-		
+
 		cal.setContainerDataSource(calEvents);
 	}
 }
