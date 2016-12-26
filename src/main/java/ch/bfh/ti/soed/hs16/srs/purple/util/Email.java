@@ -23,7 +23,7 @@ import javax.net.ssl.X509TrustManager;
  */
 public class Email {
 
-	private String to, from, subject, message;
+	private String to, subject, message;
 	private HttpsURLConnection con;
 	private TrustManager[] trustAllCerts;
 	private SSLContext sc;
@@ -95,22 +95,6 @@ public class Email {
 	}
 
 	/**
-	 * Liefert den Absender der Mail
-	 * @return Den Absender als String
-	 */
-	public String getFrom() {
-		return from;
-	}
-
-	/**
-	 * Setzt den Absender des Mails (hat keine Wirkung, da der Mailserver nur "vertrauenswürdige" Mailadressen als Absender akzeptiert; der Sender ist fest vorgegeben)
-	 * @param from Den Absender (siehe oben)
-	 */
-	public void setFrom(String from) {
-		this.from = from;
-	}
-
-	/**
 	 * Liefert den Betreff der Mail
 	 * @return Der Betreff
 	 */
@@ -149,7 +133,7 @@ public class Email {
 	public boolean send()
 	{
 		String data, response = "false";
-		data = "to=" + to + "&from=" + from + "&subject=" + subject + "&message=" + message;
+		data = "to=" + to + "&subject=" + subject + "&message=" + message;
 		try 
 		{
 			if(con == null)

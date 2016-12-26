@@ -63,6 +63,7 @@ public class ReservationView implements ViewTemplate {
 	private Reservation res;
 	private User actualUser;
 	private Room actualRoom;
+	private int actualView = -1;
 
 	// UI Components
 	private final Calendar cal = new Calendar();
@@ -117,7 +118,11 @@ public class ReservationView implements ViewTemplate {
 
 			@Override
 			public void rangeSelect(RangeSelectEvent event) {
-				showPopup(new Reservation(-1, new Timestamp(event.getStart().getTime()), new Timestamp(event.getEnd().getTime()), null, "", ""));
+				Timestamp start = new Timestamp(event.getStart().getTime());
+				Timestamp ende = new Timestamp(event.getEnd().getTime());
+				if(start.compareTo(ende) == 0)
+					ende.setTime(ende.getTime() + 3600 * 1000); //if start and end are the same, add 1 hour to the end
+				showPopup(new Reservation(-1, start, ende, null, "", ""));
 			}
 		});
 		
@@ -162,21 +167,26 @@ public class ReservationView implements ViewTemplate {
 					Timestamp startTime = new Timestamp(startDate.getValue().getTime());
 					Timestamp endTime = new Timestamp(endDate.getValue().getTime());
 					List<User> hosts = new ArrayList<User>();
+					//Hosts auslesen
 					Set<Integer> temp = (Set<Integer>) ReservationView.this.hosts.getValue();
 					for(int id : temp)
 						for(int y = 0;y < hostList.size();y++)
 							if(hostList.get(y).getUserID() == id)
 								hosts.add(hostList.get(y));
+					if(hosts.size() == 0) //Wenn kein User als Host ist, wird der aktuelle User als Host genommen
+						hosts.add(actualUser);
 					List<User> participants = new ArrayList<User>();
+					//Teilnehmer auslesen
 					Set<Integer> temp2 = (Set<Integer>) ReservationView.this.participantList.getValue();
 					for(int id : temp2)
 						for(int y = 0;y < hostList.size();y++)
-							if(hostList.get(y).getUserID() == id)
+							if(hostList.get(y).getUserID() == id && !isHost(hostList.get(y), hosts)) //Teilnehmer nur speichern, wenn er nicht bereits Host ist
 								participants.add(hostList.get(y));
 					
 					System.out.println(hosts.get(0).getUsername());
 					if(res.getReservationID() > 0) //Edit
 					{
+						//TODO: Muss noch auf die edit Methode vom Controller geändert werden, sobald vorhanden
 						Reservation newRes = new Reservation(res.getReservationID(), startTime, endTime, resCont.getRoom((int) rooms.getValue()), title.getValue(), description.getValue(), hosts, participants);
 						resCont.deleteReservation(res.getReservationID());
 						resCont.addReservation(newRes);
@@ -226,21 +236,8 @@ public class ReservationView implements ViewTemplate {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				int val = (int) viewSelect.getValue();
-				if(val == -1)
-				{
-					resList = resCont.getAllReservations();
-				}
-				if(val == -2)
-				{
-					resList = resCont.getAllReservationsFromUser(actualUser);
-				}
-				if(val > 0) //Raum
-				{
-					for(int i = 0;i < roomList.size();i++)
-						if(roomList.get(i).getRoomID() == val)
-							actualRoom = roomList.get(i);
-					resList = resCont.getAllReservationsFromRoom(actualRoom.getRoomID());
-				}
+				if(val != 0)
+					actualView = val;
 				calendarUpdate();
 			}
 		};
@@ -281,16 +278,27 @@ public class ReservationView implements ViewTemplate {
 		boolean newRes = res.getReservationID() > 0 ? false : true;
 		boolean isHost = isHost(actualUser, res.getHostList());
 		final GridLayout gridLayout = new GridLayout(3, 5);
+		ValueChangeListener vcl = new ValueChangeListener() {
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				//TODO: refresh the free rooms in the given time space
+				startDate.getValue().getTime(); //Startzeit
+				endDate.getValue().getTime(); //Endzeit
+			}
+		};
 		popUpWindow = new Window();
 		popUpWindow.center();
 		popUpWindow.setModal(true);
 		startDate = new DateField("Startzeit");
 		startDate.setLocale(VaadinSession.getCurrent().getLocale());
-		startDate.setDateFormat("dd.MM.yyyy HH:mm");
 		startDate.setValue(res.getStart());
+		startDate.addValueChangeListener(vcl);
+		startDate.setDateFormat("dd.MM.yyyy HH:mm");
 		startDate.setResolution(Resolution.HOUR);
 		endDate = new DateField("Endzeit");
 		endDate.setValue(res.getEnd());
+		endDate.addValueChangeListener(vcl);
 		endDate.setDateFormat("dd.MM.yyyy HH:mm");
 		endDate.setLocale(VaadinSession.getCurrent().getLocale());
 		endDate.setResolution(Resolution.HOUR);
@@ -338,12 +346,11 @@ public class ReservationView implements ViewTemplate {
 					if(participant.get(y).getUserID() == resPart.get(i).getUserID())
 						participantList.select(resPart.get(i).getUserID());
 		}
-		else
-			participantList.select(actualUser.getUserID());
 		participantList.setRows(participant.size() > 5 ? 5 : participant.size());
 		rooms = new NativeSelect("Raum");
-		rooms.clear();
 		rooms.setNullSelectionAllowed(false);
+		rooms.removeAllItems();
+		//TODO: Get free rooms for the selected timeslot
 		for(int i = 0;i < roomList.size();i++)
 		{
 			rooms.addItem(roomList.get(i).getRoomID());
@@ -427,6 +434,21 @@ public class ReservationView implements ViewTemplate {
 	 */
 	private void calendarUpdate(){
 		calEvents.removeAllItems();
+		if(actualView == -1) //Alle Reservationen
+		{
+			resList = resCont.getAllReservations();
+		}
+		if(actualView == -2) //Eigene Reservationen
+		{
+			resList = resCont.getAllReservationsFromUser(actualUser);
+		}
+		if(actualView > 0) //Raum
+		{
+			for(int i = 0;i < roomList.size();i++)
+				if(roomList.get(i).getRoomID() == actualView)
+					actualRoom = roomList.get(i);
+			resList = resCont.getAllReservationsFromRoom(actualRoom.getRoomID());
+		}
 		for(int i = 0; i < resList.size(); i++)
 			if(isHost(actualUser, resList.get(i).getHostList()))
 				resList.get(i).setStyleName("gruen");
