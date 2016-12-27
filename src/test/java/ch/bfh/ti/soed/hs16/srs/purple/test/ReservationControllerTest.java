@@ -8,7 +8,6 @@
 package ch.bfh.ti.soed.hs16.srs.purple.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -19,7 +18,6 @@ import java.util.List;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController;
@@ -55,7 +53,7 @@ public class ReservationControllerTest {
 		testUserHostList.add(testUserHost);
 		DBController.getInstance().insertNewUser("Test", "Participant", "patrik.aebischer@hotmail.com", "TestUserPart", "1234", DBController.getInstance().selectAllFunctions().get(0), DBController.getInstance().selectAllRoles().get(0));
 		testUserPart = DBController.getInstance().selectUserBy(Table_User.COLUMN_USERNAME, "TestUserPart").get(0);
-		testUserPartList.add(testUserHost);
+		testUserPartList.add(testUserPart);
 	}
 
 	@Test
@@ -72,7 +70,7 @@ public class ReservationControllerTest {
 		int resID = DBController.getInstance().selectReservationBy(Table_Reservation.COLUMN_ROOMID, testRoom2.getRoomID()).get(0).getReservationID();
 		assertTrue(reservationController.deleteReservation(resID));
 	}
-/*
+
 	@Test
 	public void testAcceptReservation(){
 		Reservation res = new Reservation(-1, startTime1, endTime1, testRoom1, "Test add Reservation", "Reservation added!", testUserHostList, testUserPartList);
@@ -81,51 +79,63 @@ public class ReservationControllerTest {
 		reservationController.acceptReservation(testUserPart, res);
 		res = DBController.getInstance().selectReservationBy(Table_Reservation.COLUMN_ROOMID, testRoom1.getRoomID()).get(0);
 		assertEquals(res.getAcceptedParticipantsList().get(0).getUsername(), "TestUserPart");
-	}*/
-
-	@Ignore
-	public void testCancelReservation(){
-
+		reservationController.deleteReservation(res.getReservationID());
 	}
 
-	// TODO
-	@Ignore
+	@Test
+	public void testCancelReservation(){
+		Reservation res = new Reservation(-1, startTime1, endTime1, testRoom1, "Test add Reservation", "Reservation added!", testUserHostList, testUserPartList);
+		reservationController.addReservation(res);
+		res = DBController.getInstance().selectReservationBy(Table_Reservation.COLUMN_ROOMID, testRoom1.getRoomID()).get(0);
+		reservationController.cancelReservation(testUserPart, res);
+		res = DBController.getInstance().selectReservationBy(Table_Reservation.COLUMN_ROOMID, testRoom1.getRoomID()).get(0);
+		assertEquals(res.getAcceptedParticipantsList().size(), 0);
+		reservationController.deleteReservation(res.getReservationID());
+	}
+
+	@Test
 	public void testGetAllRooms(){
-		//TODO: Räume hinzufügen und wieder löschen
 		assertNotNull(reservationController.getAllRooms());
 	}
 
-	@Ignore
+	@Test
 	public void testGetAllReservationsFromRoom(){
-
-		//assertNotNull(reservationController.getAllReservationsFromRoom(roomID));
+		reservationController.addReservation(new Reservation(-1, startTime1, endTime1, testRoom1, "Test add Reservation", "Reservation added!", testUserHostList, testUserPartList));
+		assertEquals(reservationController.getAllReservationsFromRoom(testRoom1.getRoomID()).size(), 1);
+		//reservationController.deleteReservation(DBController.getInstance().selectReservationBy(Table_Reservation.COLUMN_ROOMID, testRoom1.getRoomID()).get(0).getReservationID());
 	}
 
-	@Ignore
+	@Test
 	public void testGetAllReservationsFromUser(){
-
+		assertEquals(reservationController.getAllReservationsFromUser(testUserHost).size(),1);
 	}
 
-	@Ignore
+	@Test
 	public void testGetAllUsers(){
-
+		assertNotNull(reservationController.getAllUsers());
 	}
 
-	// TODO
-	@Ignore
+	@Test
 	public void testGetSessionUser(){
-		assertEquals(reservationController.getSessionUser(DBController.getInstance().selectAllUsers().get(0).toString()), DBController.getInstance().selectAllUsers().get(0).toString());
+		assertEquals(reservationController.getSessionUser("TestUser").getUsername(), DBController.getInstance().selectUserBy(Table_User.COLUMN_ID, testUserHost.getUserID()).get(0).getUsername());
 	}
 
-	@Ignore
+	@Test
 	public void testGetAllReservations(){
-
+		assertNotNull(reservationController.getAllReservations());
+		reservationController.deleteReservation(DBController.getInstance().selectReservationBy(Table_Reservation.COLUMN_ROOMID, testRoom1.getRoomID()).get(0).getReservationID());
 	}
 
-	// TODO
-	@Ignore
-	public void testWrongReservation(){
-		assertFalse(reservationController.addReservation(null));
+	@Test
+	public void testGetAllFreeRooms(){
+		reservationController.addReservation(new Reservation(-1, startTime1, endTime1, testRoom1, "Test add Reservation", "Reservation added!", testUserHostList));
+		assertNotNull(reservationController.getAllFreeRooms(startTime1, endTime1));
+		reservationController.deleteReservation(DBController.getInstance().selectReservationBy(Table_Reservation.COLUMN_ROOMID, testRoom1.getRoomID()).get(0).getReservationID());
+	}
+
+	@Test
+	public void testGetRoom(){
+		assertNotNull(reservationController.getRoom(testRoom1.getRoomID()));
 	}
 
 	@AfterClass

@@ -17,11 +17,8 @@ import ch.bfh.ti.soed.hs16.srs.purple.model.Reservation;
 import ch.bfh.ti.soed.hs16.srs.purple.model.Room;
 import ch.bfh.ti.soed.hs16.srs.purple.model.User;
 import ch.bfh.ti.soed.hs16.srs.purple.util.Email;
-import ch.bfh.ti.soed.hs16.srs.purple.view.ReservationView;
 
 public class ReservationController {
-	private ReservationView reservationView;
-	private User user;
 	private DBController dbController;
 
 	private static String DOMAIN = "Unsere Website";
