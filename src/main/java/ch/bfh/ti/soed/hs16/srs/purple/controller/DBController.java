@@ -605,6 +605,124 @@ public class DBController {
 		}
 		return success;
 	}
+	
+	public boolean updateReservation(Reservation editedReservation) {
+		// Get reservation before update
+		Reservation reservation = selectReservationBy(Table_Reservation.COLUMN_ID, editedReservation.getReservationID()).get(0);
+		Timestamp oldStartDate = reservation.getStartDate();
+		Timestamp oldEndDate = reservation.getEndDate();
+		Timestamp newStartDate = editedReservation.getStartDate();
+		Timestamp newEndDate = editedReservation.getEndDate();
+		Room oldRoom = reservation.getRoom();
+		Room newRoom = editedReservation.getRoom();
+		// Check if the reservation has a new room or not and if the room is free for the new time interval
+		boolean isNewRoomFree = false;
+		boolean isOldRoomFree = false;
+		if(oldRoom.getRoomID().equals(newRoom.getRoomID())) {
+			boolean isFreeBefore = false;
+			boolean isFreeAfter = false;
+			// If the reservation begins earlier -> check if room is free before
+			if(newStartDate.getTime() < oldStartDate.getTime()) {
+				for(Room room : selectFreeRooms(newStartDate, oldStartDate)) {
+					if(room.getRoomID().equals(oldRoom.getRoomID())) isFreeBefore = true;
+				}
+			}
+			// If the reservation ends later -> check if room is free after
+			if(newStartDate.getTime() > oldStartDate.getTime()) {
+				for(Room room : selectFreeRooms(oldEndDate, newEndDate)) {
+					if(room.getRoomID().equals(oldRoom.getRoomID())) isFreeAfter = true;
+				}
+			}
+			
+			// If reservation only starts earlier
+			if(newStartDate.getTime() < oldStartDate.getTime() && newEndDate.getTime() <= oldEndDate.getTime()) {
+				if(isFreeBefore) isOldRoomFree = true;
+			} else 
+				// If reservation only ends later
+				if(newStartDate.getTime() > oldStartDate.getTime() && newEndDate.getTime() >= oldEndDate.getTime()) {
+					if(isFreeAfter) isOldRoomFree = true;
+			} else
+				// If reservation starts earlier and ends later
+				if(newStartDate.getTime() < oldStartDate.getTime() && newEndDate.getTime() > oldEndDate.getTime()) {
+					if(isFreeBefore && isFreeAfter) isOldRoomFree = true;
+			}
+			
+			// If the new time interval is between the old time interval -> reservation can be updated
+			if(newStartDate.getTime() >= oldStartDate.getTime() && newEndDate.getTime() <= oldEndDate.getTime()) {
+				isOldRoomFree = true;
+			}
+		} else {
+			// Check if new room is free for the new time interval
+			for(Room room : selectFreeRooms(newStartDate, newEndDate)) {
+				if(room.getRoomID().equals(newRoom.getRoomID())) isNewRoomFree = true;
+			}
+		}
+		
+		// If the new room or the old room is free for the new time interval -> update reservation
+		boolean successUpdate = true;
+		boolean successDeleteHosts = true;
+		boolean successDeleteParticipants = true;
+		boolean successInsertHosts = true;
+		boolean successInsertparticipants = true;
+		if((editedReservation.getHostList().size() > 0) && (isNewRoomFree || isOldRoomFree)) {
+			// Update reservation
+			String updateStmt = "UPDATE reservation SET startdate = '"+editedReservation.getStartDate()+"', enddate = '"+editedReservation.getEndDate()+"', "
+					+ "roomid = "+editedReservation.getRoom().getRoomID()+", title = '"+editedReservation.getTitle()+"', description = '"+editedReservation.getDescription()+"' "
+							+ "WHERE idreservation = "+editedReservation.getReservationID();
+			successUpdate = executeUpdate(updateStmt).isSuccess();
+			
+			// Update assigned hosts and participants
+			List<User> oldHosts = reservation.getHostList();
+			List<User> newHosts = editedReservation.getHostList();
+			List<User> oldParticipants = reservation.getParticipantList();
+			List<User> newParticipants = editedReservation.getParticipantList();
+			
+			List<User> hostsToAdd = getLeftDiffUsers(newHosts, oldHosts);
+			List<User> hostsToDelete = getLeftDiffUsers(oldHosts, newHosts);
+			List<User> participantsToAdd = getLeftDiffUsers(newParticipants, oldParticipants);
+			List<User> participantsToDelete = getLeftDiffUsers(oldParticipants, newParticipants);
+			
+			// Add and Delete hosts and participants
+			updateStmt = "DELETE FROM userreservation WHERE ";
+			for(User hostToDelete : hostsToDelete) {
+				updateStmt += "(reservationid = "+editedReservation.getReservationID()+" AND userid = "+hostToDelete.getUserID()+")";
+				if(hostsToDelete.indexOf(hostToDelete) < hostsToDelete.size() - 1) updateStmt +=" OR ";
+			}
+			if(hostsToDelete.size() > 0) successDeleteHosts = executeUpdate(updateStmt).isSuccess();
+			
+			updateStmt = "DELETE FROM userreservation WHERE ";
+			for(User participantToDelete : participantsToDelete) {
+				updateStmt += "(reservationid = "+editedReservation.getReservationID()+" AND userid = "+participantToDelete.getUserID()+")";
+				if(participantsToDelete.indexOf(participantToDelete) < participantsToDelete.size() - 1) updateStmt +=" OR ";
+			}
+			if(participantsToDelete.size() > 0) successDeleteParticipants = executeUpdate(updateStmt).isSuccess();
+			
+			for(User hostToAdd : hostsToAdd) {
+				updateStmt = "INSERT INTO userreservation(reservationid, userid, host, accept) "
+						+ "VALUES("+editedReservation.getReservationID()+", "+hostToAdd.getUserID()+",1,1)";
+				successInsertHosts = executeUpdate(updateStmt).isSuccess();
+			}
+			
+			for(User participantToAdd : participantsToAdd) {
+				updateStmt = "INSERT INTO userreservation(reservationid, userid, host, accept) "
+						+ "VALUES("+editedReservation.getReservationID()+", "+participantToAdd.getUserID()+",0,0)";
+				successInsertparticipants = executeUpdate(updateStmt).isSuccess();
+			}
+		}
+		return successUpdate & successDeleteHosts & successDeleteParticipants & successInsertHosts & successInsertparticipants;
+	}
+	
+	private List<User> getLeftDiffUsers(List<User> leftList, List<User> rightList) {
+		List<User> diffUsers = new ArrayList<User>();
+		for(User leftUser : leftList) {
+			boolean diff = true;
+			for(User rightUser : rightList) {
+				if(leftUser.getUserID().equals(rightUser.getUserID())) diff = false;
+			}
+			if(diff) diffUsers.add(leftUser);
+		}
+		return diffUsers;
+	}
 
 	/**
 	 * Function updates an user.

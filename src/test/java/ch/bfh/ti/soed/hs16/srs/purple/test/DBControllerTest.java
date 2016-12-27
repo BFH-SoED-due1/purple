@@ -802,6 +802,75 @@ public class DBControllerTest {
 		assertTrue(controller.deleteUser(testParticipant1.getUserID()));
 		assertTrue(controller.deleteUser(testParticipant2.getUserID()));
 	}
+	
+	@Test
+	public void testUpdateReservation() {
+		DBController controller = DBController.getInstance();
+		// Insert test host
+		String fName = "f testUpdateReservation User 1";
+		String lName = "l testUpdateReservation User 1";
+		String email = "e testUpdateReservation User 1";
+		String uname = "u testUpdateReservation User 1";
+		String pw = "p testUpdateReservation User 1";
+		assertTrue(controller.insertNewUser(fName, lName, email, uname, pw, null, null));
+		User user1 = controller.selectUserBy(Table_User.COLUMN_USERNAME, uname).get(0);
+		List<User> hosts = new ArrayList<User>();
+		hosts.add(user1);
+		
+		// Insert test participants
+		fName = "f testUpdateReservation User 2";
+		lName = "l testUpdateReservation User 2";
+		email = "e testUpdateReservation User 2";
+		uname = "u testUpdateReservation User 2";
+		pw = "p testUpdateReservation User 2";
+		assertTrue(controller.insertNewUser(fName, lName, email, uname, pw, null, null));
+		User user2 = controller.selectUserBy(Table_User.COLUMN_USERNAME, uname).get(0);
+		
+		fName = "f testUpdateReservation User 3";
+		lName = "l testUpdateReservation User 3";
+		email = "e testUpdateReservation User 3";
+		uname = "u testUpdateReservation User 3";
+		pw = "p testUpdateReservation User 3";
+		assertTrue(controller.insertNewUser(fName, lName, email, uname, pw, null, null));
+		User user3 = controller.selectUserBy(Table_User.COLUMN_USERNAME, uname).get(0);
+		
+		List<User> participants = new ArrayList<User>();
+		participants.add(user2);
+		participants.add(user3);
+		
+		
+		// Insert test room
+		controller.insertNewRoom(-10, "Test Room", 55);
+		Room testRoom = controller.selectRoomBy(Table_Room.COLUMN_ROOMNUMBER, -10).get(0);
+		
+		// Insert test reservations
+		Timestamp startDate = Timestamp.valueOf("2018-12-08 08:00:00.000000");
+		Timestamp endDate = Timestamp.valueOf("2018-12-08 12:00:00.000000");
+		assertTrue(controller.insertNewReservation(startDate, endDate, testRoom, hosts, participants, "testUpdateReservation Title", "testUpdateReservation Description"));
+		
+		// Get reservation and edit it
+		Reservation reservation = controller.selectReservationBy(Table_Reservation.COLUMN_ROOMID, testRoom.getRoomID()).get(0);
+		
+		// Add new participant
+		fName = "f testUpdateReservation Added Participant";
+		lName = "l testUpdateReservation Added Participant";
+		email = "e testUpdateReservation Added Participant";
+		uname = "u testUpdateReservation Added Participant";
+		pw = "p testUpdateReservation Added Participant";
+		assertTrue(controller.insertNewUser(fName, lName, email, uname, pw, null, null));
+		User addedparticipant = controller.selectUserBy(Table_User.COLUMN_USERNAME, uname).get(0);
+		
+		reservation.addParticipant(addedparticipant);
+		assertTrue(controller.updateReservation(reservation));
+		
+		// Delete room (Deletes also all reservations)
+		assertTrue(controller.deleteRoom(testRoom.getRoomID()));
+		// Delete users
+		assertTrue(controller.deleteUser(user1.getUserID()));
+		assertTrue(controller.deleteUser(user2.getUserID()));
+		assertTrue(controller.deleteUser(user3.getUserID()));
+		assertTrue(controller.deleteUser(addedparticipant.getUserID()));
+	}
 
 	// --- ROW ---
 	@Test
