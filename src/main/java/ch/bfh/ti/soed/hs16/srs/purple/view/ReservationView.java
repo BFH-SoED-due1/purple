@@ -76,7 +76,7 @@ public class ReservationView implements ViewTemplate {
 	private ListSelect participantList;
 	private NativeSelect viewSelect;
 	private NativeSelect rooms;
-	private Button saveButton, deleteButton;
+	private Button saveButton, deleteButton, acceptButton, rejectButton;
 	private Window popUpWindow;
 	private final GridLayout layout = new GridLayout(2, 2);
 
@@ -128,7 +128,7 @@ public class ReservationView implements ViewTemplate {
 
 		/**
 		 * DateClickHandler
-		 * switches between dayli and monthly view
+		 * switches between daily and monthly view
 		 */
 		cal.setHandler(new DateClickHandler() {
 
@@ -218,6 +218,16 @@ public class ReservationView implements ViewTemplate {
 						}
 					});
 				}
+				if(event.getButton() == acceptButton) //Accept reservation as participant
+				{
+					//TODO: Kommentar wegnehmen
+					//resCont.acceptReservation(actualUser, res);
+				}
+				if(event.getButton() == rejectButton) //reject reservation as participant
+				{
+					//TODO: Kommentar wegnehmen
+					//resCont.cancelReservation(actualUSer, res);
+				}
 			}
 		};
 
@@ -235,6 +245,8 @@ public class ReservationView implements ViewTemplate {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
+				if(viewSelect.getValue() == null)
+					return;
 				int val = (int) viewSelect.getValue();
 				if(val != 0)
 					actualView = val;
@@ -272,11 +284,13 @@ public class ReservationView implements ViewTemplate {
 	 * Shows the popup window where a reservation can be modified, deleted or inserted
 	 * @param res The Reservation Object (for a new reservation, fill the startDate with the current Timestamp!)
 	 */
+	@SuppressWarnings("serial")
 	private void showPopup(Reservation res)
 	{
 		this.res = res; //Update the member
 		boolean newRes = res.getReservationID() > 0 ? false : true;
 		boolean isHost = isHost(actualUser, res.getHostList());
+		boolean isParticipant = isHost(actualUser, res.getParticipantList());
 		final GridLayout gridLayout = new GridLayout(3, 5);
 		ValueChangeListener vcl = new ValueChangeListener() {
 
@@ -380,6 +394,25 @@ public class ReservationView implements ViewTemplate {
 			gridLayout.addComponent(saveButton, 0, 4);
 			gridLayout.addComponent(deleteButton, 1, 4);
 		}
+		if(isParticipant) //show buttons for accept oder decline a reservation
+		{
+			acceptButton = new Button("Zusagen");
+			rejectButton = new Button("Absagen");
+			acceptButton.addClickListener(clButton);
+			rejectButton.addClickListener(clButton);
+			if(isHost(actualUser, res.getAcceptedParticipantsList()))
+			{
+				acceptButton.setEnabled(false);
+				rejectButton.setEnabled(true);
+			}
+			else
+			{
+				rejectButton.setEnabled(false);
+				acceptButton.setEnabled(true);
+			}
+			gridLayout.addComponent(acceptButton, 0, 4);
+			gridLayout.addComponent(rejectButton, 1, 4);
+		}
 		gridLayout.setSpacing(true);
 		gridLayout.setMargin(new MarginInfo(false, false, false, true));
 		gridLayout.setWidth(100, Unit.PERCENTAGE);
@@ -450,8 +483,14 @@ public class ReservationView implements ViewTemplate {
 			resList = resCont.getAllReservationsFromRoom(actualRoom.getRoomID());
 		}
 		for(int i = 0; i < resList.size(); i++)
-			if(isHost(actualUser, resList.get(i).getHostList()))
+		{
+			if(isHost(actualUser, resList.get(i).getHostList())) //Reservation as host
+				resList.get(i).setStyleName("violett");
+			if(isHost(actualUser, resList.get(i).getAcceptedParticipantsList())) //accepted reservation
 				resList.get(i).setStyleName("gruen");
+			if(!isHost(actualUser, resList.get(i).getAcceptedParticipantsList()) && isHost(actualUser, resList.get(i).getParticipantList())) //rejected reservation
+				resList.get(i).setStyleName("rot");
+		}
 		calEvents.addAll(resList);
 		calEvents.sort(new Object[]{"start"}, new boolean[]{true});
 
