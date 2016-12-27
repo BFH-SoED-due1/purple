@@ -12988,3 +12988,11 @@ div.v-layout.v-horizontal.v-widget {
 .mytheme .normalTextField {
 	border-color: #a3a3a3;
 }
+
+.mytheme .v-calendar-event-gruen::before, .mytheme .v-calendar-event-gruen {
+	color: #33FF33 !important;
+}
+
+.mytheme .v-calendar-event-gruen .v-calendar-event-content {
+	background-color: rgba(51, 255, 51, 0.2) !important;
+}
