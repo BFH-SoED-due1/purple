@@ -27,6 +27,7 @@ public class User {
 	private String username;
 	// TODO: encrypt password
 	private String password;
+
 	private Role role;
 	private Function function;
 
@@ -76,6 +77,34 @@ public class User {
 
 	public Function getFunction() {
 		return function;
+	}
+	
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
+	}
+
+	public void setFunction(Function function) {
+		this.function = function;
 	}
 
 }

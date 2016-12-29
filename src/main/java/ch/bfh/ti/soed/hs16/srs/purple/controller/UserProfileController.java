@@ -42,11 +42,9 @@ public class UserProfileController {
 	 * 
 	 * @param user
 	 *            user to update
-	 * @param userID
-	 *            userId to update
 	 */
-	public void updateUser(User user, int userID) {
-		boolean update = this.dbController.updateUser(user, userID);
+	public void updateUser(User user) {
+		boolean update = this.dbController.updateUser(user);
 		System.out.println("Update: " + update);
 	}
 
