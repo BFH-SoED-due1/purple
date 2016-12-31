@@ -118,6 +118,7 @@ public class UserProfileView implements ViewTemplate {
 	/**
 	 * Function sets the event for the register button
 	 */
+	@SuppressWarnings("serial")
 	private void setEventOnSave() {
 		this.save.addClickListener(new Button.ClickListener() {
 
@@ -141,11 +142,16 @@ public class UserProfileView implements ViewTemplate {
 						UserProfileView.this.password.validate();
 						UserProfileView.this.passwordReply.validate();
 					}
+					
+					// Update user
+					currentDbUser.setFirstName(firstName.getValue());
+					currentDbUser.setLastName(lastName.getValue());
+					currentDbUser.setEmailAddress(email.getValue());
+					currentDbUser.setUsername(username.getValue());
+					currentDbUser.setPassword(password.getValue());
+					currentDbUser.setFunction((Function) function.getValue());
 
-					User modifiedUser = new User(null, firstName.getValue(), lastName.getValue(), email.getValue(),
-							username.getValue(), password.getValue(), null, (Function) function.getValue());
-
-					UserProfileView.this.userProfileController.updateUser(modifiedUser, currentDbUser.getUserID());
+					UserProfileView.this.userProfileController.updateUser(currentDbUser);
 					System.out.println("update user successfully");
 
 				} catch (InvalidValueException ex) {

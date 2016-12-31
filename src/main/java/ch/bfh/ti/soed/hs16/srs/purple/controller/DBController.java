@@ -27,6 +27,8 @@ import ch.bfh.ti.soed.hs16.srs.purple.util.Row;
 /**
  * Controls the connection for the database. Every operation performed on the
  * database by this application must go through this controller.
+ * 
+ * @author Elias Schildknecht
  */
 public class DBController {
 
@@ -200,30 +202,44 @@ public class DBController {
 	}
 
 	// --- INSERT METHODS ---
-	// TODO: insert only reservation and assign it to user
 	public boolean insertNewReservation(Timestamp startDate, Timestamp endDate, Room room, List<User> hosts, List<User> participants, String title, String description){
 		if(room == null) return false;
-		String insertReservation = "INSERT INTO reservation(IDReservation, StartDate, EndDate, RoomID, Title, Description) "
-				+ "VALUES(null,'" + startDate + "','" + endDate + "','" + room.getRoomID() + "','" + title + "','"
-				+ description + "')";
-		ExecuteResult resultReservation = executeUpdate(insertReservation);
-		for (Integer reservationID : resultReservation.getGeneratedIDs()) {
-			if (hosts != null) {
-				for (User user : hosts) {
-					String insertHosts = "INSERT INTO userreservation(reservationid,userid,host,accept) " + "VALUES ("
-							+ reservationID + "," + user.getUserID() + ",1,1)";
-					resultReservation.setSuccess(executeUpdate(insertHosts).isSuccess());
-				}
-			}
-			if (participants != null) {
-				for (User user : participants) {
-					String insertParticipants = "INSERT INTO userreservation(reservationid,userid,host,accept) " + "VALUES ("
-							+ reservationID + "," + user.getUserID() + ",0,0)";
-					resultReservation.setSuccess(executeUpdate(insertParticipants).isSuccess());
-				}
-			}
+		// Check if the room is free for the given time interval
+		List<Room> freeRooms = selectFreeRooms(startDate, endDate);
+		boolean isFree = false;
+		for(Room freeRoom : freeRooms) {
+			if(freeRoom.getRoomID().equals(room.getRoomID())) isFree = true;
 		}
-		return resultReservation.isSuccess();
+		
+		// Check if a host is assigned (at least one host must be assigned)
+		boolean hasHost = false;
+		if(hosts != null && !hosts.isEmpty()) hasHost = true;
+		
+		// If room is free for the given time interval and a host is assigned -> insert new reservation
+		if(isFree && hasHost) {
+			String insertReservation = "INSERT INTO reservation(IDReservation, StartDate, EndDate, RoomID, Title, Description) "
+					+ "VALUES(null,'" + startDate + "','" + endDate + "','" + room.getRoomID() + "','" + title + "','"
+					+ description + "')";
+			ExecuteResult resultReservation = executeUpdate(insertReservation);
+			for (Integer reservationID : resultReservation.getGeneratedIDs()) {
+				if (hosts != null) {
+					for (User user : hosts) {
+						String insertHosts = "INSERT INTO userreservation(reservationid,userid,host,accept) " + "VALUES ("
+								+ reservationID + "," + user.getUserID() + ",1,1)";
+						resultReservation.setSuccess(executeUpdate(insertHosts).isSuccess());
+					}
+				}
+				if (participants != null) {
+					for (User user : participants) {
+						String insertParticipants = "INSERT INTO userreservation(reservationid,userid,host,accept) " + "VALUES ("
+								+ reservationID + "," + user.getUserID() + ",0,0)";
+						resultReservation.setSuccess(executeUpdate(insertParticipants).isSuccess());
+					}
+				}
+			}
+			return resultReservation.isSuccess();
+		}
+		return false;
 	}
 
 	public boolean insertNewRole(String role) {
@@ -508,8 +524,8 @@ public class DBController {
 					+ "SELECT roomid "
 					+ "FROM reservation "
 					+ "WHERE (startdate <= '"+startDate+"' AND enddate >= '"+endDate+"') "
-						+ "OR (startdate BETWEEN '"+startDate+"' AND '"+endDate+"') "
-						+ "OR (enddate BETWEEN '"+startDate+"' AND '"+endDate+"'))";
+						+ "OR (startdate > '"+startDate+"' AND startdate < '"+endDate+"') "
+						+ "OR (enddate > '"+startDate+"' AND enddate < '"+endDate+"'))";
 		for (Row row : executeSelect(selectStmt)) {
 			Integer roomid = (Integer) row.getRow().get(0).getKey();
 			// get room java-instances
@@ -533,29 +549,27 @@ public class DBController {
 	 * User must be assigned to the reservation.
 	 * */
 	public boolean updateHostReservation(User user, Reservation reservation, boolean isHost) {
-		boolean hasAccepted = reservation.hasUserAcceptedReservation(user);
-		String updateStmt = "UPDATE userreservation SET host = "+isHost+", accept = "+hasAccepted+" WHERE userid = "+user.getUserID()+" AND reservationid = "+reservation.getReservationID();
-		boolean success = executeUpdate(updateStmt).isSuccess();
-		if(success) {
-			if(isHost) {
+		boolean hasAccepted = reservation.hasParticipantAcceptedReservation(user);
+		if(isHost) {
+			String updateStmt = "UPDATE userreservation SET host = "+isHost+", accept = "+hasAccepted+" WHERE userid = "+user.getUserID()+" AND reservationid = "+reservation.getReservationID();
+			if(executeUpdate(updateStmt).isSuccess()) {
 				reservation.addHost(user);
-				User toDelete = null;
-				for(User participant : reservation.getParticipantList()) {
-					if(participant.getUserID().equals(user.getUserID())) toDelete = participant;
-				}
-				reservation.getParticipantList().remove(toDelete);
-				if(hasAccepted) reservation.getAcceptedParticipantsList().remove(toDelete);
-			} else {
-				User toDelete = null;
-				for(User host : reservation.getHostList()) {
-					if(host.getUserID().equals(user.getUserID())) toDelete = host;
-				}
-				reservation.getHostList().remove(toDelete);
-				reservation.addParticipant(user);
-				if(hasAccepted) reservation.getAcceptedParticipantsList().add(user);
+				reservation.removeParticipant(user);
+				return true;
 			}
+			return false;
+		} else {
+			if(reservation.getHostList().size() > 1) {
+				String updateStmt = "UPDATE userreservation SET host = "+isHost+", accept = "+hasAccepted+" WHERE userid = "+user.getUserID()+" AND reservationid = "+reservation.getReservationID();
+				if(executeUpdate(updateStmt).isSuccess()) {
+					reservation.removeHost(user);
+					reservation.addParticipant(user);
+					if(hasAccepted) reservation.getAcceptedParticipantsList().add(user);
+					return true;
+				}
+			}
+			return false;
 		}
-		return success;
 	}
 	
 	/**
@@ -605,30 +619,161 @@ public class DBController {
 		}
 		return success;
 	}
+	
+	/**
+	 * Updates a reservation in the database.
+	 * Only updates a reservation if there are no conflicts with other reservations/times and rooms.
+	 * 
+	 * @param editedReservation - The reservation which was edited
+	 * @return true if the reservation has been updated successfully in the database - false otherwise.
+	 * */
+	public boolean updateReservation(Reservation editedReservation) {
+		// Get reservation before update
+		Reservation reservation = selectReservationBy(Table_Reservation.COLUMN_ID, editedReservation.getReservationID()).get(0);
+		Timestamp oldStartDate = reservation.getStartDate();
+		Timestamp oldEndDate = reservation.getEndDate();
+		Timestamp newStartDate = editedReservation.getStartDate();
+		Timestamp newEndDate = editedReservation.getEndDate();
+		Room oldRoom = reservation.getRoom();
+		Room newRoom = editedReservation.getRoom();
+		// Check if the reservation has a new room or not and if the room is free for the new time interval
+		boolean isNewRoomFree = false;
+		boolean isOldRoomFree = false;
+		if(oldRoom.getRoomID().equals(newRoom.getRoomID())) {
+			boolean isFreeBefore = false;
+			boolean isFreeAfter = false;
+			// If the reservation begins earlier -> check if room is free before
+			if(newStartDate.getTime() < oldStartDate.getTime()) {
+				for(Room room : selectFreeRooms(newStartDate, oldStartDate)) {
+					if(room.getRoomID().equals(oldRoom.getRoomID())) isFreeBefore = true;
+				}
+			}
+			// If the reservation ends later -> check if room is free after
+			if(newEndDate.getTime() > oldEndDate.getTime()) {
+				for(Room room : selectFreeRooms(oldEndDate, newEndDate)) {
+					if(room.getRoomID().equals(oldRoom.getRoomID())) isFreeAfter = true;
+				}
+			}
+			
+			// If reservation only starts earlier
+			if(newStartDate.getTime() < oldStartDate.getTime() && newEndDate.getTime() <= oldEndDate.getTime()) {
+				if(isFreeBefore) isOldRoomFree = true;
+			} else 
+				// If reservation only ends later
+				if(newStartDate.getTime() >= oldStartDate.getTime() && newEndDate.getTime() > oldEndDate.getTime()) {
+					if(isFreeAfter) isOldRoomFree = true;
+			} else
+				// If reservation starts earlier and ends later
+				if(newStartDate.getTime() < oldStartDate.getTime() && newEndDate.getTime() > oldEndDate.getTime()) {
+					if(isFreeBefore && isFreeAfter) isOldRoomFree = true;
+			}
+			
+			// If the new time interval is between the old time interval -> reservation can be updated
+			if(newStartDate.getTime() >= oldStartDate.getTime() && newEndDate.getTime() <= oldEndDate.getTime()) {
+				isOldRoomFree = true;
+			}
+		} else {
+			// Check if new room is free for the time interval
+			for(Room room : selectFreeRooms(newStartDate, newEndDate)) {
+				if(room.getRoomID().equals(newRoom.getRoomID())) isNewRoomFree = true;
+			}
+		}
+		
+		// If the new room or the old room is free for the new time interval -> update reservation
+		boolean successUpdate = false;
+		boolean successDeleteHosts = true;
+		boolean successDeleteParticipants = true;
+		boolean successInsertHosts = true;
+		boolean successInsertparticipants = true;
+		if(isNewRoomFree || isOldRoomFree) {
+			// Update reservation
+			String updateStmt = "UPDATE reservation SET startdate = '"+editedReservation.getStartDate()+"', enddate = '"+editedReservation.getEndDate()+"', "
+					+ "roomid = "+editedReservation.getRoom().getRoomID()+", title = '"+editedReservation.getTitle()+"', description = '"+editedReservation.getDescription()+"' "
+							+ "WHERE idreservation = "+editedReservation.getReservationID();
+			successUpdate = executeUpdate(updateStmt).isSuccess();
+			
+			// Update assigned hosts and participants
+			List<User> oldHosts = reservation.getHostList();
+			List<User> newHosts = editedReservation.getHostList();
+			List<User> oldParticipants = reservation.getParticipantList();
+			List<User> newParticipants = editedReservation.getParticipantList();
+			
+			List<User> hostsToAdd = getLeftDiffUsers(newHosts, oldHosts);
+			List<User> hostsToDelete = getLeftDiffUsers(oldHosts, newHosts);
+			List<User> participantsToAdd = getLeftDiffUsers(newParticipants, oldParticipants);
+			List<User> participantsToDelete = getLeftDiffUsers(oldParticipants, newParticipants);
+			
+			// Add and Delete hosts and participants
+			if(hostsToDelete.size() > 0) {
+				updateStmt = "DELETE FROM userreservation WHERE ";
+				for(User hostToDelete : hostsToDelete) {
+					updateStmt += "(reservationid = "+editedReservation.getReservationID()+" AND userid = "+hostToDelete.getUserID()+")";
+					if(hostsToDelete.indexOf(hostToDelete) < hostsToDelete.size() - 1) updateStmt +=" OR ";
+				}
+				successDeleteHosts = executeUpdate(updateStmt).isSuccess();
+			}
+			
+			if(participantsToDelete.size() > 0) {
+				updateStmt = "DELETE FROM userreservation WHERE ";
+				for(User participantToDelete : participantsToDelete) {
+					updateStmt += "(reservationid = "+editedReservation.getReservationID()+" AND userid = "+participantToDelete.getUserID()+")";
+					if(participantsToDelete.indexOf(participantToDelete) < participantsToDelete.size() - 1) updateStmt +=" OR ";
+				}
+				successDeleteParticipants = executeUpdate(updateStmt).isSuccess();
+			}
+			
+			for(User hostToAdd : hostsToAdd) {
+				updateStmt = "INSERT INTO userreservation(reservationid, userid, host, accept) "
+						+ "VALUES("+editedReservation.getReservationID()+", "+hostToAdd.getUserID()+",1,1)";
+				successInsertHosts = executeUpdate(updateStmt).isSuccess();
+			}
+			
+			for(User participantToAdd : participantsToAdd) {
+				updateStmt = "INSERT INTO userreservation(reservationid, userid, host, accept) "
+						+ "VALUES("+editedReservation.getReservationID()+", "+participantToAdd.getUserID()+",0,0)";
+				successInsertparticipants = executeUpdate(updateStmt).isSuccess();
+			}
+		}
+		return successUpdate && successDeleteHosts && successDeleteParticipants && successInsertHosts && successInsertparticipants;
+	}
+	
+	/**
+	 * Gets the users from the left list which aren't in the right list.
+	 * 
+	 * @param leftList - List with users.
+	 * @param rightList - List with users.
+	 * 
+	 * @return A list containing all the users from the left list which aren't in the right list.
+	 * */
+	private List<User> getLeftDiffUsers(List<User> leftList, List<User> rightList) {
+		List<User> diffUsers = new ArrayList<User>();
+		for(User leftUser : leftList) {
+			boolean diff = true;
+			for(User rightUser : rightList) {
+				if(leftUser.getUserID().equals(rightUser.getUserID())) diff = false;
+			}
+			if(diff) diffUsers.add(leftUser);
+		}
+		return diffUsers;
+	}
 
 	/**
-	 * Function updates an user.
+	 * Function updates an user. Does not update a new role.
 	 * 
-	 * @param user
-	 *            user to update
-	 * @param userID
-	 *            userId to update
+	 * @param user - user to update
 	 */
-	public boolean updateUser(User user, int userID) {
-		String function;
-		if (user.getFunction() == null) {
-			function = "null";
-		} else {
-			function = Integer.toString(user.getFunction().getId());
-		}
-
+	public boolean updateUser(User user) {
+		Integer functionID = null;
+		if(user.getFunction() != null) functionID = user.getFunction().getId();
+		
 		String updateUser = "UPDATE user SET " + Table_User.COLUMN_FIRSTNAME.getValue() + " = '" + user.getFirstName()
 				+ "'," + Table_User.COLUMN_LASTNAME.getValue() + " = '" + user.getLastName() + "',"
 				+ Table_User.COLUMN_EMAIL.getValue() + " = '" + user.getEmailAddress() + "', "
 				+ Table_User.COLUMN_PASSWORD.getValue() + " = '" + user.getPassword() + "',"
-				+ Table_User.COLUMN_FUNCTIONID.getValue() + " = " + function + ","
+				+ Table_User.COLUMN_FUNCTIONID.getValue() + " = " + functionID + ","
+				// TODO: check if new username already exists (username must be unique)
 				+ Table_User.COLUMN_USERNAME.getValue() + " = '" + user.getUsername() + "' " + "WHERE "
-				+ Table_User.COLUMN_ID.getValue() + " = " + userID + ";";
+				+ Table_User.COLUMN_ID.getValue() + " = " + user.getUserID() + ";";
 
 		return executeUpdate(updateUser).isSuccess();
 	}

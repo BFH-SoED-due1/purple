@@ -23,15 +23,15 @@ import com.vaadin.ui.components.calendar.event.BasicEvent;
  */
 @SuppressWarnings("serial")
 public class Reservation extends BasicEvent{
-	private final Integer reservationID;
-	private final Room room;
-	private final Timestamp startDate;
-	private final Timestamp endDate;
-	private final List<User> hostList;
-	private final List<User> participantList;
+	private Integer reservationID;
+	private Room room;
+	private Timestamp startDate;
+	private Timestamp endDate;
+	private List<User> hostList;
+	private List<User> participantList;
 	private List<User> acceptedParticipantsList;
-	private final String title;
-	private final String description;
+	private String title;
+	private String description;
 
 	public Reservation(Integer reservationID, Timestamp startDate, Timestamp endDate, Room room, String title, String description){
 		super();
@@ -86,12 +86,48 @@ public class Reservation extends BasicEvent{
 		return participantList.size() == acceptedParticipantsList.size();
 	}
 
-	public boolean hasUserAcceptedReservation(User user){
+	public boolean hasParticipantAcceptedReservation(User user){
 		boolean hasAccepted = false;
 		for(User acceptedUser : acceptedParticipantsList){
 			if(user.getUserID().equals(acceptedUser.getUserID())) hasAccepted = true;
 		}
 		return hasAccepted;
+	}
+	
+	public void removeParticipant(User participant) {
+		User toRemove = null;
+		for(User user : participantList) {
+			if(user.getUserID().equals(participant.getUserID())) toRemove = user;
+		}
+		participantList.remove(toRemove);
+		for(User acceptedParticipant : acceptedParticipantsList) {
+			if(acceptedParticipant.getUserID().equals(participant.getUserID())) toRemove = acceptedParticipant;
+		}
+		acceptedParticipantsList.remove(toRemove);
+	}
+	
+	/**
+	 * Removes a host from the reservation.
+	 * 
+	 * @param host - The host do remove.
+	 * @return true if the host could be removed - false if the host could not have been deleted because there would remain no host for the reservation.
+	 * */
+	public boolean removeHost(User host) {
+		if(hostList.size() <= 1) {
+			return false;
+		} else {
+			User toDelete = null;
+			for(User user : hostList) {
+				if(user.getUserID().equals(host.getUserID())) toDelete = user;
+			}
+			hostList.remove(toDelete);
+			return true;
+		}
+	}
+	
+	public void removeAllParticipants() {
+		participantList.clear();
+		acceptedParticipantsList.clear();
 	}
 
 	public Room getRoom() {
@@ -141,5 +177,25 @@ public class Reservation extends BasicEvent{
 
 	public List<User> getAcceptedParticipantsList() {
 		return acceptedParticipantsList;
+	}
+
+	public void changeRoom(Room room) {
+		this.room = room;
+	}
+
+	public void setStartDate(Timestamp startDate) {
+		this.startDate = startDate;
+	}
+
+	public void setEndDate(Timestamp endDate) {
+		this.endDate = endDate;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }
