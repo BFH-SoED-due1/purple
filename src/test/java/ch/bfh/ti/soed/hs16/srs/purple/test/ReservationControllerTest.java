@@ -33,6 +33,7 @@ public class ReservationControllerTest {
 
 	private static ReservationController reservationController = new ReservationController();
 	private Timestamp startTime1 = new Timestamp(new Date().getTime());
+	private Timestamp startTime2 = new Timestamp(new Date().getTime()+1000000);
 	private Timestamp endTime1 = new Timestamp(new Date().getTime()+3600000);
 	private static Room testRoom1;
 	private static Room testRoom2;
@@ -69,6 +70,14 @@ public class ReservationControllerTest {
 		reservationController.addReservation(new Reservation(-1, startTime1, endTime1, testRoom2, "Test add Reservation", "Reservation added!", testUserHostList));
 		int resID = DBController.getInstance().selectReservationBy(Table_Reservation.COLUMN_ROOMID, testRoom2.getRoomID()).get(0).getReservationID();
 		assertTrue(reservationController.deleteReservation(resID));
+	}
+
+	@Test
+	public void testUpdateReservation(){
+		reservationController.addReservation(new Reservation(-1, startTime1, endTime1, testRoom2, "Test add Reservation", "Reservation added!", testUserHostList));
+		Reservation res = DBController.getInstance().selectReservationBy(Table_Reservation.COLUMN_ROOMID, testRoom2.getRoomID()).get(0);
+		res.setStart(startTime2);
+		assertTrue(reservationController.updateReservation(res));
 	}
 
 	@Test

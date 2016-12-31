@@ -55,14 +55,14 @@ public class ReservationController {
 
 
 	/**
-	 * Edit a reservation
+	 * Update a reservation
 	 *
-	 * @param resID
-	 *            - ReservationID
-	 *//*
-	public boolean editReservation(Reservation reservation) {
-		return this.dbController.editReservation(reservation);
-	}*/
+	 * @param reservation
+	 *            - Reservation-Object
+	 */
+	public boolean updateReservation(Reservation reservation) {
+		return this.dbController.updateReservation(reservation);
+	}
 
 	/**
 	 * User accepts the reservation
