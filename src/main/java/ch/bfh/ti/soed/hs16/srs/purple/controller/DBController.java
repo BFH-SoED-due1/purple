@@ -27,7 +27,7 @@ import ch.bfh.ti.soed.hs16.srs.purple.util.Row;
 /**
  * Controls the connection for the database. Every operation performed on the
  * database by this application must go through this controller.
- * 
+ *
  * @author Elias Schildknecht
  */
 public class DBController {
@@ -210,11 +210,11 @@ public class DBController {
 		for(Room freeRoom : freeRooms) {
 			if(freeRoom.getRoomID().equals(room.getRoomID())) isFree = true;
 		}
-		
+
 		// Check if a host is assigned (at least one host must be assigned)
 		boolean hasHost = false;
 		if(hosts != null && !hosts.isEmpty()) hasHost = true;
-		
+
 		// If room is free for the given time interval and a host is assigned -> insert new reservation
 		if(isFree && hasHost) {
 			String insertReservation = "INSERT INTO reservation(IDReservation, StartDate, EndDate, RoomID, Title, Description) "
@@ -505,10 +505,10 @@ public class DBController {
 		}
 		return reservations;
 	}
-	
+
 	/**
 	 * Returns all free rooms between a given time interval.
-	 * 
+	 *
 	 * @param startDate - Interval begin.
 	 * @param endDate - Interval end.
 	 * @return A list containing all free rooms between the given time interval.
@@ -516,7 +516,7 @@ public class DBController {
 	public List<Room> selectFreeRooms(Timestamp startDate, Timestamp endDate) {
 		List<Room> freeRooms = new ArrayList<Room>();
 		// Get all reservations before and after the given time interval
-		
+
 		String selectStmt = "SELECT distinct(roomid) "
 				+ "FROM reservation "
 				+ "WHERE roomid "
@@ -531,7 +531,7 @@ public class DBController {
 			// get room java-instances
 			freeRooms.add(selectRoomBy(Table_Room.COLUMN_ID, roomid).get(0));
 		}
-		
+
 		// Get free rooms without assigned reservations
 		String selectFreeRoomsStmt = "SELECT idroom FROM room WHERE idroom NOT IN (SELECT distinct(idroom) "
 				+ "FROM room JOIN reservation ON room.idroom = reservation.roomid)";
@@ -542,12 +542,16 @@ public class DBController {
 		}
 		return freeRooms;
 	}
-	
+
 	// --- UPDATE METHODS ---
 	/**
 	 * Sets a user to be the host or not for a specific reservation.
 	 * User must be assigned to the reservation.
-	 * */
+	 * @param user
+	 * @param reservation
+	 * @param isHost
+	 * @return
+	 */
 	public boolean updateHostReservation(User user, Reservation reservation, boolean isHost) {
 		boolean hasAccepted = reservation.hasParticipantAcceptedReservation(user);
 		if(isHost) {
@@ -571,11 +575,15 @@ public class DBController {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Accepts or cancels a specific reservation for a user.
 	 * User must be assigned to the reservation.
-	 * */
+	 * @param user
+	 * @param reservation
+	 * @param accept
+	 * @return
+	 */
 	public boolean updateAcceptReservation(User user, Reservation reservation, boolean accept) {
 		String updateStmt = "UPDATE userreservation SET accept = "+accept+" WHERE userid = "+user.getUserID()+" AND reservationid = "+reservation.getReservationID();
 		boolean updateSucces = executeUpdate(updateStmt).isSuccess();
@@ -592,11 +600,15 @@ public class DBController {
 		}
 		return updateSucces;
 	}
-	
+
 	/**
 	 * Accepts or cancels all reservations from the list for a user.
 	 * User must be assigned to the reservation.
-	 * */
+	 * @param user
+	 * @param reservations
+	 * @param accept
+	 * @return
+	 */
 	public boolean updateAcceptReservation(User user, List<Reservation> reservations, boolean accept) {
 		String updateStmt = "UPDATE userreservation SET accept = "+accept+" WHERE ";
 		for(Reservation reservation : reservations)  {
@@ -619,11 +631,11 @@ public class DBController {
 		}
 		return success;
 	}
-	
+
 	/**
 	 * Updates a reservation in the database.
 	 * Only updates a reservation if there are no conflicts with other reservations/times and rooms.
-	 * 
+	 *
 	 * @param editedReservation - The reservation which was edited
 	 * @return true if the reservation has been updated successfully in the database - false otherwise.
 	 * */
@@ -654,11 +666,11 @@ public class DBController {
 					if(room.getRoomID().equals(oldRoom.getRoomID())) isFreeAfter = true;
 				}
 			}
-			
+
 			// If reservation only starts earlier
 			if(newStartDate.getTime() < oldStartDate.getTime() && newEndDate.getTime() <= oldEndDate.getTime()) {
 				if(isFreeBefore) isOldRoomFree = true;
-			} else 
+			} else
 				// If reservation only ends later
 				if(newStartDate.getTime() >= oldStartDate.getTime() && newEndDate.getTime() > oldEndDate.getTime()) {
 					if(isFreeAfter) isOldRoomFree = true;
@@ -667,7 +679,7 @@ public class DBController {
 				if(newStartDate.getTime() < oldStartDate.getTime() && newEndDate.getTime() > oldEndDate.getTime()) {
 					if(isFreeBefore && isFreeAfter) isOldRoomFree = true;
 			}
-			
+
 			// If the new time interval is between the old time interval -> reservation can be updated
 			if(newStartDate.getTime() >= oldStartDate.getTime() && newEndDate.getTime() <= oldEndDate.getTime()) {
 				isOldRoomFree = true;
@@ -678,7 +690,7 @@ public class DBController {
 				if(room.getRoomID().equals(newRoom.getRoomID())) isNewRoomFree = true;
 			}
 		}
-		
+
 		// If the new room or the old room is free for the new time interval -> update reservation
 		boolean successUpdate = false;
 		boolean successDeleteHosts = true;
@@ -691,18 +703,18 @@ public class DBController {
 					+ "roomid = "+editedReservation.getRoom().getRoomID()+", title = '"+editedReservation.getTitle()+"', description = '"+editedReservation.getDescription()+"' "
 							+ "WHERE idreservation = "+editedReservation.getReservationID();
 			successUpdate = executeUpdate(updateStmt).isSuccess();
-			
+
 			// Update assigned hosts and participants
 			List<User> oldHosts = reservation.getHostList();
 			List<User> newHosts = editedReservation.getHostList();
 			List<User> oldParticipants = reservation.getParticipantList();
 			List<User> newParticipants = editedReservation.getParticipantList();
-			
+
 			List<User> hostsToAdd = getLeftDiffUsers(newHosts, oldHosts);
 			List<User> hostsToDelete = getLeftDiffUsers(oldHosts, newHosts);
 			List<User> participantsToAdd = getLeftDiffUsers(newParticipants, oldParticipants);
 			List<User> participantsToDelete = getLeftDiffUsers(oldParticipants, newParticipants);
-			
+
 			// Add and Delete hosts and participants
 			if(hostsToDelete.size() > 0) {
 				updateStmt = "DELETE FROM userreservation WHERE ";
@@ -712,7 +724,7 @@ public class DBController {
 				}
 				successDeleteHosts = executeUpdate(updateStmt).isSuccess();
 			}
-			
+
 			if(participantsToDelete.size() > 0) {
 				updateStmt = "DELETE FROM userreservation WHERE ";
 				for(User participantToDelete : participantsToDelete) {
@@ -721,13 +733,13 @@ public class DBController {
 				}
 				successDeleteParticipants = executeUpdate(updateStmt).isSuccess();
 			}
-			
+
 			for(User hostToAdd : hostsToAdd) {
 				updateStmt = "INSERT INTO userreservation(reservationid, userid, host, accept) "
 						+ "VALUES("+editedReservation.getReservationID()+", "+hostToAdd.getUserID()+",1,1)";
 				successInsertHosts = executeUpdate(updateStmt).isSuccess();
 			}
-			
+
 			for(User participantToAdd : participantsToAdd) {
 				updateStmt = "INSERT INTO userreservation(reservationid, userid, host, accept) "
 						+ "VALUES("+editedReservation.getReservationID()+", "+participantToAdd.getUserID()+",0,0)";
@@ -736,13 +748,13 @@ public class DBController {
 		}
 		return successUpdate && successDeleteHosts && successDeleteParticipants && successInsertHosts && successInsertparticipants;
 	}
-	
+
 	/**
 	 * Gets the users from the left list which aren't in the right list.
-	 * 
+	 *
 	 * @param leftList - List with users.
 	 * @param rightList - List with users.
-	 * 
+	 *
 	 * @return A list containing all the users from the left list which aren't in the right list.
 	 * */
 	private List<User> getLeftDiffUsers(List<User> leftList, List<User> rightList) {
@@ -759,13 +771,14 @@ public class DBController {
 
 	/**
 	 * Function updates an user. Does not update a new role.
-	 * 
+	 *
 	 * @param user - user to update
+	 * @return true on success, false otherwise
 	 */
 	public boolean updateUser(User user) {
 		Integer functionID = null;
 		if(user.getFunction() != null) functionID = user.getFunction().getId();
-		
+
 		String updateUser = "UPDATE user SET " + Table_User.COLUMN_FIRSTNAME.getValue() + " = '" + user.getFirstName()
 				+ "'," + Table_User.COLUMN_LASTNAME.getValue() + " = '" + user.getLastName() + "',"
 				+ Table_User.COLUMN_EMAIL.getValue() + " = '" + user.getEmailAddress() + "', "

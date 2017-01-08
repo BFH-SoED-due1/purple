@@ -59,6 +59,7 @@ public class ReservationController {
 	 *
 	 * @param reservation
 	 *            - Reservation-Object
+	 * @return true on success, false otherwise
 	 */
 	public boolean updateReservation(Reservation reservation) {
 		return this.dbController.updateReservation(reservation);
@@ -66,7 +67,9 @@ public class ReservationController {
 
 	/**
 	 * User accepts the reservation
-	 * @param resID - ID of the accepted reservation
+	 * @param user - user of the accepted reservation
+	 * @param reservation - reservation of the accepted reservation
+	 * @return true on success, false otherwise
 	 */
 	public boolean acceptReservation(User user, Reservation reservation){
 		return this.dbController.updateAcceptReservation(user, reservation, true);
@@ -74,7 +77,9 @@ public class ReservationController {
 
 	/**
 	 * User cancels the reservation
-	 * @param resID - ID of the canceled reservation
+	 * @param user - user of the canceled reservation
+	 * @param reservation - reservation of the canceled reservation
+	 * @return true on success, false otherwise
 	 */
 	public boolean cancelReservation(User user, Reservation reservation){
 		return this.dbController.updateAcceptReservation(user, reservation, false);

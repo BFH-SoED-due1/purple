@@ -78,7 +78,7 @@ public class User {
 	public Function getFunction() {
 		return function;
 	}
-	
+
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}

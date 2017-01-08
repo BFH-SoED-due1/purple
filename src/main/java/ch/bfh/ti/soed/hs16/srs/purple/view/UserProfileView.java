@@ -9,6 +9,13 @@ package ch.bfh.ti.soed.hs16.srs.purple.view;
 
 import java.util.List;
 
+import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController;
+import ch.bfh.ti.soed.hs16.srs.purple.controller.LoginController;
+import ch.bfh.ti.soed.hs16.srs.purple.controller.UserProfileController;
+import ch.bfh.ti.soed.hs16.srs.purple.controller.ValidationController;
+import ch.bfh.ti.soed.hs16.srs.purple.model.Function;
+import ch.bfh.ti.soed.hs16.srs.purple.model.User;
+
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Button;
@@ -21,15 +28,8 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 
-import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController;
-import ch.bfh.ti.soed.hs16.srs.purple.controller.LoginController;
-import ch.bfh.ti.soed.hs16.srs.purple.controller.UserProfileController;
-import ch.bfh.ti.soed.hs16.srs.purple.controller.ValidationController;
-import ch.bfh.ti.soed.hs16.srs.purple.model.Function;
-import ch.bfh.ti.soed.hs16.srs.purple.model.User;
-
 /**
- * 
+ *
  * @author eliabosiger
  *
  */
@@ -142,7 +142,7 @@ public class UserProfileView implements ViewTemplate {
 						UserProfileView.this.password.validate();
 						UserProfileView.this.passwordReply.validate();
 					}
-					
+
 					// Update user
 					currentDbUser.setFirstName(firstName.getValue());
 					currentDbUser.setLastName(lastName.getValue());

@@ -12994,7 +12994,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .mytheme .v-calendar-event-gruen .v-calendar-event-content {
-	background-color: rgba(51, 255, 51, 0.2) !important;
+	background-color: rgba(20, 255, 20, 0.2) !important;
 }
 
 .mytheme .v-calendar-event-rot::before, .mytheme .v-calendar-event-rot {
@@ -13011,7 +13011,4 @@ div.v-layout.v-horizontal.v-widget {
 
 .mytheme .v-calendar-event-violett .v-calendar-event-content {
 	background-color: rgba(255, 0, 255, 0.2) !important;
-	color: #33FF33 !important;
-}
-
 }

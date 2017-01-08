@@ -9,16 +9,16 @@ package ch.bfh.ti.soed.hs16.srs.purple.controller;
 
 import java.util.List;
 
-import com.vaadin.server.VaadinSession;
-
 import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController.Table_User;
 import ch.bfh.ti.soed.hs16.srs.purple.model.Role;
 import ch.bfh.ti.soed.hs16.srs.purple.model.User;
 
+import com.vaadin.server.VaadinSession;
+
 public class LoginController {
 
 	// static
-	public static String USER_SESSION_ATTRIBUTE = "user";
+	public static final String USER_SESSION_ATTRIBUTE = "user";
 
 	// membervariables
 	private User user;

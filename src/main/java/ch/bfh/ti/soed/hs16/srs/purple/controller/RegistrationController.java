@@ -45,7 +45,7 @@ public class RegistrationController {
 
 	/**
 	 * Function returns all functions for the registration view.
-	 * 
+	 *
 	 * @return all functions for the registration view.
 	 */
 	public List<Function> getAllFunctions() {
@@ -54,7 +54,7 @@ public class RegistrationController {
 
 	/**
 	 * Function updates an user
-	 * 
+	 *
 	 * @param user
 	 *            user that will be updated
 	 */

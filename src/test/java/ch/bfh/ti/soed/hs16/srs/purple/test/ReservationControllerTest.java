@@ -132,7 +132,7 @@ public class ReservationControllerTest {
 	@Test
 	public void testGetAllReservations(){
 		assertNotNull(reservationController.getAllReservations());
-		reservationController.deleteReservation(DBController.getInstance().selectReservationBy(Table_Reservation.COLUMN_ROOMID, testRoom1.getRoomID()).get(0).getReservationID());
+		//reservationController.deleteReservation(DBController.getInstance().selectReservationBy(Table_Reservation.COLUMN_ROOMID, testRoom1.getRoomID()).get(0).getReservationID());
 	}
 
 	@Test

@@ -93,7 +93,7 @@ public class Reservation extends BasicEvent{
 		}
 		return hasAccepted;
 	}
-	
+
 	public void removeParticipant(User participant) {
 		User toRemove = null;
 		for(User user : participantList) {
@@ -105,10 +105,10 @@ public class Reservation extends BasicEvent{
 		}
 		acceptedParticipantsList.remove(toRemove);
 	}
-	
+
 	/**
 	 * Removes a host from the reservation.
-	 * 
+	 *
 	 * @param host - The host do remove.
 	 * @return true if the host could be removed - false if the host could not have been deleted because there would remain no host for the reservation.
 	 * */
@@ -124,7 +124,7 @@ public class Reservation extends BasicEvent{
 			return true;
 		}
 	}
-	
+
 	public void removeAllParticipants() {
 		participantList.clear();
 		acceptedParticipantsList.clear();
@@ -195,6 +195,7 @@ public class Reservation extends BasicEvent{
 		this.title = title;
 	}
 
+	@Override
 	public void setDescription(String description) {
 		this.description = description;
 	}
