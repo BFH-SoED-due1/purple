@@ -65,11 +65,6 @@ public class LoginController {
 
 		List<Role> roles = this.dbController.selectAllRoles();
 
-		for (Role role : roles) {
-			System.out.println("role id: " + role.getId());
-			System.out.println("role: " + role.getRole());
-		}
-
 		if (!users.isEmpty()) {
 			this.user = users.get(0);
 			return true;

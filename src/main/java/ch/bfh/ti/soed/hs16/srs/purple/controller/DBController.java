@@ -547,6 +547,12 @@ public class DBController {
 	/**
 	 * Sets a user to be the host or not for a specific reservation.
 	 * User must be assigned to the reservation.
+	 * 
+	 * @param user - user which should be host or not
+	 * @param reservation - the reservation for which the user should be host or not
+	 * @param isHost - if the user should be host or not
+	 * 
+	 * @return true if the update was successfully - false otherwise.
 	 * */
 	public boolean updateHostReservation(User user, Reservation reservation, boolean isHost) {
 		boolean hasAccepted = reservation.hasParticipantAcceptedReservation(user);
@@ -575,6 +581,12 @@ public class DBController {
 	/**
 	 * Accepts or cancels a specific reservation for a user.
 	 * User must be assigned to the reservation.
+	 * 
+	 * @param user - user which should accept the reservation or not
+	 * @param reservation - the reservation which the user should accept or not
+	 * @param accept - if the user accepts the reservation or not
+	 * 
+	 * @return true if the update was successfully - false otherwise.
 	 * */
 	public boolean updateAcceptReservation(User user, Reservation reservation, boolean accept) {
 		String updateStmt = "UPDATE userreservation SET accept = "+accept+" WHERE userid = "+user.getUserID()+" AND reservationid = "+reservation.getReservationID();
@@ -596,6 +608,10 @@ public class DBController {
 	/**
 	 * Accepts or cancels all reservations from the list for a user.
 	 * User must be assigned to the reservation.
+	 * 
+	 * @param user - user which should accept the reservation or not
+	 * @param reservations - the reservations which the user should accept or not
+	 * @param accept - if the user accepts the reservation or not
 	 * */
 	public boolean updateAcceptReservation(User user, List<Reservation> reservations, boolean accept) {
 		String updateStmt = "UPDATE userreservation SET accept = "+accept+" WHERE ";
@@ -761,6 +777,7 @@ public class DBController {
 	 * Function updates an user. Does not update a new role.
 	 * 
 	 * @param user - user to update
+	 * @return true if the update was successfully - false otherwise
 	 */
 	public boolean updateUser(User user) {
 		Integer functionID = null;

@@ -116,7 +116,7 @@ public class UserProfileView implements ViewTemplate {
 	}
 
 	/**
-	 * Function sets the event for the register button
+	 * Function sets the event for the save button
 	 */
 	@SuppressWarnings("serial")
 	private void setEventOnSave() {
@@ -124,15 +124,17 @@ public class UserProfileView implements ViewTemplate {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+				// TODO: make validation before "save" button is clicked
 				try {
 					UserProfileView.this.firstName.validate();
 					UserProfileView.this.lastName.validate();
 					UserProfileView.this.email.validate();
 
-					if (!currentDbUser.getUsername().equals(username.getValue())) {
-						ValidationController.checkIfUserAlredyExist(username, DBController.getInstance());
+					if (!currentDbUser.getUsername().equals(UserProfileView.this.username.getValue())) {
+						ValidationController.checkIfUserAlredyExist(UserProfileView.this.username, DBController.getInstance());
 						UserProfileView.this.username.validate();
 					}
+					
 					if (password.getValue() != null && !password.getValue().isEmpty()
 							&& passwordReply.getValue() != null && !passwordReply.getValue().isEmpty()) {
 
@@ -151,9 +153,9 @@ public class UserProfileView implements ViewTemplate {
 					currentDbUser.setPassword(password.getValue());
 					currentDbUser.setFunction((Function) function.getValue());
 
-					UserProfileView.this.userProfileController.updateUser(currentDbUser);
-					System.out.println("update user successfully");
-
+					boolean success = UserProfileView.this.userProfileController.updateUser(currentDbUser);
+					if(success) System.out.println("update user successfully");
+					
 				} catch (InvalidValueException ex) {
 					System.out.println("Failed to update user");
 				}

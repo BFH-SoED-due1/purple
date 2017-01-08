@@ -48,12 +48,16 @@ public class RegistrationView implements ViewTemplate {
 	private Button register = new Button("Registrieren");
 	private FormLayout registrationLayout = new FormLayout();
 	private RegistrationController registrationController = new RegistrationController(this);
+	
+	private List<Function> loadedFunctions;
 
 	/**
 	 * Function initlaizes the Components for the registrationview.
 	 */
 	@Override
 	public void initView() {
+		loadedFunctions = this.registrationController.getAllFunctions();
+		
 		this.registrationLayout.setSpacing(true);
 		this.title.setStyleName("h2");
 		this.successFullRegistrationTitel.setStyleName("h2");
@@ -138,10 +142,8 @@ public class RegistrationView implements ViewTemplate {
 	 */
 	private void setDefaultView() {
 		this.registrationLayout.removeAllComponents();
-
-		List<Function> functions = this.registrationController.getAllFunctions();
-
-		for (Function f : functions) {
+		
+		for (Function f : loadedFunctions) {
 			this.function.addItem(f);
 		}
 

@@ -10,6 +10,7 @@ package ch.bfh.ti.soed.hs16.srs.purple.controller;
 import java.util.List;
 
 import com.vaadin.data.Validator;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
@@ -54,8 +55,7 @@ public class ValidationController {
 	 * @param passwordField - The passwordfield to be checked
 	 * @param repliedPasswordField - The replied password
 	 */
-	public static void checkIfPasswordIsEqualWithRepliedPassword(PasswordField passwordField,
-			PasswordField repliedPasswordField) {
+	public static void checkIfPasswordIsEqualWithRepliedPassword(PasswordField passwordField, PasswordField repliedPasswordField) throws InvalidValueException {
 
 		repliedPasswordField.addValidator(new Validator() {
 
@@ -74,14 +74,14 @@ public class ValidationController {
 	 * @param username - The "username"-textfield
 	 * @param dbController - Instance of DBController
 	 */
-	public static void checkIfUserAlredyExist(TextField username, DBController dbController) {
+	public static void checkIfUserAlredyExist(TextField username, DBController dbController) throws InvalidValueException {
 		username.addValidator(new Validator() {
 
 			@Override
 			public void validate(Object value) throws InvalidValueException {
 				List<User> users = dbController.selectUserBy(Table_User.COLUMN_USERNAME, username.getValue());
 
-				if (users.size() != 0) {
+				if (users.size() > 0) {
 					throw new InvalidValueException("Username ist bereits vergeben!");
 				}
 			}

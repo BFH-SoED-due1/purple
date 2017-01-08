@@ -42,10 +42,10 @@ public class UserProfileController {
 	 * 
 	 * @param user
 	 *            user to update
+	 * @return true if successfully - false otherwise
 	 */
-	public void updateUser(User user) {
-		boolean update = this.dbController.updateUser(user);
-		System.out.println("Update: " + update);
+	public boolean updateUser(User user) {
+		return this.dbController.updateUser(user);
 	}
 
 	/**
