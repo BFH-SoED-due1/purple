@@ -5,7 +5,6 @@
  *
  * Distributable under GPL license. See terms of license at gnu.org.
  */
-
 package ch.bfh.ti.soed.hs16.srs.purple.controller;
 
 import java.util.List;
@@ -28,7 +27,7 @@ public class UserProfileController {
 
 	/**
 	 * Function returns the user for the UserProfileView
-	 * 
+	 *
 	 * @param username
 	 *            current logged in username
 	 * @return User-Object
@@ -39,7 +38,7 @@ public class UserProfileController {
 
 	/**
 	 * Function updates an user.
-	 * 
+	 *
 	 * @param user
 	 *            user to update
 	 * @return true if successfully - false otherwise
@@ -50,7 +49,7 @@ public class UserProfileController {
 
 	/**
 	 * Function returns all functions for the registration view.
-	 * 
+	 *
 	 * @return all functions for the registration view.
 	 */
 	public List<Function> getAllFunctions() {

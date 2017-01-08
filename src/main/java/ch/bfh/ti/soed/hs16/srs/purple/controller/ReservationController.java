@@ -59,16 +59,28 @@ public class ReservationController {
 	 *
 	 * @param reservation
 	 *            - Reservation-Object
-	 * @return true if successfully - false otherwise
+	 * @return true on success, false otherwise
 	 */
 	public boolean updateReservation(Reservation reservation) {
 		return this.dbController.updateReservation(reservation);
 	}
-	
+
+	/**
+	 * User accepts the reservation
+	 * @param user - user of the accepted reservation
+	 * @param reservation - reservation of the accepted reservation
+	 * @return true on success, false otherwise
+	 */
 	public boolean acceptReservation(User user, Reservation reservation){
 		return this.dbController.updateAcceptReservation(user, reservation, true);
 	}
-	
+
+	/**
+	 * User cancels the reservation
+	 * @param user - user of the canceled reservation
+	 * @param reservation - reservation of the canceled reservation
+	 * @return true on success, false otherwise
+	 */
 	public boolean cancelReservation(User user, Reservation reservation){
 		return this.dbController.updateAcceptReservation(user, reservation, false);
 	}

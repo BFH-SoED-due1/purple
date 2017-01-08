@@ -132,7 +132,6 @@ public class ReservationControllerTest {
 	@Test
 	public void testGetAllReservations(){
 		assertNotNull(reservationController.getAllReservations());
-		
 		List<Reservation> reservations = DBController.getInstance().selectReservationBy(Table_Reservation.COLUMN_ROOMID, testRoom1.getRoomID());
 		
 		for(Reservation reservation : reservations) {

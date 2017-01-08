@@ -16,6 +16,11 @@ import java.util.Set;
 
 import org.vaadin.dialogs.ConfirmDialog;
 
+import ch.bfh.ti.soed.hs16.srs.purple.controller.ReservationController;
+import ch.bfh.ti.soed.hs16.srs.purple.model.Reservation;
+import ch.bfh.ti.soed.hs16.srs.purple.model.Room;
+import ch.bfh.ti.soed.hs16.srs.purple.model.User;
+
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanItemContainer;
@@ -45,11 +50,6 @@ import com.vaadin.ui.components.calendar.CalendarComponentEvents.EventClick;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents.EventClickHandler;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents.RangeSelectEvent;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents.RangeSelectHandler;
-
-import ch.bfh.ti.soed.hs16.srs.purple.controller.ReservationController;
-import ch.bfh.ti.soed.hs16.srs.purple.model.Reservation;
-import ch.bfh.ti.soed.hs16.srs.purple.model.Room;
-import ch.bfh.ti.soed.hs16.srs.purple.model.User;
 
 public class ReservationView implements ViewTemplate {
 
@@ -186,10 +186,8 @@ public class ReservationView implements ViewTemplate {
 					System.out.println(hosts.get(0).getUsername());
 					if(res.getReservationID() > 0) //Edit
 					{
-						//TODO: Muss noch auf die edit Methode vom Controller geändert werden, sobald vorhanden
 						Reservation newRes = new Reservation(res.getReservationID(), startTime, endTime, resCont.getRoom((int) rooms.getValue()), title.getValue(), description.getValue(), hosts, participants);
-						resCont.deleteReservation(res.getReservationID());
-						resCont.addReservation(newRes);
+						resCont.updateReservation(newRes);
 						popUpWindow.close();
 						calendarUpdate();
 					}
@@ -220,13 +218,13 @@ public class ReservationView implements ViewTemplate {
 				}
 				if(event.getButton() == acceptButton) //Accept reservation as participant
 				{
-					//TODO: Kommentar wegnehmen
-					//resCont.acceptReservation(actualUser, res);
+					if(resCont.acceptReservation(actualUser, res))
+						popUpWindow.close();
 				}
 				if(event.getButton() == rejectButton) //reject reservation as participant
 				{
-					//TODO: Kommentar wegnehmen
-					//resCont.cancelReservation(actualUSer, res);
+					if(resCont.cancelReservation(actualUser, res))
+						popUpWindow.close();
 				}
 			}
 		};
@@ -296,9 +294,22 @@ public class ReservationView implements ViewTemplate {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				//TODO: refresh the free rooms in the given time space
-				startDate.getValue().getTime(); //Startzeit
-				endDate.getValue().getTime(); //Endzeit
+				List<Room> roomList = resCont.getAllFreeRooms(new Timestamp(startDate.getValue().getTime()), new Timestamp(endDate.getValue().getTime()));
+				if(ReservationView.this.res.getReservationID() > 0)
+				{
+					System.out.println("Aktuellen Raum");
+					rooms.addItem(ReservationView.this.res.getRoom().getRoomID());
+					rooms.setItemCaption(ReservationView.this.res.getRoom().getRoomID(), ReservationView.this.res.getRoom().getName() + " (" + ReservationView.this.res.getRoom().getNumberOfSeats() + " Plätze)");
+					rooms.select(ReservationView.this.res.getRoom().getRoomID());
+				}
+				for(int i = 0;i < roomList.size();i++)
+				{
+					rooms.addItem(roomList.get(i).getRoomID());
+					String caption = roomList.get(i).getName() + " (" + roomList.get(i).getNumberOfSeats() + " Plätze)";
+					rooms.setItemCaption(roomList.get(i).getRoomID(), caption);
+				}
+				if(ReservationView.this.res.getReservationID() <= 0 && actualRoom != null)
+					rooms.select(actualRoom.getRoomID());
 			}
 		};
 		popUpWindow = new Window();
@@ -364,17 +375,21 @@ public class ReservationView implements ViewTemplate {
 		rooms = new NativeSelect("Raum");
 		rooms.setNullSelectionAllowed(false);
 		rooms.removeAllItems();
-		//TODO: Get free rooms for the selected timeslot
+		List<Room> roomList = resCont.getAllFreeRooms(new Timestamp(startDate.getValue().getTime()), new Timestamp(endDate.getValue().getTime()));
+		if(!newRes)
+		{
+			rooms.addItem(res.getRoom().getRoomID());
+			rooms.setItemCaption(res.getRoom().getRoomID(), res.getRoom().getName() + " (" + res.getRoom().getNumberOfSeats() + " Plätze)");
+			rooms.select(res.getRoom().getRoomID());
+		}
 		for(int i = 0;i < roomList.size();i++)
 		{
 			rooms.addItem(roomList.get(i).getRoomID());
 			String caption = roomList.get(i).getName() + " (" + roomList.get(i).getNumberOfSeats() + " Plätze)";
 			rooms.setItemCaption(roomList.get(i).getRoomID(), caption);
-			if(!newRes)
-				rooms.select(res.getRoom().getRoomID());
-			if(newRes && actualRoom != null)
-				rooms.select(actualRoom.getRoomID());
 		}
+		if(newRes && actualRoom != null)
+			rooms.select(actualRoom.getRoomID());
 		saveButton = new Button("Speichern");
 		saveButton.addClickListener(clButton);
 		deleteButton = new Button("Löschen");
@@ -389,6 +404,8 @@ public class ReservationView implements ViewTemplate {
 		gridLayout.addComponent(title, 0, 2);
 		gridLayout.addComponent(rooms, 1, 2, 2, 2);
 		gridLayout.addComponent(description, 0, 3, 1, 3);
+		if(roomList.size() == 0)
+			saveButton.setEnabled(false);
 		if(isHost || newRes) //show buttons for edit and delete only if the user is host or its a new reservation
 		{
 			gridLayout.addComponent(saveButton, 0, 4);
@@ -437,6 +454,10 @@ public class ReservationView implements ViewTemplate {
 		return false;
 	}
 
+	/**
+	 * enable or disable input components.
+	 * @param editable true if the inputs should be editable, false otherwise
+	 */
 	private void setEditable(boolean editable)
 	{
 		saveButton.setCaption(editable ? "Speichern" : "Bearbeiten");
@@ -453,6 +474,7 @@ public class ReservationView implements ViewTemplate {
 
 	/**
 	 * Function shows the view on the content panel
+	 * @param content
 	 */
 	@Override
 	public void display(Component content) {
