@@ -134,7 +134,7 @@ public class UserProfileView implements ViewTemplate {
 						ValidationController.checkIfUserAlredyExist(UserProfileView.this.username, DBController.getInstance());
 						UserProfileView.this.username.validate();
 					}
-					
+
 					if (password.getValue() != null && !password.getValue().isEmpty()
 							&& passwordReply.getValue() != null && !passwordReply.getValue().isEmpty()) {
 
@@ -155,7 +155,7 @@ public class UserProfileView implements ViewTemplate {
 
 					boolean success = UserProfileView.this.userProfileController.updateUser(currentDbUser);
 					if(success) System.out.println("update user successfully");
-					
+
 				} catch (InvalidValueException ex) {
 					System.out.println("Failed to update user");
 				}

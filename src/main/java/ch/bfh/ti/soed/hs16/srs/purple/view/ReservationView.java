@@ -474,7 +474,7 @@ public class ReservationView implements ViewTemplate {
 
 	/**
 	 * Function shows the view on the content panel
-	 * @param content
+	 * @param content - the content to be displayed.
 	 */
 	@Override
 	public void display(Component content) {
