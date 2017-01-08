@@ -19,7 +19,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Used to map sql types into java types.
+ * Used to map SQL types into java types.
+ * TODO: Maybe a bit overkill for this application (use Spring Framework instead)
+ *
+ * @author Elias Schildknecht
  * */
 public class Row {
 	private List<Entry<Object, Class<?>>> row;

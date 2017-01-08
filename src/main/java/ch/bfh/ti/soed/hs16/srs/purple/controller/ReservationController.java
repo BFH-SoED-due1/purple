@@ -8,74 +8,34 @@
 package ch.bfh.ti.soed.hs16.srs.purple.controller;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-
+import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController.Table_Reservation;
+import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController.Table_Room;
+import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController.Table_User;
 import ch.bfh.ti.soed.hs16.srs.purple.model.Reservation;
 import ch.bfh.ti.soed.hs16.srs.purple.model.Room;
 import ch.bfh.ti.soed.hs16.srs.purple.model.User;
-import ch.bfh.ti.soed.hs16.srs.purple.view.ReservationView;
+import ch.bfh.ti.soed.hs16.srs.purple.util.Email;
 
 public class ReservationController {
-	private ReservationView reservationView;
-	private User user;
 	private DBController dbController;
 
-	private List<User> hosts = new ArrayList<User>();
+	private static String DOMAIN = "Unsere Website";
 
-	public ReservationController(User actUser) {
+	public ReservationController() {
 		dbController = DBController.getInstance();
-		hosts.add(actUser);
 	}
-
-//	private ClickListener clickListener = new ClickListener() {
-//
-//		@Override
-//		public void buttonClick(ClickEvent event) {
-//			// Reservation uiRes = reservationView.getReservation();
-//			// switch (reservationView.getAction()) {
-//			// case ReservationView.Action.INSERT:
-//			// reservationView.setStatus(addReservation(uiRes.getStartDate(),
-//			// uiRes.getEndDate(), uiRes.getRoom(),
-//			// uiRes.getTitle(), uiRes.getDescription(),
-//			// uiRes.getParticipantList()));
-//			// break;
-//			// case ReservationView.Action.DELETE:
-//			// reservationView.setStatus(deleteReservation(uiRes.getReservationID()));
-//			// break;
-//			// case ReservationView.Action.EDIT:
-//			// reservationView.setStatus(editReservation(uiRes.getReservationID()));
-//			// break;
-//			// case ReservationView.Action.NONE:
-//			// break;
-//			// }
-//		}
-//	};
 
 	/**
 	 * Add a reservation to the DB
 	 *
-	 * @param start
-	 *            : startime of the reservation
-	 * @param end
-	 *            : endtime of the reservation
-	 * @param room
-	 *            : reservated room
-	 * @param title
-	 *            : title of the reservation
-	 * @param description
-	 *            : description of the reservation
-	 * @param participants
-	 *            : participants of the reservation
+	 * @param res - The reservation
 	 * @return true = success, false = fail
 	 */
-	public boolean addReservation(java.sql.Timestamp start, Timestamp end, Room room, String title, String description,
-			List<User> participants) {
-		if (this.dbController.insertNewReservation(start, end, room, this.hosts, participants, title, description)) {
-			sendEmail(this.hosts, participants);
+	public boolean addReservation(Reservation res) {
+		if (this.dbController.insertNewReservation(res.getStartDate(), res.getEndDate(), res.getRoom(), res.getHostList(), res.getParticipantList(), res.getTitle(), res.getDescription())) {
+			sendEmail(res);
 			getAllReservations();
 			return true;
 		}
@@ -86,44 +46,146 @@ public class ReservationController {
 	 * Delete a reservation from the DB
 	 *
 	 * @param resID
-	 *            : ReservationID
+	 *            - ReservationID
 	 * @return true = success, false = fail
 	 */
 	public boolean deleteReservation(int resID) {
 		return this.dbController.deleteReservation(resID);
 	}
 
-//	/**
-//	 * Edit a reservation
-//	 *
-//	 * @param resID
-//	 *            : ReservationID
-//	 */
-//	public void editReservation(int resID) {
-//		// // einfach löschen und neu erstellen? Oder zu gefährlich weil jemand
-//		// anderes dazwischen reservieren könnte?
-//	}
 
 	/**
-	 * Send an E-Mail to the hosts and participants of a reservation
+	 * Update a reservation
 	 *
-	 * @param hosts
-	 *            : Hosts of the reservation
-	 * @param participants
-	 *            : Participants of the reservation
+	 * @param reservation
+	 *            - Reservation-Object
+	 * @return true on success, false otherwise
 	 */
-	public void sendEmail(List<User> hosts, List<User> participants) {
-		// SimpleEmail mail = new SimpleEmail();
+	public boolean updateReservation(Reservation reservation) {
+		return this.dbController.updateReservation(reservation);
 	}
 
-	// /**
-	// * Get All reservations from the DB
-	// */
+	/**
+	 * User accepts the reservation
+	 * @param user - user of the accepted reservation
+	 * @param reservation - reservation of the accepted reservation
+	 * @return true on success, false otherwise
+	 */
+	public boolean acceptReservation(User user, Reservation reservation){
+		return this.dbController.updateAcceptReservation(user, reservation, true);
+	}
+
+	/**
+	 * User cancels the reservation
+	 * @param user - user of the canceled reservation
+	 * @param reservation - reservation of the canceled reservation
+	 * @return true on success, false otherwise
+	 */
+	public boolean cancelReservation(User user, Reservation reservation){
+		return this.dbController.updateAcceptReservation(user, reservation, false);
+	}
+
+	/**
+	 * Get the room-object from the roomID
+	 * @param roomID - ID of a room
+	 * @return The specific room with the given ID
+	 */
+	public Room getRoom(int roomID)
+	{
+		return this.dbController.selectRoomBy(Table_Room.COLUMN_ID, roomID).get(0);
+	}
+
+	/**
+	 * Get all rooms form the DB
+	 * @return List of all rooms
+	 */
+	public List<Room> getAllRooms(){
+		return this.dbController.selectAllRooms();
+	}
+
+	/**
+	 * Returns all free rooms during the given Time
+	 * @param startDate - Starttime of the timewindow
+	 * @param endDate - Endtime of the timewindow
+	 * @return list of free Rooms or an empty list, if no room is avaiable
+	 */
+	public List<Room> getAllFreeRooms(Timestamp startDate, Timestamp endDate){
+		return this.dbController.selectFreeRooms(startDate, endDate);
+	}
+
+	/**
+	 * Get all reservations form one specific room
+	 * @param roomID - ID of a room
+	 *
+	 * @return List of all reservations from a specific room
+	 */
+	public List<Reservation> getAllReservationsFromRoom(int roomID){
+		return this.dbController.selectReservationBy(Table_Reservation.COLUMN_ROOMID, roomID);
+	}
+
+	/**
+	 * Get all reservations from one specific user
+	 * @param user - ID of an user
+	 * @return List of all reservations from a specific user
+	 */
+	public List<Reservation> getAllReservationsFromUser(User user){
+		List<Reservation> tempList = this.dbController.selectReservationsForUser(user, true);
+		tempList.addAll(this.dbController.selectReservationsForUser(user, false));
+		return tempList;
+	}
+	/**
+	 * Get all Users
+	 * @return List of all users
+	 */
+	public List<User> getAllUsers(){
+		return this.dbController.selectAllUsers();
+	}
+
+	/**
+	 * Get VaadinSession-user from the DB
+	 * @param user - String with a valid username
+	 * @return Userobject from user with the name at parameter user
+	 */
+	public User getSessionUser(String user){
+		return dbController.selectUserBy(Table_User.COLUMN_USERNAME, user).get(0);
+	}
+
+	/**
+	 * Get all reservations
+	 * @return List of all reservations on the system
+	 */
 	public List<Reservation> getAllReservations() {
-		// // vermutlich ists doch besser, immer alle Reservationen an die View
-		// zu
-		// // übergeben...
 		return this.dbController.selectAllReservations();
+	}
+
+	/**
+	 * Sends an E-Mail to the hosts and participants of a reservation
+	 * @param reservation - Object
+	 */
+	public void sendEmail(Reservation reservation) {
+		for (int i = 0; i < reservation.getHostList().size(); i++){
+			String message =	"Hallo " + reservation.getHostList().get(i).getUsername() + "<br>" +
+								reservation.getHostList().get(0).getUsername() + " hat dich als Veranstalter für folgenden Termin hinzugefügt: <br>" +
+								"Thema: " + reservation.getTitle() + "<br>" +
+								"Raum: " + reservation.getRoom().getName() + "<br>" +
+								"Beginn: " + reservation.getStartDate().toString() + "<br>" +
+								"Ende: " + reservation.getEndDate().toString() + "<br>" +
+								"Bitte logge dich auf " + DOMAIN + " ein und sage entweder zu oder ab.";
+			Email mail = new Email(reservation.getHostList().get(i).getEmailAddress(), "Neuer Termin", message);
+			mail.send();
+		}
+
+		for (int i = 0; i < reservation.getParticipantList().size(); i++){
+			String message =	"Hallo " + reservation.getParticipantList().get(i).getUsername() + "<br>" +
+								reservation.getHostList().get(0).getUsername() + " hat dich als Teilnehmer für folgenden Termin hinzugefügt: <br>" +
+								"Thema: " + reservation.getTitle() + "<br>" +
+								"Raum: " + reservation.getRoom().getName() + "<br>" +
+								"Beginn: " + reservation.getStartDate().toString() + "<br>" +
+								"Ende: " + reservation.getEndDate().toString() + "<br>" +
+								"Bitte logge dich auf " + DOMAIN + " ein und sage entweder zu oder ab.";
+			Email mail = new Email(reservation.getParticipantList().get(i).getEmailAddress(), "Neuer Termin", message);
+			mail.send();
+		}
 	}
 
 }

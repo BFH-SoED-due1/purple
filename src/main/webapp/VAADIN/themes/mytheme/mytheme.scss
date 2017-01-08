@@ -55,4 +55,26 @@
   .normalTextField {
   	border-color: #a3a3a3;
   }
+  
+  .v-calendar-event-gruen::before, .v-calendar-event-gruen {
+  	color: #14FF14 !important;
+  }
+  
+  .v-calendar-event-gruen .v-calendar-event-content {
+  	background-color: rgba(20, 255, 20, 0.2) !important;
+  }
+  .v-calendar-event-rot::before, .v-calendar-event-rot {
+  	color: #FF3333 !important;
+  }
+  
+  .v-calendar-event-rot .v-calendar-event-content {
+  	background-color: rgba(255, 51, 51, 0.2) !important;
+  }
+  .v-calendar-event-violett::before, .v-calendar-event-violett {
+  	color: #FF00FF !important;
+  }
+  
+  .v-calendar-event-violett .v-calendar-event-content {
+  	background-color: rgba(255, 0, 255, 0.2) !important;
+  }
 }

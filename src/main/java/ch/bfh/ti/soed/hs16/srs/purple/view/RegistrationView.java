@@ -7,12 +7,15 @@
  */
 package ch.bfh.ti.soed.hs16.srs.purple.view;
 
+import java.util.List;
+
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
@@ -20,6 +23,7 @@ import com.vaadin.ui.TextField;
 import ch.bfh.ti.soed.hs16.srs.purple.controller.DBController;
 import ch.bfh.ti.soed.hs16.srs.purple.controller.RegistrationController;
 import ch.bfh.ti.soed.hs16.srs.purple.controller.ValidationController;
+import ch.bfh.ti.soed.hs16.srs.purple.model.Function;
 import ch.bfh.ti.soed.hs16.srs.purple.model.User;
 
 /**
@@ -28,7 +32,7 @@ import ch.bfh.ti.soed.hs16.srs.purple.model.User;
  */
 public class RegistrationView implements ViewTemplate {
 
-	// Membervariable
+	// Membervariables
 	private Label successFullRegistrationTitel = new Label("Erfolgreiche Registration");
 	private Label successFullRegistration = new Label();
 	private Label successFullLayout = new Label();
@@ -37,6 +41,7 @@ public class RegistrationView implements ViewTemplate {
 	private TextField lastName = new TextField("Name");
 	private TextField firstName = new TextField("Vorname");
 	private TextField email = new TextField("Email-Adresse");
+	private NativeSelect function = new NativeSelect("Funktion");
 	private TextField username = new TextField("Benutzername");
 	private PasswordField password = new PasswordField("Passwort");
 	private PasswordField passwordReply = new PasswordField("Passwort bestätigen");
@@ -44,11 +49,15 @@ public class RegistrationView implements ViewTemplate {
 	private FormLayout registrationLayout = new FormLayout();
 	private RegistrationController registrationController = new RegistrationController(this);
 
+	private List<Function> loadedFunctions;
+
 	/**
 	 * Function initlaizes the Components for the registrationview.
 	 */
 	@Override
 	public void initView() {
+		loadedFunctions = this.registrationController.getAllFunctions();
+
 		this.registrationLayout.setSpacing(true);
 		this.title.setStyleName("h2");
 		this.successFullRegistrationTitel.setStyleName("h2");
@@ -59,6 +68,7 @@ public class RegistrationView implements ViewTemplate {
 		this.username.setInputPrompt("Benutzername");
 		this.password.setInputPrompt("Passwort");
 		this.passwordReply.setInputPrompt("Passwort");
+		this.function.setRequired(true);
 
 		ValidationController.setTextFieldRequired(this.lastName);
 		ValidationController.setTextFieldRequired(this.firstName);
@@ -102,9 +112,9 @@ public class RegistrationView implements ViewTemplate {
 					RegistrationView.this.passwordReply.validate();
 
 					User newRegisteredUser = new User(null, firstName.getValue(), lastName.getValue(), email.getValue(),
-							username.getValue(), password.getValue(), null);
+							username.getValue(), password.getValue(), null, (Function) function.getValue());
 
-					RegistrationView.this.registrationController.registerNewUser(newRegisteredUser, null);
+					RegistrationView.this.registrationController.registerNewUser(newRegisteredUser);
 					setAfterRegistrationView();
 				} catch (InvalidValueException ex) {
 					System.out.println("Failed to register");
@@ -133,6 +143,10 @@ public class RegistrationView implements ViewTemplate {
 	private void setDefaultView() {
 		this.registrationLayout.removeAllComponents();
 
+		for (Function f : loadedFunctions) {
+			this.function.addItem(f);
+		}
+
 		this.lastName.setValue("");
 		this.firstName.setValue("");
 		this.email.setValue("");
@@ -143,6 +157,7 @@ public class RegistrationView implements ViewTemplate {
 		this.registrationLayout.addComponent(this.lastName);
 		this.registrationLayout.addComponent(this.firstName);
 		this.registrationLayout.addComponent(this.email);
+		this.registrationLayout.addComponent(this.function);
 		this.registrationLayout.addComponent(this.username);
 		this.registrationLayout.addComponent(this.password);
 		this.registrationLayout.addComponent(this.passwordReply);
