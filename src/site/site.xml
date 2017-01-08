@@ -37,9 +37,10 @@
             <item name="Sprint 2: UML updated" href="doc/UML_Klassendiagramm_updated.pdf" />
 	        <item name="Sprint 3: Product Backlog" href="doc/Sprint_3_Product_Backlog.pdf" />
 	        <item name="Sprint 3: Database Schema" href="doc/DB_Schema.pdf" />
-	        <item name="Sprint 4: UML updated" href="doc/Sprint_4_Klassendiagramm.pdf"/>
+	        <item name="Sprint 3: UML updated" href="doc/Sprint_3_Klassendiagramm.pdf"/>
 	        <item name="Sprint 4: Product Backlog" href="doc/Sprint_4_Product_Backlog.pdf"/>
 	        <item name="Sprint 4: Database Schema" href="doc/Sprint_4_DB_Schema.pdf"/>
+	        <item name="Sprint 4: UML updated" href="doc/Sprint_4_Klassendiagramm.pdf"/>
             <!--
             <item name="System Sequence Diagram" href="system_sequence_diagram.html" />
             <item name="Detailed Design Document" href="detailed_design_document.html" />
