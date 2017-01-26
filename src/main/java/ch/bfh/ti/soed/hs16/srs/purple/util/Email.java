@@ -25,6 +25,7 @@ import javax.net.ssl.X509TrustManager;
 
 /**
  * Sendet EMails via den Server von mir
+ * 
  * @author Lukas
  *
  */
@@ -37,60 +38,70 @@ public class Email {
 	private URL site;
 
 	/**
-	 * Konstruktor der Email Klasse. Es werden alle Parameter direkt hier übergeben
-	 * @param to Empfänger
-	 * @param subject Betreff
-	 * @param message Nachricht
+	 * Konstruktor der Email Klasse. Es werden alle Parameter direkt hier
+	 * übergeben
+	 * 
+	 * @param to
+	 *            Empfänger
+	 * @param subject
+	 *            Betreff
+	 * @param message
+	 *            Nachricht
 	 */
 	public Email(String to, String subject, String message) {
 		this.to = to;
 		this.subject = subject;
 		this.message = message;
 
-		//Trust all Certs, so we can use our own certified ssl certificate -> more security
+		// Trust all Certs, so we can use our own certified ssl certificate ->
+		// more security
 		trustAllCerts = new TrustManager[] { new X509TrustManager() {
-		      @Override
+			@Override
 			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-		        return null;
-		      }
+				return null;
+			}
 
-		      @Override
+			@Override
 			public void checkClientTrusted(X509Certificate[] certs, String authType) {
-		      }
+			}
 
-		      @Override
+			@Override
 			public void checkServerTrusted(X509Certificate[] certs, String authType) {
-		      }
-		    }
-		};
+			}
+		} };
 		try {
 			sc = SSLContext.getInstance("SSL");
 			sc.init(null, trustAllCerts, new java.security.SecureRandom());
 		} catch (NoSuchAlgorithmException e1) {
+			// TODO Bad exception handling
 			e1.printStackTrace();
 		} catch (KeyManagementException e) {
+			// TODO Bad exception handling
 			e.printStackTrace();
 		}
 		HostnameVerifier allHostsValid = new HostnameVerifier() {
-	        @Override
+			@Override
 			public boolean verify(String hostname, SSLSession session) {
-	          return true;
-	        }
-	    };
-	    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-	    // Install the all-trusting host verifier
-	    HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+				return true;
+			}
+		};
+		HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+		// Install the all-trusting host verifier
+		HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
 
 		try {
-			//site = new URL(Resources.getSystem().getString(R.string.php_url));
+			// site = new
+			// URL(Resources.getSystem().getString(R.string.php_url));
 			this.site = new URL("https://sds-ranking.ch/bfh/reservation.php");
 		} catch (MalformedURLException e) {
+			// TODO Bad exception handling
 			e.printStackTrace();
 		}
 	}
 
 	/**
 	 * Liefert den Empfänger zurück
+	 * 
 	 * @return Den Empfänger als String
 	 */
 	public String getTo() {
@@ -99,7 +110,9 @@ public class Email {
 
 	/**
 	 * Setzt den Empfänger des Mails
-	 * @param to Der Empfänger
+	 * 
+	 * @param to
+	 *            Der Empfänger
 	 */
 	public void setTo(String to) {
 		this.to = to;
@@ -107,6 +120,7 @@ public class Email {
 
 	/**
 	 * Liefert den Betreff der Mail
+	 * 
 	 * @return Der Betreff
 	 */
 	public String getSubject() {
@@ -115,7 +129,9 @@ public class Email {
 
 	/**
 	 * Setzt den Betreff der Mail
-	 * @param subject Der Betreff
+	 * 
+	 * @param subject
+	 *            Der Betreff
 	 */
 	public void setSubject(String subject) {
 		this.subject = subject;
@@ -123,6 +139,7 @@ public class Email {
 
 	/**
 	 * Gibt die zu versendende Email zurück
+	 * 
 	 * @return Die Email
 	 */
 	public String getMessage() {
@@ -131,7 +148,9 @@ public class Email {
 
 	/**
 	 * Setzt den Text des Mails (kann auch HTML sein!)
-	 * @param message Der Inhalt des Mails (auch in HTML)
+	 * 
+	 * @param message
+	 *            Der Inhalt des Mails (auch in HTML)
 	 */
 	public void setMessage(String message) {
 		this.message = message;
@@ -139,16 +158,14 @@ public class Email {
 
 	/**
 	 * Sendet das E-Mail
+	 * 
 	 * @return true wenn gesendet, false sonst
 	 */
-	public boolean send()
-	{
+	public boolean send() {
 		String data, response = "false";
 		data = "to=" + to + "&subject=" + subject + "&message=" + message;
-		try
-		{
-			if(con == null)
-			{
+		try {
+			if (con == null) {
 				con = (HttpsURLConnection) site.openConnection();
 				con.setRequestMethod("POST");
 				con.setDoOutput(true);
@@ -159,27 +176,23 @@ public class Email {
 			out.flush();
 			out.close();
 			response = read();
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		if(response.equals("true"))
+		if (response.equals("true"))
 			return true;
 		return false;
 	}
 
-	private String read()
-	{
-		try
-		{
+	private String read() {
+		try {
 			if (con == null)
 				con = (HttpsURLConnection) site.openConnection();
 			con.setReadTimeout(2000);
 			@SuppressWarnings("resource")
 			Scanner s = new Scanner(con.getInputStream()).useDelimiter("\\A");
 			return s.hasNext() ? s.next() : "";
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			System.out.println("IOE Server");
 			return "IOE";
 		}
